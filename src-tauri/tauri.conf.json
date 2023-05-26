@@ -1,0 +1,57 @@
+{
+    "build": {
+        "beforeDevCommand": "yarn dev",
+        "beforeBuildCommand": "yarn build",
+        "devPath": "http://localhost:1420",
+        "distDir": "../dist",
+        "withGlobalTauri": false
+    },
+    "package": {
+        "productName": "TeamAI",
+        "version": "../package.json"
+    },
+    "tauri": {
+        "allowlist": {
+            "all": false,
+            "shell": {
+                "all": false,
+                "open": true
+            }
+        },
+        "bundle": {
+            "active": true,
+            "icon": [
+                "icons/32x32.png",
+                "icons/128x128.png",
+                "icons/128x128@2x.png",
+                "icons/icon.icns",
+                "icons/icon.ico"
+            ],
+            "identifier": "com.addable.team-ai",
+            "targets": "all"
+        },
+        "security": {
+            "csp": null
+        },
+        "updater": {
+            "active": true,
+            "dialog": true,
+            "endpoints": [
+                "https://github.com/PeterBlenessy/team-ai/releases/latest/download/latest.json"
+            ],
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlEM0Y4OTE3M0I1Q0U4RjcKUldUMzZGdzdGNGsvbmJtaXJURC9vNm1ySVhqTFFNQS9MZ3J2MUdqUGxGdUdpcE1ON0p1bDBYSVQK",
+            "windows": {
+                "installMode": "passive"
+            }
+        },
+        "windows": [
+            {
+                "fullscreen": false,
+                "resizable": true,
+                "title": "TeamAI",
+                "width": 800,
+                "height": 600
+            }
+        ]
+    }
+}

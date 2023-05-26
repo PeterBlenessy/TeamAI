@@ -1,0 +1,26 @@
+{
+  "name": "team-ai",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "release:draft": "CHANGELOG=$(sed -n \"/^## v$npm_package_version/,/^## /p\" CHANGELOG.md | sed '1d;$d') && gh release create v$npm_package_version --draft --title v$npm_package_version --notes \"$CHANGELOG\"",
+    "release:publish": "gh release edit v$npm_package_version --draft=false --latest",
+    "git:push": "CHANGELOG=$(sed -n \"/^## v$npm_package_version/,/^## /p\" CHANGELOG.md | sed '1d;$d') && git add . && git commit -m \"$CHANGELOG\" && git push -u origin main",
+    "cicd": "yarn git:push && yarn release:draft && yarn release:publish"
+
+  },
+  "dependencies": {
+    "vue": "^3.2.45",
+    "@tauri-apps/api": "^1.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "vite": "^4.2.1",
+    "@tauri-apps/cli": "^1.3.0"
+  }
+}
