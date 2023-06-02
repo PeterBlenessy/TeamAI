@@ -1,52 +1,61 @@
-<script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Greet from "./components/Greet.vue";
-</script>
-
 <template>
-  <div class="container">
-    <h1>Welcome to Tauri!</h1>
+    <q-layout view="lHh lpr fFf">
 
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
+        <q-header elevated >
+            <q-toolbar>
+                <UserInput />
 
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
+                <q-space />
 
-    <p>
-      Recommended IDE setup:
-      <a href="https://code.visualstudio.com/" target="_blank">VS Code</a>
-      +
-      <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-      +
-      <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank"
-        >Tauri</a
-      >
-      +
-      <a href="https://github.com/rust-lang/rust-analyzer" target="_blank"
-        >rust-analyzer</a
-      >
-    </p>
+                <q-btn dense flat icon="group_add">
+                    <q-tooltip delay="750" transition-show="scale" transition-hide="scale">
+                        {{ t('toolbar.tooltip.addTeam') }}
+                    </q-tooltip>
+                </q-btn>
+                <q-btn dense flat icon="invert_colors" @click.stop="toggleDarkMode">
+                    <q-tooltip delay="750" transition-show="scale" transition-hide="scale">
+                        {{ t('toolbar.tooltip.darkMode') }}
+                    </q-tooltip>
+                </q-btn>
+                <q-btn dense flat icon="info">
+                    <q-tooltip delay="750" transition-show="scale" transition-hide="scale">
+                        {{ t('toolbar.tooltip.info') }}
+                    </q-tooltip>
+                </q-btn>
+            </q-toolbar>
+        </q-header>
 
-    <Greet />
-  </div>
+        <q-page-container>
+            <q-page>
+
+            </q-page>
+        </q-page-container>
+
+    </q-layout>
 </template>
 
-<style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
+<script>
+import { ref } from 'vue';
+import UserInput from "./components/UserInput.vue"
+import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
+// This starter template is using Vue 3 <script setup> SFCs
+// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+export default {
+
+    components: {
+        UserInput,
+    },
+
+    setup() {
+        const { t } = useI18n();
+        const $q = useQuasar();
+        
+        return {
+            t,
+            toggleDarkMode: () => $q.dark.toggle()
+        }
+    },
 }
-</style>
+</script>

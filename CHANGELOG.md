@@ -22,7 +22,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.0.2 - [UNRELEASED]
+## v0.1.1 - [UNRELEASED]
+
+## v0.1.0 - 2023-06-02
+- Removed Greet component that comes with the boilerplate.
+- Added [Quasar as a Vite plugin](https://quasar.dev/start/vite-plugin#installation).
+- Added [Pinia](https://pinia.vuejs.org) for state management.
+- Added [vue-i18n@9](https://vue-i18n.intlify.dev) for internationalization.
+- Added Dark mode toggle.
+- Added UserInput component.
+- Added tooltips to clickable icons.
 
 ## v0.0.1 - 2023-05-26
 - Initial release based on [tauri-app-boilerplate](https://github.com/PeterBlenessy/tauri-app-boilerplate)
