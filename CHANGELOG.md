@@ -22,7 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.1.1 - [UNRELEASED]
+## v0.1.2 - [UNRELEASED]
+
+## v0.1.1 - 2023-06-06
+- Fixed window flashing on startup.
+- Changed title bar style to overlay.
+- Fixed CVE-2023-34092.
+- Changed tooltip delay to get a better UX.
 
 ## v0.1.0 - 2023-06-02
 - Removed Greet component that comes with the boilerplate.

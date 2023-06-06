@@ -1,24 +1,26 @@
 <template>
     <q-layout view="lHh lpr fFf">
 
-        <q-header elevated >
+        <q-header  class="bg-grey-10">
             <q-toolbar>
+                <q-space />
+
                 <UserInput />
 
                 <q-space />
 
                 <q-btn dense flat icon="group_add">
-                    <q-tooltip delay="750" transition-show="scale" transition-hide="scale">
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.addTeam') }}
                     </q-tooltip>
                 </q-btn>
                 <q-btn dense flat icon="invert_colors" @click.stop="toggleDarkMode">
-                    <q-tooltip delay="750" transition-show="scale" transition-hide="scale">
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.darkMode') }}
                     </q-tooltip>
                 </q-btn>
                 <q-btn dense flat icon="info">
-                    <q-tooltip delay="750" transition-show="scale" transition-hide="scale">
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.info') }}
                     </q-tooltip>
                 </q-btn>
@@ -35,23 +37,26 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { onMounted } from 'vue';
 import UserInput from "./components/UserInput.vue"
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
+import { invoke } from '@tauri-apps/api';
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 export default {
 
     components: {
-        UserInput,
+        UserInput
     },
 
     setup() {
         const { t } = useI18n();
         const $q = useQuasar();
-        
+
+        onMounted(() => invoke('show_main_window'));
+
         return {
             t,
             toggleDarkMode: () => $q.dark.toggle()
