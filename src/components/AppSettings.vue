@@ -1,0 +1,122 @@
+<template>
+    <q-card style="width: 350px">
+        <q-list>
+
+            <q-item>
+                <q-item-section avatar>
+                    <q-icon name="dark_mode" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label>{{ t('settings.darkMode.label') }}</q-item-label>
+                    <q-item-label caption>{{ t('settings.darkMode.caption') }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                    <q-toggle v-model="darkMode" toggle-indeterminate indeterminate-value='auto' flat dense round/>
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.darkMode.tooltip') }}
+                    </q-tooltip>
+
+                </q-item-section>
+            </q-item>
+
+            <q-separator />
+
+            <q-item>
+                <q-item-section avatar>
+                    <q-icon name="key" />
+                </q-item-section>
+                <q-item-section>
+                    <q-input :model-value="apiKey" @change="val => { apiKey = val }"
+                        :label="t('settings.openAI.apiKey.label')" :placeholder="t('settings.openAI.apiKey.placeholder')"
+                        dense />
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.openAI.apiKey.tooltip') }}
+                    </q-tooltip>
+                </q-item-section>
+            </q-item>
+
+            <q-item>
+                <q-item-section avatar>
+                    <q-icon name="model_training" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label caption>{{ t('settings.openAI.model.label') }}</q-item-label>
+                    <q-select v-model="model" :options="modelOptions" dense options-dense />
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.openAI.model.tooltip') }}
+                    </q-tooltip>
+                </q-item-section>
+            </q-item>
+
+            <q-item>
+                <q-item-section avatar>
+                    <q-icon name="short_text" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label caption>{{ t('settings.openAI.maxTokens.label') }} ({{ maxTokens }})</q-item-label>
+                    <q-slider :model-value="maxTokens" @change="val => { maxTokens = val }" :min="64" :max="4096" :step="16"
+                        :markers="1024" label />
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.openAI.maxTokens.tooltip') }}
+                    </q-tooltip>
+                </q-item-section>
+            </q-item>
+
+            <q-item>
+                <q-item-section avatar>
+                    <q-icon name="alt_route" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label caption>{{ t('settings.openAI.choices.label') }} ({{ choices }})</q-item-label>
+                    <q-slider :model-value="choices" @change="val => { choices = val }" snap :min="1" :max="4" :step="1"
+                        :markers="1" label />
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.openAI.choices.tooltip') }}
+                    </q-tooltip>
+                </q-item-section>
+            </q-item>
+
+            <q-item>
+                <q-item-section avatar>
+                    <q-icon name="thermostat" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label caption>{{ t('settings.openAI.temperature.label') }} ({{ temperature }})</q-item-label>
+                    <q-slider :model-value="temperature" @change="val => { temperature = val }" :min="0" :max="2"
+                        :step="0.1" :markers="0.5" label />
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.openAI.temperature.tooltip') }}
+                    </q-tooltip>
+
+                </q-item-section>
+            </q-item>
+        </q-list>
+    </q-card>
+</template>
+
+<script>
+import { useSettingsStore } from '../stores/settings-store.js';
+import { storeToRefs } from "pinia";
+import { useI18n } from 'vue-i18n';
+
+export default {
+    name: "AppSettings",
+
+    setup() {
+        const { t } = useI18n();
+        const settingsStore = useSettingsStore();
+        const { darkMode, apiKey, model, modelOptions, maxTokens, choices, temperature } = storeToRefs(settingsStore);
+
+        return {
+            t,
+            darkMode,
+            apiKey,
+            model,
+            modelOptions,
+            maxTokens,
+            choices,
+            temperature
+        }
+    },
+}
+</script>

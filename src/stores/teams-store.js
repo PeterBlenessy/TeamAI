@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 // The teams store is essentially an array of team objects.
 // Each team object has an array of team member objects and an array of messages.

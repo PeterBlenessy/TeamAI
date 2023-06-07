@@ -22,7 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.1.2 - [UNRELEASED]
+## v0.1.3 - [UNRELEASED]
+
+## v0.1.2 - 2023-06-07
+- Added settings component and store for application wide configuration.
+- Changed dark mode toggling to use the application settings store.
 
 ## v0.1.1 - 2023-06-06
 - Fixed window flashing on startup.

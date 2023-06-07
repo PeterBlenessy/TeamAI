@@ -21,17 +21,14 @@ export default {
         tooltip: {
             addTeam: 'Add a new team',
             info: 'Info',
-            darkMode: 'Toggle dark mode',
+            settings: 'Show settings'
         },
     },
     settings: {
         darkMode: {
             label: 'Dark mode',
-            caption: 'Toggle dark/light mode'
-        },
-        useConversationMode: {
-            label: 'Use conversation mode',
-            caption: 'Send individual messages or entire conversation'
+            caption: 'Toggle dark/auto/light mode',
+            tooltip: 'Toggle dark/auto/light mode'
         },
 
         openAI: {

@@ -1,5 +1,4 @@
 import { createApp } from "vue";
-//import "./styles.css";
 import App from "./App.vue";
 
 // Quasar stuff
@@ -7,6 +6,9 @@ import { Quasar, Dark, Notify } from 'quasar';
 import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import '@quasar/extras/material-icons/material-icons.css';
 import 'quasar/dist/quasar.css';
+
+// Custom styles
+//import "./styles.css";
 
 // Pinia stuff
 import { createPinia } from 'pinia';
