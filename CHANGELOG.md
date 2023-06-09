@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [PATCH]
 
 ## v0.1.3 - [UNRELEASED]
+- Changed back title bar style to visible as drag area was not wasy to find.
+- Added persistent storage using localForage.
 
 ## v0.1.2 - 2023-06-07
 - Added settings component and store for application wide configuration.

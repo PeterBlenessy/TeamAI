@@ -3,8 +3,6 @@
 
         <q-header class="bg-grey-10">
             <q-toolbar>
-                <q-space />
-
                 <UserInput />
 
                 <q-space />
