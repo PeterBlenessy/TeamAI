@@ -22,7 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.1.3 - [UNRELEASED]
+## v0.1.5 - [UNRELEASED]
+
+## v0.1.4 - 2023-06-10
+- Fixed typo in updater endpoint.
+
+## v0.1.3 - 2023-06-10
 - Changed back title bar style to visible as drag area was not wasy to find.
 - Added persistent storage using localForage.
 
