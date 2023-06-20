@@ -22,7 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.1.5 - [UNRELEASED]
+## v0.1.6 - [UNRELEASED]
+
+## v0.1.5 - 2023-06-21
+- Added basic OpenAI API wrapper supporting chat completions.
+- Added simple visualization of question and answer.
 
 ## v0.1.4 - 2023-06-10
 - Fixed typo in updater endpoint.
