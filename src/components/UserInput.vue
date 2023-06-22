@@ -28,13 +28,23 @@ export default {
     name: 'UserInput',
     setup() {
         const teamsStore = useTeamsStore();
-        const { userInput, loading } = storeToRefs(teamsStore);
+        const { userInput, loading, messages } = storeToRefs(teamsStore);
         const question = ref('');
         const { t } = useI18n();
 
         function handleUserInput() {
+            
+            if (question.value == '') {
+                return;
+            }
+            
             userInput.value = question.value;
             question.value = '';
+            messages.value.push({
+                role: 'user',
+                content: userInput.value,
+                timestamp: new Date().toLocaleString()
+            });
         }
         return {
             handleUserInput,

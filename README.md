@@ -1,13 +1,32 @@
-# Tauri + Vue 3
+# TeamAI
 
-This template should help get you started developing with Tauri + Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.
 
-## Recommended IDE Setup
+The application is based on [tauri-app-boilerplate](https://github.com/PeterBlenessy/tauri-app-boilerplate) and uses [Tauri](https://tauri.app), [Vue 3](https://vuejs.org), [Quasar](https://quasar.dev), and [Vite](https://vitejs.dev).
+
+
+## Features
+- [x] Application wide OpenAI settings.
+- [x] Simple OpenAI conversation.
+- [ ] Create personas.
+- [ ] Create teams.
+- [ ] Bot configuration templates.
+
+## Contributions
+Contributions, issues and feature requests are welcome!
+
+### Getting started
+
+* Clone the repo or download the zip-archive](https://github.com/PeterBlenessy/TeamAI/archive/refs/heads/master.zip) and unpack it.
+* Install [prerequisites for developing Tauri apps](https://tauri.app/v1/guides/getting-started/prerequisites)
+* Run `yarn tauri dev` to launch the app.
+
+### Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 
-## Getting started
+### Changelog
+See [CHANGELOG.md](CHANGELOG.md).
 
-* Clode the repo or download the zip-archive](https://github.com/PeterBlenessy/TeamAI/archive/refs/heads/master.zip) and unpack it.
-* Install [prerequisites for developing Tauri apps](https://tauri.app/v1/guides/getting-started/prerequisites)
-* Run `yarn tauri dev` to launch the app.
+## License
+This project is [MIT](LICENSE) licensed.

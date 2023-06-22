@@ -59,15 +59,15 @@ export default {
     apiErrors: {
         '401': {
             message: 'Invalid Authentication.',
-            solution: 'Ensure the API key used is correct.'
+            caption: 'Please ensure that the OpenAI API key used is correct.'
         },
         '429': {
             message: 'Rate limit reached for requests, or the engine may be overloaded.',
-            solution: 'Please retry your requests after a brief wait.'
+            caption: 'Please retry your requests after a brief wait.'
         },
         '500': {
             message: 'The server had an error while processing your request.',
-            solution: 'Retry your request after a brief wait and contact us if the issue persists.'
+            caption: 'Please retry your request after a brief wait and contact us if the issue persists.'
         },
     },
 

@@ -39,10 +39,14 @@ const openAI = () => {
 
         try {
             const response = await fetch("https://api.openai.com/v1/chat/completions", requestOptions);
+            if (!response.ok) throw new Error(`${response.status} - ${response.statusText}`);
+
             const json = await response.json();
+            if (json.errorCode) throw new Error(`${data.errorCode}`);
+
             return json.choices[0].message;
         } catch (error) {
-            console.error(error);
+            throw new Error(error.message);
         }
     }
 

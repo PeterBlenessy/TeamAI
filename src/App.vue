@@ -3,6 +3,7 @@
 
         <q-header class="bg-grey-10">
             <q-toolbar>
+                <OpenAI />
                 <UserInput />
 
                 <q-space />
@@ -33,14 +34,7 @@
 
         <q-page-container>
             <q-page>
-                <q-list>
-                    <q-item>
-                        <q-item-section>
-                            <q-item-label>{{ userInput }}</q-item-label>
-                            <q-item-label caption>{{ response.content }}</q-item-label>
-                        </q-item-section>
-                    </q-item>
-                </q-list>
+                <Messages />
             </q-page>
         </q-page-container>
 
@@ -51,13 +45,13 @@
 import { onMounted, ref, watch } from 'vue';
 import AppSettings from "./components/AppSettings.vue";
 import UserInput from "./components/UserInput.vue";
+import Messages from "./components/Messages.vue";
+import OpenAI from './components/OpenAI.vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
-import { invoke } from '@tauri-apps/api';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from './stores/settings-store.js';
-import { useTeamsStore } from './stores/teams-store.js';
-import OpenAI from './services/openai.js';
+import { invoke } from '@tauri-apps/api';
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
@@ -65,7 +59,9 @@ export default {
 
     components: {
         AppSettings,
-        UserInput
+        UserInput,
+        Messages,
+        OpenAI
     },
 
     setup() {
@@ -74,13 +70,6 @@ export default {
         const settingsStore = useSettingsStore()
         const { darkMode } = storeToRefs(settingsStore);
 
-        const teamsStore = useTeamsStore();
-        const { userInput, loading } = storeToRefs(teamsStore);
-
-        const openAI = OpenAI([]);
-
-        const response = ref('');
-
         // Show the main window when all web content has loaded.
         // This fixes the issue of flickering when the app starts and is in darkMode.
         onMounted(() => invoke('show_main_window'));
@@ -88,24 +77,10 @@ export default {
         // Watch runtime changes to dark mode
         watch(darkMode, () => $q.dark.set(darkMode.value));
 
-        // Watch runtime changes to user input
-        watch(userInput, () => {
-            if (userInput.value != '') {
-                askQuestion(userInput.value)
-            }
-        });
-
-        const askQuestion = async (question) => {
-            response.value = await openAI.createChatCompletion([{ "role": "user", "content": question }]);
-        }
-
         return {
             showSettings: ref(false),
             t,
             darkMode,
-            askQuestion,
-            userInput,
-            response
         }
     },
 }

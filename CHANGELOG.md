@@ -22,7 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.1.6 - [UNRELEASED]
+## v0.2.x - [UNRELEASED]
+
+## v0.2.0 - 2023-06-22
+- Added system tray icon. When clicked, the application is shown and focused.
+- Added improved description in README.md.
+- Added Messages component to handle display of messages.
+- Created OpenAI component to handle OpenAI API communication and related error notifications.
 
 ## v0.1.5 - 2023-06-21
 - Added basic OpenAI API wrapper supporting chat completions.

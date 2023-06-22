@@ -33,6 +33,11 @@
         "security": {
             "csp": null
         },
+        "systemTray": {
+            "iconPath": "icons/icon.png",
+            "iconAsTemplate": true,
+            "menuOnLeftClick": false
+        },
         "updater": {
             "active": true,
             "dialog": true,
