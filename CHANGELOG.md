@@ -22,7 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.2.x - [UNRELEASED]
+## v0.3.x - [UNRELEASED]
+
+## v0.3.0 - 2023-06-22
+- Added support for markdown and syntax highlighting in chat messages.
+- Added user and assistant avatars in messages.
+- Fixed some dark mode issues.
 
 ## v0.2.0 - 2023-06-22
 - Added system tray icon. When clicked, the application is shown and focused.

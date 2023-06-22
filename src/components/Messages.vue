@@ -11,10 +11,13 @@
         </q-item>
 
         <div v-for="message in [...messages].reverse()" :key="message.timestamp">
-            <q-item top :class="message.role == 'user' ? 'bg-grey-9' : 'bg-grey-10'">
+            <q-item top dense>
+                <q-item-section avatar top>
+                    <q-avatar rounded size="xl" :icon="message.role == 'user' ? 'account_box' : 'computer'" />
+                </q-item-section>
                 <q-item-section top>
                     <q-item-label>
-                        {{ message.content }}
+                        <q-markdown :src="message.content" :plugins="mdPlugins" />
                     </q-item-label>
                 </q-item-section>
             </q-item>
@@ -27,17 +30,31 @@
 
 import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from 'pinia';
+import { QMarkdown } from '@quasar/quasar-ui-qmarkdown';
+import '@quasar/quasar-ui-qmarkdown/dist/index.css';
+import mermaid from '@datatraccorporation/markdown-it-mermaid';
 
 export default {
     name: 'Messages',
+    components: {
+        QMarkdown
+    },
     setup() {
         const teamsStore = useTeamsStore();
         const { loading, messages } = storeToRefs(teamsStore);
 
         return {
             loading,
-            messages
+            messages,
+            mdPlugins: [mermaid]
         }
     }
 }
 </script>
+
+<style>
+/* Markdown div styling */
+.q-markdown {
+    padding-right: 50px;
+}
+</style>

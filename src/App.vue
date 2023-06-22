@@ -35,6 +35,11 @@
         <q-page-container>
             <q-page>
                 <Messages />
+                <!-- place QPageScroller at end of page -->
+                <q-page-scroller reverse position="bottom-right" :scroll-offset="20" :offset="[20, 20]">
+                    <q-btn round dense icon="south" />
+                </q-page-scroller>
+
             </q-page>
         </q-page-container>
 
