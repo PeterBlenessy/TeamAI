@@ -23,6 +23,7 @@ export default {
         watch(userInput, () => {
             if (userInput.value != '') {
                 askQuestion(userInput.value);
+                userInput.value = '';
             }
         });
 

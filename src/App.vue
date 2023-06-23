@@ -8,6 +8,11 @@
 
                 <q-space />
 
+                <q-btn @click="clearMessages" dense flat icon="clear_all">
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                        {{ $t('toolbar.tooltip.clear') }}
+                    </q-tooltip>
+                </q-btn>
                 <q-btn dense flat icon="group_add">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.addTeam') }}
@@ -56,6 +61,7 @@ import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from './stores/settings-store.js';
+import { useTeamsStore } from './stores/teams-store.js';
 import { invoke } from '@tauri-apps/api';
 
 // This starter template is using Vue 3 <script setup> SFCs
@@ -75,6 +81,9 @@ export default {
         const settingsStore = useSettingsStore()
         const { darkMode } = storeToRefs(settingsStore);
 
+        const teamsStore = useTeamsStore();
+        const { clearMessages } = teamsStore;
+
         // Show the main window when all web content has loaded.
         // This fixes the issue of flickering when the app starts and is in darkMode.
         onMounted(() => invoke('show_main_window'));
@@ -86,6 +95,7 @@ export default {
             showSettings: ref(false),
             t,
             darkMode,
+            clearMessages
         }
     },
 }

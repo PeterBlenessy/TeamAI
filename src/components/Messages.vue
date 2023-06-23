@@ -21,6 +21,8 @@
                     </q-item-label>
                 </q-item-section>
             </q-item>
+
+            <q-separator spaced inset="item" />
         </div>
 
     </q-list>

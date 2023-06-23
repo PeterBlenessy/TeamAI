@@ -12,18 +12,26 @@ import 'quasar/dist/quasar.css';
 
 // Pinia stuff
 import { createPinia } from 'pinia';
+import { localForagePlugin } from './services/localforage';
 
 // i18n stuff
 import { createI18n } from 'vue-i18n';
 import messages from './i18n';
 
+// ---------------------------------------------------------------------------------------------
 // Create the app
 const app = createApp(App);
 
+// ---------------------------------------------------------------------------------------------
 // Make pinia available in the app
 const pinia = createPinia();
+
+// Make localForage available in pinia stores
+pinia.use(localForagePlugin);
+
 app.use(pinia);
 
+// ---------------------------------------------------------------------------------------------
 // Make i18n available in the app
 const i18n = createI18n({
     locale: 'en',
@@ -32,6 +40,7 @@ const i18n = createI18n({
 });
 app.use(i18n);
 
+// ---------------------------------------------------------------------------------------------
 // Make Quasar available in the app
 app.use(Quasar, {
     plugins: { Dark, Notify }, // import Quasar plugins and add here
@@ -54,4 +63,5 @@ app.use(Quasar, {
     */
 });
 
+// ---------------------------------------------------------------------------------------------
 app.mount("#app");

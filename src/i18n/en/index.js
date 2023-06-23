@@ -11,14 +11,12 @@ export default {
         placeholder: 'Ask your question',
         tooltip: {
             send: 'Send question',
-            settings: 'Settings',
-            clear: 'Clear messages',
-            restore: 'Restore latest messages'
         },
     },
 
     toolbar: {
         tooltip: {
+            clear: 'Clear messages',
             addTeam: 'Add a new team',
             info: 'Info',
             settings: 'Show settings'
