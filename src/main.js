@@ -46,7 +46,10 @@ app.use(Quasar, {
     plugins: { Dark, Notify }, // import Quasar plugins and add here
     config: {
         dark: 'auto',
-        notify: {}
+        notify: {},
+        brand: {
+            primary: '#ff6f00'
+        }
     },
     iconSet: quasarIconSet,
     /*

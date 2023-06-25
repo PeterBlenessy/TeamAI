@@ -10,7 +10,7 @@ export default {
     userInput: {
         placeholder: 'Ask your question',
         tooltip: {
-            send: 'Send question',
+            send: 'Send your question',
         },
     },
 

@@ -13,7 +13,7 @@
         <div v-for="message in [...messages].reverse()" :key="message.timestamp">
             <q-item top dense>
                 <q-item-section avatar top>
-                    <q-avatar rounded size="xl" :icon="message.role == 'user' ? 'account_box' : 'computer'" />
+                    <q-icon rounded size="md" :name="message.role == 'user' ? 'account_box' : 'computer'" :color="iconColor" />
                 </q-item-section>
 
                 <q-separator vertical spaced />
@@ -38,6 +38,8 @@ import { storeToRefs } from 'pinia';
 import { QMarkdown } from '@quasar/quasar-ui-qmarkdown';
 import '@quasar/quasar-ui-qmarkdown/dist/index.css';
 import mermaid from '@datatraccorporation/markdown-it-mermaid';
+import { useQuasar } from 'quasar';
+import { computed } from 'vue';
 
 export default {
     name: 'Messages',
@@ -47,11 +49,13 @@ export default {
     setup() {
         const teamsStore = useTeamsStore();
         const { loading, messages } = storeToRefs(teamsStore);
+        const $q = useQuasar();
 
         return {
             loading,
             messages,
-            mdPlugins: [mermaid]
+            mdPlugins: [mermaid],
+            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
     }
 }

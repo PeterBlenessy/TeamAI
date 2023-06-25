@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 
 export const useSettingsStore = defineStore('settings', () => {
-
+    
     // Application settings
     const darkMode = ref('auto');
     const conversationMode = ref(true);
@@ -14,6 +14,7 @@ export const useSettingsStore = defineStore('settings', () => {
     const maxTokens = ref(512);
     const choices = ref(1);
     const temperature = ref(0.2);
+
 
     return {
         // Application settings

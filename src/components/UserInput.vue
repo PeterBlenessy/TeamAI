@@ -1,14 +1,14 @@
 <template>
     <q-input dense filled autofocus autogrow style="min-width: 80%; max-width: 80%;" 
-        dark color="white" bg-color="grey-9"
+        :dark="$q.dark.isActive" 
         :placeholder="t('userInput.placeholder')" @keydown.enter.prevent="handleUserInput" v-model="question">
 
         <template v-slot:prepend>
-            <q-icon name="live_help" style="padding: 5px" color="white" />
+            <q-icon name="live_help" style="padding: 5px"  :color="iconColor" />
         </template>
 
         <template v-slot:append>
-            <q-btn @click="handleUserInput" dense flat icon="send" color="white">
+            <q-btn @click="handleUserInput" dense flat icon="send"  :color="iconColor">
                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                     {{ t('userInput.tooltip.send') }}
                 </q-tooltip>
@@ -19,10 +19,11 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { useQuasar } from 'quasar';
 
 export default {
     name: 'UserInput',
@@ -31,6 +32,7 @@ export default {
         const { userInput } = storeToRefs(teamsStore);
         const question = ref('');
         const { t } = useI18n();
+        const $q = useQuasar();
 
         function handleUserInput() {
             
@@ -44,7 +46,8 @@ export default {
         return {
             handleUserInput,
             question,
-            t
+            t,
+            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
     }
 }

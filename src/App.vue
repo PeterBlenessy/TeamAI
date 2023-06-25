@@ -1,30 +1,30 @@
 <template>
     <q-layout view="lHh lpr fFf">
 
-        <q-header class="bg-grey-10">
+        <q-header :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
             <q-toolbar>
                 <OpenAI />
                 <UserInput />
 
                 <q-space />
 
-                <q-btn @click="clearMessages" dense flat icon="clear_all">
+                <q-btn @click="clearMessages" dense flat icon="clear_all" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ $t('toolbar.tooltip.clear') }}
                     </q-tooltip>
                 </q-btn>
-                <q-btn dense flat icon="group_add">
+                <q-btn dense flat icon="group_add" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.addTeam') }}
                     </q-tooltip>
                 </q-btn>
-                <q-btn dense flat icon="tune" @click="() => { showSettings = true }">
+                <q-btn dense flat icon="tune" @click="() => { showSettings = true }" :color="iconColor" >
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.settings') }}
                     </q-tooltip>
                 </q-btn>
 
-                <q-btn dense flat icon="info" @click="">
+                <q-btn dense flat icon="info" @click="" :color="iconColor" >
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.info') }}
                     </q-tooltip>
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import AppSettings from "./components/AppSettings.vue";
 import UserInput from "./components/UserInput.vue";
 import Messages from "./components/Messages.vue";
@@ -79,7 +79,7 @@ export default {
         const { t } = useI18n();
         const $q = useQuasar();
         const settingsStore = useSettingsStore()
-        const { darkMode } = storeToRefs(settingsStore);
+        const { darkMode, iconColor } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
         const { clearMessages } = teamsStore;
@@ -95,7 +95,8 @@ export default {
             showSettings: ref(false),
             t,
             darkMode,
-            clearMessages
+            clearMessages,
+            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
     },
 }

@@ -4,7 +4,7 @@
 
             <q-item>
                 <q-item-section avatar>
-                    <q-icon name="dark_mode" />
+                    <q-icon name="dark_mode" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>{{ t('settings.darkMode.label') }}</q-item-label>
@@ -23,7 +23,7 @@
 
             <q-item>
                 <q-item-section avatar>
-                    <q-icon name="chat" />
+                    <q-icon name="chat" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>{{ $t('settings.conversationMode.label') }}</q-item-label>
@@ -41,7 +41,7 @@
 
             <q-item>
                 <q-item-section avatar>
-                    <q-icon name="key" />
+                    <q-icon name="key" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
                     <q-input :model-value="apiKey" @change="val => { apiKey = val }"
@@ -55,7 +55,7 @@
 
             <q-item>
                 <q-item-section avatar>
-                    <q-icon name="model_training" />
+                    <q-icon name="model_training" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label caption>{{ t('settings.openAI.model.label') }}</q-item-label>
@@ -68,7 +68,7 @@
 
             <q-item>
                 <q-item-section avatar>
-                    <q-icon name="short_text" />
+                    <q-icon name="short_text" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label caption>{{ t('settings.openAI.maxTokens.label') }} ({{ maxTokens }})</q-item-label>
@@ -82,7 +82,7 @@
 
             <q-item>
                 <q-item-section avatar>
-                    <q-icon name="alt_route" />
+                    <q-icon name="alt_route" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label caption>{{ t('settings.openAI.choices.label') }} ({{ choices }})</q-item-label>
@@ -96,7 +96,7 @@
 
             <q-item>
                 <q-item-section avatar>
-                    <q-icon name="thermostat" />
+                    <q-icon name="thermostat" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label caption>{{ t('settings.openAI.temperature.label') }} ({{ temperature }})</q-item-label>
@@ -113,9 +113,11 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
+import { useQuasar } from 'quasar';
 
 export default {
     name: "AppSettings",
@@ -124,6 +126,7 @@ export default {
         const { t } = useI18n();
         const settingsStore = useSettingsStore();
         const { darkMode, conversationMode, apiKey, model, modelOptions, maxTokens, choices, temperature } = storeToRefs(settingsStore);
+        const $q = useQuasar();
 
         return {
             t,
@@ -134,7 +137,8 @@ export default {
             modelOptions,
             maxTokens,
             choices,
-            temperature
+            temperature,
+            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
     },
 }
