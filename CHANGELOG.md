@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.3.x - [UNRELEASED]
 
+## v0.3.2 - 2023-06-25
+- Added conversation mode setting, i.e. to send individual messages or entire conversation history.
+- Fixed issue where UI was remaind in loading mode after error.
+
 ## v0.3.1 - 2023-06-23
 - Message history is now persisted across application restarts.
 - Added a button to clear message history.

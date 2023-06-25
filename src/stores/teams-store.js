@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
 // The teams-store holds the teams creeated by the user in a list. A team is a list of AI assistants, bots
@@ -22,6 +22,7 @@ export const useTeamsStore = defineStore('teams', () => {
     // Actions
     function clearMessages() {
         messages.value = [];
+        loading.value = false; // Just in case UI hangs due to some unhandled error
     }
 
     return {

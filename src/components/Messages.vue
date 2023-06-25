@@ -15,6 +15,9 @@
                 <q-item-section avatar top>
                     <q-avatar rounded size="xl" :icon="message.role == 'user' ? 'account_box' : 'computer'" />
                 </q-item-section>
+
+                <q-separator vertical spaced />
+
                 <q-item-section top>
                     <q-item-label>
                         <q-markdown :src="message.content" :plugins="mdPlugins" />
@@ -22,7 +25,7 @@
                 </q-item-section>
             </q-item>
 
-            <q-separator spaced inset="item" />
+            <q-separator inset spaced />
         </div>
 
     </q-list>

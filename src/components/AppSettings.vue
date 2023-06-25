@@ -23,6 +23,24 @@
 
             <q-item>
                 <q-item-section avatar>
+                    <q-icon name="chat" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label>{{ $t('settings.conversationMode.label') }}</q-item-label>
+                    <q-item-label caption>{{ $t('settings.conversationMode.caption') }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                    <q-toggle v-model="conversationMode" flat dense round />
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.conversationMode.tooltip') }}
+                    </q-tooltip>
+                </q-item-section>
+            </q-item>
+
+            <q-separator />
+
+            <q-item>
+                <q-item-section avatar>
                     <q-icon name="key" />
                 </q-item-section>
                 <q-item-section>
@@ -105,11 +123,12 @@ export default {
     setup() {
         const { t } = useI18n();
         const settingsStore = useSettingsStore();
-        const { darkMode, apiKey, model, modelOptions, maxTokens, choices, temperature } = storeToRefs(settingsStore);
+        const { darkMode, conversationMode, apiKey, model, modelOptions, maxTokens, choices, temperature } = storeToRefs(settingsStore);
 
         return {
             t,
             darkMode,
+            conversationMode,
             apiKey,
             model,
             modelOptions,

@@ -28,6 +28,11 @@ export default {
             caption: 'Toggle dark/auto/light mode',
             tooltip: 'Toggle dark/auto/light mode'
         },
+        conversationMode: {
+            label: 'Conversation mode',
+            caption: 'Send individual messages or entire conversation history',
+            tooltip: 'Toggle conversation mode on/off'
+        },
 
         openAI: {
             apiKey: {
@@ -36,7 +41,7 @@ export default {
                 tooltip: 'Your OpenAI API key. You can find it in your OpenAI dashboard.'
             },
             model: {
-                label: 'AI model',
+                label: 'OpenAI model',
                 tooltip: 'The AI model to use for generating the response.'
             },
             maxTokens: {
@@ -67,6 +72,10 @@ export default {
             message: 'The server had an error while processing your request.',
             caption: 'Please retry your request after a brief wait and contact us if the issue persists.'
         },
+        '400': {
+            message: 'The request seams invalid.',
+            caption: 'Please check your request and try again.'
+        }
     },
 
     page: {}

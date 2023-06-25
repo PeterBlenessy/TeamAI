@@ -4,6 +4,7 @@
 
 import { watch } from 'vue';
 import { useTeamsStore } from '../stores/teams-store.js';
+import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import OpenAI from '../services/openai.js';
 import { useQuasar } from 'quasar';
@@ -13,15 +14,37 @@ export default {
     name: 'OpenAI',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, messages, userInput } = storeToRefs(teamsStore);
+        const { loading, messages, userInput, systemMessage } = storeToRefs(teamsStore);
+
+        const settingsStore = useSettingsStore();
+        const { conversationMode } = storeToRefs(settingsStore);
+
+        const getMessages = (conversationId) => {
+            //return messages.value.filter(message => message.id == id);
+            return messages.value.map(message => { 
+                if (message.conversationId == conversationId) {
+                    return { "role": message.role, "content": message.content };
+                }
+            })
+        }
+
         const $q = useQuasar();
         const { t } = useI18n();
 
-        const openAI = OpenAI([]);
+        const openAI = OpenAI();
+        // Todo: implement conversationId generation.
+        const conversationId = 1;
 
         // Watch runtime changes to user input
         watch(userInput, () => {
             if (userInput.value != '') {
+                messages.value.push({
+                    role: 'user',
+                    content: userInput.value,
+                    timestamp: new Date().toLocaleString(),
+                    conversationId: conversationId
+                });
+
                 askQuestion(userInput.value);
                 userInput.value = '';
             }
@@ -29,12 +52,17 @@ export default {
 
         const askQuestion = async (question) => {
             loading.value = true;
+            let conversation = (!conversationMode.value) ? [{ "role": "user", "content": question }] : getMessages(1);
             try {
-                let response = await openAI.createChatCompletion([{ "role": "user", "content": question }]);
+                let response = await openAI.createChatCompletion([
+                    { "role": "system", "content": systemMessage.value},
+                    ...conversation
+                ]);
                 messages.value.push({
                     role: response.role,
                     content: response.content,
-                    timestamp: new Date().toLocaleString()
+                    timestamp: new Date().toLocaleString(),
+                    conversationId: conversationId
                 });
             } catch (error) {
                 let message = ''

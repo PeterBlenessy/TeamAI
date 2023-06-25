@@ -14,10 +14,7 @@ const openAI = () => {
 
         const body = {
             "model": model.value,
-            "messages": [
-                { "role": "system", "content": "I am a helpful assistant" },
-                ...messages
-            ],
+            "messages": messages,
             "max_tokens": maxTokens.value,
             "temperature": temperature.value,
             "stream": false,

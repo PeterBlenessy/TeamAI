@@ -28,7 +28,7 @@ export default {
     name: 'UserInput',
     setup() {
         const teamsStore = useTeamsStore();
-        const { userInput, loading, messages } = storeToRefs(teamsStore);
+        const { userInput } = storeToRefs(teamsStore);
         const question = ref('');
         const { t } = useI18n();
 
@@ -40,15 +40,9 @@ export default {
             
             userInput.value = question.value;
             question.value = '';
-            messages.value.push({
-                role: 'user',
-                content: userInput.value,
-                timestamp: new Date().toLocaleString()
-            });
         }
         return {
             handleUserInput,
-            loading,
             question,
             t
         }
