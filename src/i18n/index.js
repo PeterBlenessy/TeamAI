@@ -1,5 +1,9 @@
-import en from './en'
+import en from './locales/en.js'
+import sv from './locales/sv.js'
+import hu from './locales/hu.js'
 
 export default {
-  'en': en
+    'en': en,
+    'sv': sv,
+    'hu': hu
 }

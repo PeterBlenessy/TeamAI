@@ -18,13 +18,13 @@
                         {{ t('toolbar.tooltip.addTeam') }}
                     </q-tooltip>
                 </q-btn>
-                <q-btn dense flat icon="tune" @click="() => { showSettings = true }" :color="iconColor" >
+                <q-btn dense flat icon="tune" @click="() => { showSettings = true }" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.settings') }}
                     </q-tooltip>
                 </q-btn>
 
-                <q-btn dense flat icon="info" @click="" :color="iconColor" >
+                <q-btn dense flat icon="info" @click="() => { showInfo = true }" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.info') }}
                     </q-tooltip>
@@ -32,6 +32,17 @@
 
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
                     <AppSettings />
+                </q-dialog>
+
+                <q-dialog v-model="showInfo" position="top" transition-show="slide-down">
+                    <q-card>
+                        <q-card-section>
+                            <div class="text-h6">
+                                {{ t('info.title') }}
+                            </div>
+                            {{ t('info.content') }}
+                        </q-card-section>
+                    </q-card>
                 </q-dialog>
 
             </q-toolbar>
@@ -63,6 +74,7 @@ import { storeToRefs } from 'pinia';
 import { useSettingsStore } from './stores/settings-store.js';
 import { useTeamsStore } from './stores/teams-store.js';
 import { invoke } from '@tauri-apps/api';
+import { settingsDB } from './services/localforage';
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
@@ -76,13 +88,16 @@ export default {
     },
 
     setup() {
-        const { t } = useI18n();
+        const { t, locale } = useI18n();
         const $q = useQuasar();
         const settingsStore = useSettingsStore()
-        const { darkMode, iconColor } = storeToRefs(settingsStore);
+        const { darkMode, userLocale } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
         const { clearMessages } = teamsStore;
+
+        // Set application locale to the one selected by the user and stored in the settings store.
+        onMounted(() => locale.value = userLocale.value);
 
         // Show the main window when all web content has loaded.
         // This fixes the issue of flickering when the app starts and is in darkMode.
@@ -91,8 +106,12 @@ export default {
         // Watch runtime changes to dark mode
         watch(darkMode, () => $q.dark.set(darkMode.value));
 
+        // Watch runtime changes to locale
+        watch(locale, () => userLocale.value = locale.value);
+
         return {
             showSettings: ref(false),
+            showInfo: ref(false),
             t,
             darkMode,
             clearMessages,

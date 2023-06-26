@@ -28,6 +28,11 @@ export default {
             caption: 'Toggle dark/auto/light mode',
             tooltip: 'Toggle dark/auto/light mode'
         },
+        locale: {
+            label: 'Application language',
+            caption: 'Select the preferred application language',
+            tooltip: 'Select the preferred application language'
+        },
         conversationMode: {
             label: 'Conversation mode',
             caption: 'Send individual messages or entire conversation history',
@@ -42,7 +47,7 @@ export default {
             },
             model: {
                 label: 'OpenAI model',
-                tooltip: 'The AI model to use for generating the response.'
+                tooltip: 'The OpenAI model to use for generating the response.'
             },
             maxTokens: {
                 label: 'Max tokens',
@@ -50,7 +55,7 @@ export default {
             },
             choices: {
                 label: 'Choices',
-                tooltip: 'Number of chat completion choices to generate for each input message.'
+                tooltip: 'Number of responses to generate for each question.'
             },
             temperature: {
                 label: 'Temperature',
@@ -78,5 +83,10 @@ export default {
         }
     },
 
-    page: {}
+    page: {},
+
+    info: {
+        title: 'Info',
+        content: 'The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.'
+    }
 }

@@ -5,6 +5,7 @@ export const useSettingsStore = defineStore('settings', () => {
     
     // Application settings
     const darkMode = ref('auto');
+    const userLocale = ref('en');
     const conversationMode = ref(true);
 
     // OpenAI settings
@@ -19,6 +20,7 @@ export const useSettingsStore = defineStore('settings', () => {
     return {
         // Application settings
         darkMode,
+        userLocale,
         conversationMode,
 
         // OpenAI settings

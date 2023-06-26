@@ -4,6 +4,23 @@
 
             <q-item>
                 <q-item-section avatar>
+                    <q-icon name="language" :color="iconColor" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label>{{ t('settings.locale.label') }}</q-item-label>
+                    <q-item-label caption>{{ t('settings.locale.caption') }}</q-item-label>                    
+                </q-item-section>
+                <q-item-section side>
+
+                    <q-select v-model="locale" :options="availableLocales" dense options-dense />
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.locale.tooltip') }}
+                    </q-tooltip>
+                </q-item-section>
+            </q-item>
+
+            <q-item>
+                <q-item-section avatar>
                     <q-icon name="dark_mode" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
@@ -11,7 +28,7 @@
                     <q-item-label caption>{{ t('settings.darkMode.caption') }}</q-item-label>
                 </q-item-section>
                 <q-item-section side>
-                    <q-toggle v-model="darkMode" toggle-indeterminate indeterminate-value='auto' flat dense round/>
+                    <q-toggle v-model="darkMode" toggle-indeterminate indeterminate-value='auto' flat dense round />
                     <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                         {{ t('settings.darkMode.tooltip') }}
                     </q-tooltip>
@@ -113,7 +130,7 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
@@ -123,13 +140,15 @@ export default {
     name: "AppSettings",
 
     setup() {
-        const { t } = useI18n();
+        const { t, locale, availableLocales } = useI18n();
         const settingsStore = useSettingsStore();
         const { darkMode, conversationMode, apiKey, model, modelOptions, maxTokens, choices, temperature } = storeToRefs(settingsStore);
         const $q = useQuasar();
 
         return {
             t,
+            locale,
+            availableLocales,
             darkMode,
             conversationMode,
             apiKey,
