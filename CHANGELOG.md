@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.3.x - [UNRELEASED]
 
+## v0.3.4 - 2023-06-26
+- Added more information about the application to the bundle configuration.
+
 ## v0.3.3 - 2023-06-25
 - Changed colors slightly to better adapt to dark/light mode.
 

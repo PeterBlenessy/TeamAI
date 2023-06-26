@@ -20,7 +20,6 @@ export default {
         const { conversationMode } = storeToRefs(settingsStore);
 
         const getMessages = (conversationId) => {
-            //return messages.value.filter(message => message.id == id);
             return messages.value.map(message => { 
                 if (message.conversationId == conversationId) {
                     return { "role": message.role, "content": message.content };
