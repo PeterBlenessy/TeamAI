@@ -108,6 +108,7 @@ export default {
 
         // Watch runtime changes to locale
         watch(locale, () => userLocale.value = locale.value);
+        watch(userLocale, () => locale.value = userLocale.value);
 
         return {
             showSettings: ref(false),

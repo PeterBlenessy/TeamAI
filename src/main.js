@@ -23,15 +23,6 @@ import messages from './i18n';
 const app = createApp(App);
 
 // ---------------------------------------------------------------------------------------------
-// Make pinia available in the app
-const pinia = createPinia();
-
-// Make localForage available in pinia stores
-pinia.use(localForagePlugin);
-
-app.use(pinia);
-
-// ---------------------------------------------------------------------------------------------
 // Make i18n available in the app
 const i18n = createI18n({
     locale: 'en',
@@ -39,6 +30,15 @@ const i18n = createI18n({
     messages,
 });
 app.use(i18n);
+
+// ---------------------------------------------------------------------------------------------
+// Make pinia available in the app
+const pinia = createPinia();
+
+// Make localForage available in pinia stores
+pinia.use(localForagePlugin);
+
+app.use(pinia);
 
 // ---------------------------------------------------------------------------------------------
 // Make Quasar available in the app

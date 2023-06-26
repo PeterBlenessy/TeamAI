@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.3.x - [UNRELEASED]
 
+## v0.4.1 - 2023-06-26
+- Fixed issue where user selected language was not loaded on application start.
+
 ## v0.4.0 - 2023-06-26
 - Added new languages, Swedish and Hungarian, and language switcher in settings dialog.
 - Added brief application description shown when info icon is clicked.

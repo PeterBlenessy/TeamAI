@@ -40,7 +40,7 @@ const localForagePlugin = (({ store }) => {
         if (Object.keys(persistedState) != 0) store.$patch(persistedState);
     }).catch((error) => {
         console.log(error);
-    }).finally(() => {  
+    }).finally(() => {
         console.log("Persisted states restored from storage: ", store.$id);
     });
 
