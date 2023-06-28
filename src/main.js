@@ -5,6 +5,8 @@ import App from "./App.vue";
 import { Quasar, Dark, Notify } from 'quasar';
 import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import '@quasar/extras/material-icons/material-icons.css';
+import '@quasar/extras/mdi-v7/mdi-v7.css'
+import '@quasar/extras/bootstrap-icons/bootstrap-icons.css'
 import 'quasar/dist/quasar.css';
 
 // Custom styles
@@ -52,6 +54,10 @@ app.use(Quasar, {
         }
     },
     iconSet: quasarIconSet,
+    extras: [
+        'material-icons',
+        'mdi-v7',
+        'bootstrap-icons'    ],
     /*
     config: {
       brand: {

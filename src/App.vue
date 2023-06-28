@@ -8,23 +8,28 @@
 
                 <q-space />
 
-                <q-btn @click="clearMessages" dense flat icon="clear_all" :color="iconColor">
+                <q-btn @click="clearMessages" dense flat icon="mdi-notification-clear-all" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ $t('toolbar.tooltip.clear') }}
                     </q-tooltip>
                 </q-btn>
-                <q-btn dense flat icon="group_add" :color="iconColor">
+                <q-btn @click="() => { showHistory = true }" dense flat icon="mdi-history" :color="iconColor">
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                        {{ $t('toolbar.tooltip.history') }}
+                    </q-tooltip>
+                </q-btn>
+                <q-btn dense flat icon="mdi-account-multiple-plus-outline" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.addTeam') }}
                     </q-tooltip>
                 </q-btn>
-                <q-btn dense flat icon="tune" @click="() => { showSettings = true }" :color="iconColor">
+                <q-btn dense flat icon="mdi-tune" @click="() => { showSettings = true }" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.settings') }}
                     </q-tooltip>
                 </q-btn>
 
-                <q-btn dense flat icon="info" @click="() => { showInfo = true }" :color="iconColor">
+                <q-btn dense flat icon="mdi-information-outline" @click="() => { showInfo = true }" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.info') }}
                     </q-tooltip>
@@ -45,6 +50,9 @@
                     </q-card>
                 </q-dialog>
 
+                <q-dialog v-model="showHistory" position="right" transition-show="slide-left">
+                    <History />
+                </q-dialog>
             </q-toolbar>
         </q-header>
 
@@ -68,13 +76,13 @@ import AppSettings from "./components/AppSettings.vue";
 import UserInput from "./components/UserInput.vue";
 import Messages from "./components/Messages.vue";
 import OpenAI from './components/OpenAI.vue';
+import History from './components/History.vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from './stores/settings-store.js';
 import { useTeamsStore } from './stores/teams-store.js';
 import { invoke } from '@tauri-apps/api';
-import { settingsDB } from './services/localforage';
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
@@ -84,7 +92,8 @@ export default {
         AppSettings,
         UserInput,
         Messages,
-        OpenAI
+        OpenAI,
+        History
     },
 
     setup() {
@@ -113,6 +122,7 @@ export default {
         return {
             showSettings: ref(false),
             showInfo: ref(false),
+            showHistory: ref(false),
             t,
             darkMode,
             clearMessages,

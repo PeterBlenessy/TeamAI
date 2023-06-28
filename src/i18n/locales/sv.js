@@ -19,7 +19,9 @@ export default {
             clear: 'Rensa meddelanden',
             addTeam: 'Lägg till ett nytt team',
             info: 'Info',
-            settings: 'Visa inställningar'
+            settings: 'Visa inställningar',
+            history: 'Visa konversationer'
+
         },
     },
     settings: {
@@ -88,5 +90,8 @@ export default {
     info: {
         title: 'Info',
         content: 'TeamAI-applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa uppgiften som efterfrågas av användaren som en teaminsats, där varje bot bidrar med sina respektive förmågor.'
+    },
+    history:{
+        title: 'Konversationer',
     }
-    }
+}

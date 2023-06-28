@@ -16,7 +16,8 @@ export default {
             clear: 'Üzenetek törlése',
             addTeam: 'Új csapat hozzáadása',
             info: 'Információ',
-            settings: 'Beállítások megjelenítése'
+            settings: 'Beállítások',
+            history: 'Korábbi beszélgetések'
         },
     },
     settings: {
@@ -85,5 +86,8 @@ export default {
     info: {
         title: 'Információ',
         content: 'A TeamAI alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által vezérelt botokból álló csapatot hozzon létre, amelyeknek egyedi képességei és személyiségei vannak. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, így minden bot hozzájárul a saját képességeivel.'
+    },
+    history:{
+        title: "Beszélgetések"
     }
 }

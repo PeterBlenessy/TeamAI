@@ -14,7 +14,8 @@ export const useTeamsStore = defineStore('teams', () => {
     // State properties
     const bots = ref([]);
     const teams = ref([]);
-    const messages = ref([]);
+    const messages = ref([]);   // { conversationId, timestamp, role, content }
+    const history = ref([]);     // { conversationId, timestamp, title }
     const systemMessage = ref("You are a helpful assistant. You respond like you were giving examples of how to format text in markdown format using GitHub flavor.");
     const userInput = ref('');
     const loading = ref(false);
@@ -30,6 +31,7 @@ export const useTeamsStore = defineStore('teams', () => {
         bots,
         teams,
         messages,
+        history,
         systemMessage,
         userInput,
         loading,

@@ -19,7 +19,8 @@ export default {
             clear: 'Clear messages',
             addTeam: 'Add a new team',
             info: 'Info',
-            settings: 'Show settings'
+            settings: 'Show settings',
+            history: 'Show conversations'
         },
     },
     settings: {
@@ -88,5 +89,8 @@ export default {
     info: {
         title: 'Info',
         content: 'The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.'
+    },
+    history:{
+        title: 'Conversations',
     }
 }

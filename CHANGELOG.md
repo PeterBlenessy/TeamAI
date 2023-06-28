@@ -22,7 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.3.x - [UNRELEASED]
+## v0.5.x - [UNRELEASED]
+
+## v0.5.0 - 2023-06-28
+- Added Show conversation history, although individual conversations are not saved yet.
+- Changed most icons to Material Design icons.
 
 ## v0.4.1 - 2023-06-26
 - Fixed issue where user selected language was not loaded on application start.
