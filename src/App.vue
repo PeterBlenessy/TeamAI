@@ -50,7 +50,7 @@
                     </q-card>
                 </q-dialog>
 
-                <q-dialog v-model="showHistory" position="right" transition-show="slide-left">
+                <q-dialog v-model="showHistory" position="bottom" transition-show="slide-up">
                     <History />
                 </q-dialog>
             </q-toolbar>
