@@ -16,6 +16,7 @@ export default {
 
     toolbar: {
         tooltip: {
+            newConversation: 'New conversation',
             clear: 'Clear messages',
             addTeam: 'Add a new team',
             info: 'Info',
@@ -92,5 +93,9 @@ export default {
     },
     history:{
         title: 'Conversations',
+        delete: 'Delete'
+    },
+    prompts: {
+        generateTitle: 'Generate a title for this conversation.'
     }
 }

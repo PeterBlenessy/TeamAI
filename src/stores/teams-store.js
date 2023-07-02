@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { defineStore } from 'pinia';
 
 // The teams-store holds the teams creeated by the user in a list. A team is a list of AI assistants, bots
@@ -16,14 +16,46 @@ export const useTeamsStore = defineStore('teams', () => {
     const teams = ref([]);
     const messages = ref([]);   // { conversationId, timestamp, role, content }
     const history = ref([]);     // { conversationId, timestamp, title }
-    const systemMessage = ref("You are a helpful assistant. You respond like you were giving examples of how to format text in markdown format using GitHub flavor.");
+    const systemMessage = ref("You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.");
     const userInput = ref('');
+    const conversationId = ref('');
     const loading = ref(false);
 
     // Actions
-    function clearMessages() {
-        messages.value = [];
+
+    // Remove all messages for the given conversationId
+    function deleteMessages(id='') {
+        if (id == '') {
+            messages.value = messages.value.filter(message => message.conversationId != conversationId.value);
+        } else {
+            messages.value = messages.value.filter(message => message.conversationId != id);
+        }
+
         loading.value = false; // Just in case UI hangs due to some unhandled error
+    }
+    // Delete a conversation given a conversationId
+    function deleteConversation(id) {
+        history.value = history.value.filter(conversation => conversation.conversationId != id);
+
+        deleteMessages(id);
+
+        if (conversationId.value == id) {
+            conversationId.value = '';
+        }
+    }
+
+    // Create a new conversation
+    function newConversation() {
+        conversationId.value = Date.now().toString();
+    }
+
+    // Getters
+    function getMessages() {
+        return messages.value.map(message => {
+            if (message.conversationId == conversationId.value) {
+                return { "role": message.role, "content": message.content };
+            }
+        });
     }
 
     return {
@@ -34,9 +66,14 @@ export const useTeamsStore = defineStore('teams', () => {
         history,
         systemMessage,
         userInput,
+        conversationId,
         loading,
 
         // Actions
-        clearMessages
+        newConversation,
+        deleteMessages,
+        deleteConversation,
+
+        getMessages
     }
 });

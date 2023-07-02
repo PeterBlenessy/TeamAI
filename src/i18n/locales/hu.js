@@ -13,6 +13,7 @@ export default {
     
     toolbar: {
         tooltip: {
+            newConversation: 'Új beszélgetés',
             clear: 'Üzenetek törlése',
             addTeam: 'Új csapat hozzáadása',
             info: 'Információ',
@@ -88,6 +89,10 @@ export default {
         content: 'A TeamAI alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által vezérelt botokból álló csapatot hozzon létre, amelyeknek egyedi képességei és személyiségei vannak. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, így minden bot hozzájárul a saját képességeivel.'
     },
     history:{
-        title: "Beszélgetések"
+        title: "Beszélgetések",
+        delete: 'Töröl'
+    },
+    prompts: {
+        generateTitle: 'Generálj egy címet ehhez a beszélgetéshez.'
     }
 }

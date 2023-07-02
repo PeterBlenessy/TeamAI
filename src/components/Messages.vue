@@ -10,7 +10,7 @@
             </q-item-section>
         </q-item>
 
-        <div v-for="message in [...messages].reverse()" :key="message.timestamp">
+        <div v-for="message in [...filteredMessages].reverse()" :key="message.timestamp">
             <q-item top dense>
                 <q-item-section avatar top>
                     <q-icon rounded size="md" :name="message.role == 'user' ? 'account_box' : 'computer'" :color="iconColor" />
@@ -39,7 +39,7 @@ import { QMarkdown } from '@quasar/quasar-ui-qmarkdown';
 import '@quasar/quasar-ui-qmarkdown/dist/index.css';
 import mermaid from '@datatraccorporation/markdown-it-mermaid';
 import { useQuasar } from 'quasar';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 
 export default {
     name: 'Messages',
@@ -48,12 +48,18 @@ export default {
     },
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, messages } = storeToRefs(teamsStore);
+        const { loading, conversationId, messages } = storeToRefs(teamsStore);
         const $q = useQuasar();
+
+        const filteredMessages = computed(() => {
+            return messages.value.filter(message => message.conversationId == conversationId.value);
+        });
+
+        watch(conversationId, () => filteredMessages );
 
         return {
             loading,
-            messages,
+            filteredMessages,
             mdPlugins: [mermaid],
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

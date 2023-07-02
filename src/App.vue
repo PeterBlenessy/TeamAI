@@ -8,7 +8,12 @@
 
                 <q-space />
 
-                <q-btn @click="clearMessages" dense flat icon="mdi-notification-clear-all" :color="iconColor">
+                <q-btn @click="newConversation" dense flat icon="mdi-chat-plus-outline" :color="iconColor">
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                        {{ $t('toolbar.tooltip.newConversation') }}
+                    </q-tooltip>
+                </q-btn>
+                <q-btn @click="deleteMessages()" dense flat icon="mdi-notification-clear-all" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ $t('toolbar.tooltip.clear') }}
                     </q-tooltip>
@@ -98,7 +103,7 @@ export default {
         const { darkMode, userLocale } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
-        const { clearMessages } = teamsStore;
+        const { deleteMessages, newConversation } = teamsStore;
 
         // Set application locale to the one selected by the user and stored in the settings store.
         onMounted(() => locale.value = userLocale.value);
@@ -120,7 +125,8 @@ export default {
             showHistory: ref(false),
             t,
             darkMode,
-            clearMessages,
+            newConversation,
+            deleteMessages,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
     },

@@ -16,7 +16,6 @@ export const useSettingsStore = defineStore('settings', () => {
     const choices = ref(1);
     const temperature = ref(0.2);
 
-
     return {
         // Application settings
         darkMode,

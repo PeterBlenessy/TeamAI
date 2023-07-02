@@ -14,34 +14,43 @@ export default {
     name: 'OpenAI',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, messages, userInput, systemMessage } = storeToRefs(teamsStore);
+        const { loading, conversationId, messages, history, userInput, systemMessage } = storeToRefs(teamsStore);
 
         const settingsStore = useSettingsStore();
         const { conversationMode } = storeToRefs(settingsStore);
 
-        const getMessages = (conversationId) => {
-            return messages.value.map(message => { 
-                if (message.conversationId == conversationId) {
+        // Creates an array of OpenAI API message objects from the current conversation
+        const getMessages = (id) => {
+            return messages.value.map(message => {
+                if (message && message.conversationId == id) {
                     return { "role": message.role, "content": message.content };
                 }
-            })
+            });
+        }
+
+        const getConversation = (id) => {
+            return history.value.filter(item => item.conversationId == id);
         }
 
         const $q = useQuasar();
         const { t } = useI18n();
 
         const openAI = OpenAI();
-        // Todo: implement conversationId generation.
-        const conversationId = 1;
 
         // Watch runtime changes to user input
         watch(userInput, () => {
             if (userInput.value != '') {
+
+                // Generate conversationId if needed
+                if (conversationId.value == '') {
+                    teamsStore.newConversation();
+                }
+                // Add user input to messages
                 messages.value.push({
                     role: 'user',
                     content: userInput.value,
                     timestamp: new Date().toLocaleString(),
-                    conversationId: conversationId
+                    conversationId: conversationId.value
                 });
 
                 askQuestion(userInput.value);
@@ -51,18 +60,39 @@ export default {
 
         const askQuestion = async (question) => {
             loading.value = true;
-            let conversation = (!conversationMode.value) ? [{ "role": "user", "content": question }] : getMessages(1);
+            let conversation = (!conversationMode.value) ? [{ "role": "user", "content": question }] : getMessages(conversationId.value);
+            conversation = conversation.filter(item => item !== undefined);
+
             try {
                 let response = await openAI.createChatCompletion([
-                    { "role": "system", "content": systemMessage.value},
+                    { "role": "system", "content": systemMessage.value },
                     ...conversation
                 ]);
                 messages.value.push({
                     role: response.role,
                     content: response.content,
                     timestamp: new Date().toLocaleString(),
-                    conversationId: conversationId
+                    conversationId: conversationId.value
                 });
+
+                // Generate conversation title if needed
+                if (getConversation(conversationId.value).length == 0) {
+
+                    try {
+                        let response = await openAI.createChatCompletion([
+                            { "role": "user", "content": t('prompts.generateTitle') },
+                            ...getMessages(conversationId.value)
+                        ]);
+                        history.value.push({
+                            title: response.content,
+                            timestamp: new Date().toLocaleString(),
+                            conversationId: conversationId.value
+                        });
+                    }
+                    catch (error) {
+                        console.error(error);
+                    }
+                }
             } catch (error) {
                 let message = ''
                 let caption = ''
@@ -96,8 +126,9 @@ export default {
                         handler: () => { /* ... */ }
                     }]
                 })
+            } finally {
+                loading.value = false;
             }
-            loading.value = false;
         }
 
         return {}

@@ -32,6 +32,9 @@ const openAI = () => {
 
     // Public function. Creates a chat completion.
     const createChatCompletion = async (messages) => {
+        // Clean up any undefined elements in the messages array, to avoid failed OpenAI API call.
+        messages = messages.filter(message => message !== undefined);
+
         const requestOptions = setOptions(messages);
 
         try {

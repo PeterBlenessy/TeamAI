@@ -22,7 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.5.x - [UNRELEASED]
+## v0.6.x - [UNRELEASED]
+
+## v0.6.0 - 2023-07-02
+- Moved application information to separate component.
+- Added new conversation button.
+- Added automatic generation of conversation title after first response.
+- Added persistence of conversation history.
+- Added support for deleting conversations from history.
+- Changed clear messages to now clear messages only for current conversation.
 
 ## v0.5.0 - 2023-06-28
 - Added Show conversation history, although individual conversations are not saved yet.

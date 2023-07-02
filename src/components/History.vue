@@ -1,24 +1,39 @@
 <template>
-    <q-list>
+    <q-card>
+        <q-list>
 
-        <q-item-label overline>{{ $t('history.title') }}</q-item-label>
-        <q-separator />
-        
-        <div v-for="item in history" :key="item.timestamp">
-            <q-item top dense>
-                <q-item-section avatar top>
-                    <q-icon rounded size="md" name="mdi-chat" :color="iconColor" />
+            <q-item>
+                <q-item-label overline>
+                    <div class="text-h6">{{ $t('history.title') }}</div>
+                </q-item-label>
+            </q-item>
+            <q-separator />
+
+            <q-item top dense v-for="item in history" :key="item.conversationId" clickable
+                @click="showConversation(item.conversationId)">
+                <q-item-section avatar>
+                    <q-icon rounded size="xs" name="mdi-message-outline" :color="iconColor" />
                 </q-item-section>
 
-                <q-item-section top>
+                <q-item-section>
                     <q-item-label>
                         {{ item.title }}
                     </q-item-label>
                 </q-item-section>
-            </q-item>
-        </div>
 
-    </q-list>
+                <q-item-section side>
+                    <q-btn dense flat icon="mdi-delete-outline" :color="iconColor"
+                        @click="deleteConversation(item.conversationId)">
+                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                            {{ $t('history.delete') }}
+                        </q-tooltip>
+                    </q-btn>
+                </q-item-section>
+
+            </q-item>
+
+        </q-list>
+    </q-card>
 </template>
 
 <script>
@@ -33,12 +48,22 @@ export default {
     name: 'History',
     setup() {
         const teamsStore = useTeamsStore();
-        const { history } = storeToRefs(teamsStore);
+        const { history, conversationId } = storeToRefs(teamsStore);
         const $q = useQuasar();
         const { t } = useI18n();
 
+        const showConversation = (id) => {
+            conversationId.value = id;
+        }
+
+        const deleteConversation = (id) => {
+            teamsStore.deleteConversation(id);
+        }
+
         return {
             t,
+            showConversation,
+            deleteConversation,
             history,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
@@ -46,5 +71,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>

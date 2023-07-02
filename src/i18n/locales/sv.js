@@ -16,6 +16,7 @@ export default {
     
     toolbar: {
         tooltip: {
+            newConversation: 'Ny konversation',
             clear: 'Rensa meddelanden',
             addTeam: 'Lägg till ett nytt team',
             info: 'Info',
@@ -93,5 +94,9 @@ export default {
     },
     history:{
         title: 'Konversationer',
+        delete: 'Ta bort'
+    },
+    prompts: {
+        generateTitle: 'Generera en titel för denna konversation.'
     }
 }
