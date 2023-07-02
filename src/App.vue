@@ -29,25 +29,18 @@
                     </q-tooltip>
                 </q-btn>
 
-                <q-btn dense flat icon="mdi-information-outline" @click="() => { showInfo = true }" :color="iconColor">
+                <q-btn dense flat icon="mdi-information-outline" @click="() => { showInformation = true }" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ t('toolbar.tooltip.info') }}
                     </q-tooltip>
                 </q-btn>
 
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
-                    <AppSettings />
+                    <Settings />
                 </q-dialog>
 
-                <q-dialog v-model="showInfo" position="top" transition-show="slide-down">
-                    <q-card>
-                        <q-card-section>
-                            <div class="text-h6">
-                                {{ t('info.title') }}
-                            </div>
-                            {{ t('info.content') }}
-                        </q-card-section>
-                    </q-card>
+                <q-dialog v-model="showInformation" position="top" transition-show="slide-down">
+                    <Information />
                 </q-dialog>
 
                 <q-dialog v-model="showHistory" position="bottom" transition-show="slide-up">
@@ -72,11 +65,12 @@
 
 <script>
 import { computed, onMounted, ref, watch } from 'vue';
-import AppSettings from "./components/AppSettings.vue";
+import Settings from "./components/Settings.vue";
 import UserInput from "./components/UserInput.vue";
 import Messages from "./components/Messages.vue";
 import OpenAI from './components/OpenAI.vue';
 import History from './components/History.vue';
+import Information from './components/Information.vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
@@ -89,12 +83,13 @@ import { invoke } from '@tauri-apps/api';
 export default {
 
     components: {
-        AppSettings,
-        UserInput,
-        Messages,
-        OpenAI,
-        History
-    },
+    Settings,
+    UserInput,
+    Messages,
+    OpenAI,
+    History,
+    Information
+},
 
     setup() {
         const { t, locale } = useI18n();
@@ -121,7 +116,7 @@ export default {
 
         return {
             showSettings: ref(false),
-            showInfo: ref(false),
+            showInformation: ref(false),
             showHistory: ref(false),
             t,
             darkMode,
