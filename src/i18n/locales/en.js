@@ -18,6 +18,7 @@ export default {
         tooltip: {
             newConversation: 'New conversation',
             clear: 'Clear messages',
+            personas: 'Show personas',
             addTeam: 'Add a new team',
             info: 'Info',
             settings: 'Show settings',
@@ -91,11 +92,37 @@ export default {
         title: 'Info',
         content: 'The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.'
     },
-    history:{
+    history: {
         title: 'Conversations',
         delete: 'Delete'
     },
     prompts: {
         generateTitle: 'Generate a title for this conversation.'
+    },
+    personas: {
+        title: 'Personas',
+        description: 'Personas are AI assistants configured to have specific abilities and behaviour. The configuration is obtained by using specially crafted system messages. The system messages are sent to the AI assistant before the user message.',
+        actions: {
+            add: {
+                label: 'Add a new persona',
+                caption: 'Add a new persona and specify the abilities and behaviour you desire it to have.',
+                tooltip: 'Add a new persona'
+            },
+            import: {
+                label: 'Import personas',
+                caption: 'Import personas from Awesome ChatGPT prompts. This GitHub repository holds a collection of prompt examples that can be used with GPT models. These prompts are in English.',
+                tooltip: 'Import personas from Awesome ChatGPT prompts'
+            },
+            edit: {
+                tooltip: 'Edit'
+            },
+            delete: {
+                tooltip: 'Delete'
+            }
+        },
+        tableHeading: {
+            name: 'Name',
+            prompt: 'System message'
+        }
     }
 }

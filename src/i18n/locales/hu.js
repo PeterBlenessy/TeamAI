@@ -1,21 +1,22 @@
 export default {
     general: {
-    failed: 'Sikertelen művelet',
-    success: 'Sikeres művelet'
+        failed: 'Sikertelen művelet',
+        success: 'Sikeres művelet'
     },
-    
+
     userInput: {
         placeholder: 'Kérdezz bátran',
         tooltip: {
             send: 'Kérdés küldése',
         },
     },
-    
+
     toolbar: {
         tooltip: {
             newConversation: 'Új beszélgetés',
             clear: 'Üzenetek törlése',
-            addTeam: 'Új csapat hozzáadása',
+            personas: 'Személyek',
+            addTeam: 'Új csapat',
             info: 'Információ',
             settings: 'Beállítások',
             history: 'Korábbi beszélgetések'
@@ -62,7 +63,7 @@ export default {
             }
         }
     },
-    
+
     apiErrors: {
         '401': {
             message: 'Érvénytelen hitelesítés.',
@@ -81,18 +82,44 @@ export default {
             caption: 'Ellenőrizze a kérését, majd próbálja újra.'
         }
     },
-    
+
     page: {},
-    
+
     info: {
         title: 'Információ',
         content: 'A TeamAI alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által vezérelt botokból álló csapatot hozzon létre, amelyeknek egyedi képességei és személyiségei vannak. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, így minden bot hozzájárul a saját képességeivel.'
     },
-    history:{
+    history: {
         title: "Beszélgetések",
         delete: 'Töröl'
     },
     prompts: {
         generateTitle: 'Generálj egy címet ehhez a beszélgetéshez.'
+    },
+    personas: {
+        title: 'Personák',
+        description: 'A personák olyan AI asszisztensek, amelyeket konfigurálhatunk a kívánt képességek és viselkedés beállításával. A konfiguráció különlegesen kidolgozott rendszerüzenetek használatával érhető el. A rendszerüzeneteket az AI asszisztensnek a felhasználó üzenete előtt kell elküldeni.',
+        actions: {
+            add: {
+                label: 'Új persona hozzáadása',
+                caption: 'Adj hozzá egy új personát, és határozd meg a kívánt képességeket és viselkedést.',
+                tooltip: 'Új persona hozzáadása'
+            },
+            import: {
+                label: 'Personák importálása',
+                caption: 'Importálj personákat az Awesome ChatGPT promptokból. Ez a GitHub tároló egy gyűjteményt tartalmaz olyan prompt példákból, amelyeket GPT modellekkel használhatsz. Ezek a promptok angol nyelven vannak.',
+                tooltip: 'Personák importálása az Awesome ChatGPT promptokból'
+            },
+            edit: {
+                tooltip: 'Szerkesztés'
+            },
+            delete: {
+                tooltip: 'Törlés'
+            }
+        },
+        tableHeading: {
+            name: 'Név',
+            prompt: 'Rendszerüzenet'
+        }
     }
 }

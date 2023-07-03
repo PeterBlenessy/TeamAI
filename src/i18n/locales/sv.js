@@ -3,21 +3,22 @@
 
 export default {
     general: {
-    failed: 'Åtgärden misslyckades',
-    success: 'Åtgärden lyckades'
+        failed: 'Åtgärden misslyckades',
+        success: 'Åtgärden lyckades'
     },
-    
+
     userInput: {
         placeholder: 'Ställ din fråga',
         tooltip: {
             send: 'Skicka din fråga',
         },
     },
-    
+
     toolbar: {
         tooltip: {
             newConversation: 'Ny konversation',
             clear: 'Rensa meddelanden',
+            personas: 'Visa personas',
             addTeam: 'Lägg till ett nytt team',
             info: 'Info',
             settings: 'Visa inställningar',
@@ -41,7 +42,7 @@ export default {
             caption: 'Skicka individuella meddelanden eller hela konversationshistoriken',
             tooltip: 'Växla konversationsläge på/av'
         },
-    
+
         openAI: {
             apiKey: {
                 label: 'OpenAI API-nyckel',
@@ -66,7 +67,7 @@ export default {
             }
         }
     },
-    
+
     apiErrors: {
         '401': {
             message: 'Ogiltig autentisering.',
@@ -85,18 +86,44 @@ export default {
             caption: 'Kontrollera din förfrågan och försök igen.'
         }
     },
-    
+
     page: {},
-    
+
     info: {
         title: 'Info',
         content: 'TeamAI-applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa uppgiften som efterfrågas av användaren som en teaminsats, där varje bot bidrar med sina respektive förmågor.'
     },
-    history:{
+    history: {
         title: 'Konversationer',
         delete: 'Ta bort'
     },
     prompts: {
         generateTitle: 'Generera en titel för denna konversation.'
+    },
+    personas: {
+        title: 'Personas',
+        description: 'Personas är AI-assistenter som konfigureras för att ha specifika förmågor och beteenden. Konfigurationen erhålls genom att använda speciellt utformade systemmeddelanden. Systemmeddelandena skickas till AI-assistenten före användarmeddelandet.',
+        actions: {
+            add: {
+                label: 'Lägg till en ny persona',
+                caption: 'Lägg till en ny persona och ange de önskade förmågorna och beteendet.',
+                tooltip: 'Lägg till en ny persona'
+            },
+            import: {
+                label: 'Importera personas',
+                caption: 'Importera personas från Awesome ChatGPT prompts. Den här GitHub-repositoriet innehåller en samling exempel på meddelanden som kan användas med GPT-modeller. Dessa meddelanden är på engelska.',
+                tooltip: 'Importera personas från Awesome ChatGPT prompts'
+            },
+            edit: {
+                tooltip: 'Redigera'
+            },
+            delete: {
+                tooltip: 'Ta bort'
+            }
+        },
+        tableHeading: {
+            name: 'Namn',
+            prompt: 'Systemmeddelande'
+        }
     }
 }

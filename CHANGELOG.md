@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.6.x - [UNRELEASED]
 
+## v0.7.0 - 2023-07-03
+- Added Personas component to manage personas.
+- Added support for importing Awesome ChatGPT prompts, which can be added and used as personas.
+- Added support for deleting personas.
+- Added but not yet implemented support for creating new and editing existing personas.
+
 ## v0.6.0 - 2023-07-02
 - Moved application information to separate component.
 - Added new conversation button.

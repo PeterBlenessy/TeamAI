@@ -8,37 +8,13 @@
 
                 <q-space />
 
-                <q-btn @click="newConversation" dense flat icon="mdi-chat-plus-outline" :color="iconColor">
-                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ $t('toolbar.tooltip.newConversation') }}
-                    </q-tooltip>
-                </q-btn>
-                <q-btn @click="deleteMessages()" dense flat icon="mdi-notification-clear-all" :color="iconColor">
-                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ $t('toolbar.tooltip.clear') }}
-                    </q-tooltip>
-                </q-btn>
-                <q-btn @click="() => { showHistory = true }" dense flat icon="mdi-history" :color="iconColor">
-                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ $t('toolbar.tooltip.history') }}
-                    </q-tooltip>
-                </q-btn>
-                <q-btn dense flat icon="mdi-account-multiple-plus-outline" :color="iconColor">
-                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ t('toolbar.tooltip.addTeam') }}
-                    </q-tooltip>
-                </q-btn>
-                <q-btn dense flat icon="mdi-tune" @click="() => { showSettings = true }" :color="iconColor">
-                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ t('toolbar.tooltip.settings') }}
-                    </q-tooltip>
-                </q-btn>
-
-                <q-btn dense flat icon="mdi-information-outline" @click="() => { showInformation = true }" :color="iconColor">
-                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ t('toolbar.tooltip.info') }}
-                    </q-tooltip>
-                </q-btn>
+                <div v-for="item in toolbar" :key="item.tooltip">
+                    <q-btn @click="item.action" dense flat :icon="item.icon" :color="iconColor">
+                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                            {{ $t(item.tooltip) }}
+                        </q-tooltip>
+                    </q-btn>
+                </div>
 
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
                     <Settings />
@@ -46,6 +22,10 @@
 
                 <q-dialog v-model="showInformation" position="top" transition-show="slide-down">
                     <Information />
+                </q-dialog>
+
+                <q-dialog v-model="showPersonas" position="top" transition-show="slide-down">
+                    <Personas />
                 </q-dialog>
 
                 <q-dialog v-model="showHistory" position="bottom" transition-show="slide-up">
@@ -76,6 +56,7 @@ import Messages from "./components/Messages.vue";
 import OpenAI from './components/OpenAI.vue';
 import History from './components/History.vue';
 import Information from './components/Information.vue';
+import Personas from './components/Personas.vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
@@ -88,13 +69,14 @@ import { invoke } from '@tauri-apps/api';
 export default {
 
     components: {
-    Settings,
-    UserInput,
-    Messages,
-    OpenAI,
-    History,
-    Information
-},
+        Settings,
+        UserInput,
+        Messages,
+        OpenAI,
+        History,
+        Information,
+        Personas
+    },
 
     setup() {
         const { t, locale } = useI18n();
@@ -104,6 +86,49 @@ export default {
 
         const teamsStore = useTeamsStore();
         const { deleteMessages, newConversation } = teamsStore;
+
+        const showSettings = ref(false);
+        const showInformation = ref(false);
+        const showHistory = ref(false);
+        const showPersonas = ref(false);
+
+        const toolbar = [
+            { 
+                action: newConversation,
+                icon: 'mdi-chat-plus-outline',
+                tooltip: 'toolbar.tooltip.newConversation'
+            },
+            { 
+                action: deleteMessages,
+                icon: 'mdi-notification-clear-all',
+                tooltip: 'toolbar.tooltip.clear'
+            },
+            { 
+                action: () => { showHistory.value = true },
+                icon: 'mdi-history',
+                tooltip: 'toolbar.tooltip.history'
+            },
+            {
+                action: () => { showPersonas.value = true },
+                icon: 'mdi-card-account-details-outline',
+                tooltip: 'toolbar.tooltip.personas'
+            },
+            {
+                action: () => {},
+                icon: 'mdi-account-multiple-plus-outline',
+                tooltip: 'toolbar.tooltip.addTeam'
+            },
+            { 
+                action: () => { showSettings.value = true },
+                icon: 'mdi-tune',
+                tooltip: 'toolbar.tooltip.settings'
+            },
+            { 
+                action: () => { showInformation.value = true },
+                icon: 'mdi-information-outline',
+                tooltip: 'toolbar.tooltip.info'
+            }
+        ];
 
         // Set application locale to the one selected by the user and stored in the settings store.
         onMounted(() => locale.value = userLocale.value);
@@ -120,11 +145,12 @@ export default {
         watch(userLocale, () => locale.value = userLocale.value);
 
         return {
-            showSettings: ref(false),
-            showInformation: ref(false),
-            showHistory: ref(false),
+            showSettings,
+            showInformation,
+            showHistory,
+            showPersonas,
+            toolbar,
             t,
-            darkMode,
             newConversation,
             deleteMessages,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
