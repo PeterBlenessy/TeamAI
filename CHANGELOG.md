@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.6.x - [UNRELEASED]
 
+## v0.7.1 - 2023-07-03
+- Fixed bug where comma in the text broke imported prompts.
+
 ## v0.7.0 - 2023-07-03
 - Added Personas component to manage personas.
 - Added support for importing Awesome ChatGPT prompts, which can be added and used as personas.

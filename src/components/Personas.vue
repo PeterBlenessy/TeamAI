@@ -99,7 +99,7 @@ export default {
                     awesomePrompts.value = data.toString()
                         .split("\n")
                         .map(row => {
-                            let [persona, prompt] = row.split(",").map(item => item.trim().replace(/^"|"$/g, ''));
+                            let [persona, prompt] = row.split('","').map(item => item.trim().replace(/^"|"$/g, ''));
                             return { persona, prompt };
                         });
                         awesomePrompts.value.shift();
