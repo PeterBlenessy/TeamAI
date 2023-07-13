@@ -16,6 +16,16 @@
                     </q-btn>
                 </div>
 
+            </q-toolbar>
+        </q-header>
+
+        <q-page-container>
+            <q-page>
+                <Messages />
+                <!-- place QPageScroller at end of page -->
+                <q-page-scroller reverse position="bottom-right" :scroll-offset="20" :offset="[20, 20]">
+                    <q-btn round dense icon="south" />
+                </q-page-scroller>
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
                     <Settings />
                 </q-dialog>
@@ -31,16 +41,6 @@
                 <q-dialog v-model="showHistory" position="bottom" transition-show="slide-up">
                     <History />
                 </q-dialog>
-            </q-toolbar>
-        </q-header>
-
-        <q-page-container>
-            <q-page>
-                <Messages />
-                <!-- place QPageScroller at end of page -->
-                <q-page-scroller reverse position="bottom-right" :scroll-offset="20" :offset="[20, 20]">
-                    <q-btn round dense icon="south" />
-                </q-page-scroller>
 
             </q-page>
         </q-page-container>

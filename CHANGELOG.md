@@ -22,7 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.6.x - [UNRELEASED]
+## v0.7.x - [UNRELEASED]
+
+## v0.7.2 - 2023-07-13
+- Fixed bug where messages could be listed on wrong order because of wrong timestamp format.
+- Fixed bug where dialogs could not be closed if window was too narrow.
+- Changed the format of timestamps in conversation history. This may affect the order of existing items.
+- Added localized grouping of conversation history based on age, with most recent on top.
 
 ## v0.7.1 - 2023-07-03
 - Fixed bug where comma in the text broke imported prompts.

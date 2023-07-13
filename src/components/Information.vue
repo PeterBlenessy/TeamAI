@@ -1,5 +1,5 @@
 <template>
-    <q-card>
+    <q-card style="min-width: 60%; max-width: 70%">
         <q-card-section>
             <div class="text-h6">
                 {{ t('info.title') }}

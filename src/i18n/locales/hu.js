@@ -91,7 +91,32 @@ export default {
     },
     history: {
         title: "Beszélgetések",
-        delete: 'Töröl'
+        description: 'A beszélgetések régiség szerint vannak csoportosítva, a legújabb beszélgetés elől. A beszélgetések helyileg vannak tárolva.',
+        tooltip: {
+            show: 'Beszélgetés megjelenítése',
+            delete: 'Töröl'
+        },
+        groups: {
+            'Today': 'Ma',
+            'Yesterday': 'Tegnap',
+            'ThisWeek': 'Ez a hét',
+            'LastWeek': 'Múlt héten',
+            'ThisMonth': 'Ez a hónap',
+            'LastMonth': 'Múlt hónap',
+            'Older': 'Régebbi',
+            'January': 'Január',
+            'February': 'Február',
+            'March': 'Március',
+            'April': 'Április',
+            'May': 'Május',
+            'June': 'Június',
+            'July': 'Július',
+            'August': 'Augusztus',
+            'September': 'Szeptember',
+            'October': 'Október',
+            'November': 'November',
+            'December': 'December'
+        }
     },
     prompts: {
         generateTitle: 'Generálj egy címet ehhez a beszélgetéshez.'

@@ -1,5 +1,5 @@
 <template>
-    <q-card style="width: 80%">
+    <q-card style="min-width: 60%; max-width: 70%">
         <q-card-section>
             <div class="text-h6">
                 {{ t('personas.title') }}
@@ -30,7 +30,7 @@
                         <q-item-label caption>{{ t('personas.actions.import.caption') }}</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-btn dense flat icon="mdi-account-arrow-down-outline" :color="iconColor" @click="importPersonas">
+                        <q-btn dense flat icon="mdi-account-arrow-down-outline" :color="iconColor" @click="fetchPersonas">
                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                 {{ t('personas.actions.import.tooltip') }}
                             </q-tooltip>
@@ -92,7 +92,7 @@ export default {
         const { personas } = storeToRefs(teamsStore);
         const awesomePrompts = ref([]);
 
-        const importPersonas = () => {
+        const fetchPersonas = () => {
             fetch("https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv")
                 .then(response => response.text())
                 .then(data => {
@@ -105,7 +105,7 @@ export default {
                         awesomePrompts.value.shift();
                 })
                 .catch(error => console.error(error))
-                .finally(() => console.log("done"));
+                .finally(() => console.log("fetchPersonas() done"));
         }
 
         const addAwesomePrompt = (persona) => {
@@ -121,7 +121,7 @@ export default {
             t,
             personas,
             awesomePrompts,
-            importPersonas,
+            fetchPersonas,
             
             deletePersona,
             addAwesomePrompt,

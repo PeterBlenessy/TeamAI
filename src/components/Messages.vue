@@ -55,6 +55,7 @@ export default {
             return messages.value.filter(message => message.conversationId == conversationId.value);
         });
 
+        // Watch runtime changes to conversationId and load its messages
         watch(conversationId, () => filteredMessages );
 
         return {

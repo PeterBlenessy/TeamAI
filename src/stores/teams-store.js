@@ -15,7 +15,7 @@ export const useTeamsStore = defineStore('teams', () => {
     const bots = ref([]);
     const teams = ref([]);
     const messages = ref([]);   // { conversationId, timestamp, role, content }
-    const history = ref([]);    // { conversationId, timestamp, title }
+    const history = ref([]);    // { conversationId, timestamp, created, updated, title }
     const systemMessage = ref("You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.");
     const personas = ref([{persona: "Helpful assistant", prompt: "You are a helpful assistant."}]);   // { persona, prompt }
     const userInput = ref('');

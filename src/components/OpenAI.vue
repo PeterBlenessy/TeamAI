@@ -49,7 +49,7 @@ export default {
                 messages.value.push({
                     role: 'user',
                     content: userInput.value,
-                    timestamp: new Date().toLocaleString(),
+                    timestamp: Date.now(),
                     conversationId: conversationId.value
                 });
 
@@ -57,6 +57,20 @@ export default {
                 userInput.value = '';
             }
         });
+        
+        // Generate conversation title
+        const generateConversationTitle = async (id) => {
+            try {
+                let response = await openAI.createChatCompletion([
+                    { "role": "user", "content": t('prompts.generateTitle') },
+                    ...getMessages(id)
+                ]);
+                return response.content;
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
 
         const askQuestion = async (question) => {
             loading.value = true;
@@ -68,31 +82,29 @@ export default {
                     { "role": "system", "content": systemMessage.value },
                     ...conversation
                 ]);
+                const timestamp = Date.now().toString();
                 messages.value.push({
                     role: response.role,
                     content: response.content,
-                    timestamp: new Date().toLocaleString(),
+                    timestamp: timestamp,
                     conversationId: conversationId.value
                 });
 
-                // Generate conversation title if needed
+                // Check if conversation title exists
                 if (getConversation(conversationId.value).length == 0) {
-
-                    try {
-                        let response = await openAI.createChatCompletion([
-                            { "role": "user", "content": t('prompts.generateTitle') },
-                            ...getMessages(conversationId.value)
-                        ]);
+                    generateConversationTitle(conversationId.value)
+                    .then( (title) => {
                         history.value.push({
-                            title: response.content,
-                            timestamp: new Date().toLocaleString(),
+                            title: title,
+                            timestamp: timestamp,
+                            created: timestamp,
+                            updated: timestamp,
                             conversationId: conversationId.value
                         });
-                    }
-                    catch (error) {
-                        console.error(error);
-                    }
+                    })
+                    .catch(error => console.error(error))
                 }
+                // todo: if conversation title exists, update its 'updated' key to timestamp
             } catch (error) {
                 let message = ''
                 let caption = ''

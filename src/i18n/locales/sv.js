@@ -95,7 +95,31 @@ export default {
     },
     history: {
         title: 'Konversationer',
-        delete: 'Ta bort'
+        description: 'Konversationerna är grupperade efter ålder, med den senaste konversationen först. Dina konversationer sparas lokalt.',
+        tooltip: {
+            show: 'Visa konversation',
+            delete: 'Ta bort'
+        },
+        groups: {
+            'Today': 'Idag',
+            'Yesterday': 'Igår',
+            'ThisWeek': 'Denna vecka',
+            'LastWeek': 'Förra veckan',
+            'ThisMonth': 'Denna månad',
+            'LastMonth': 'Förra månaden',
+            'Older': 'Äldre',
+            'January': 'Januari',
+            'February': 'Februari',
+            'March': 'Mars',
+            'April': 'April',
+            'May': 'Maj',
+            'June': 'Juni',
+            'July': 'Juli',
+            'August': 'Augusti',
+            'September': 'September',
+            'October': 'Oktober',
+            'November': 'November',
+            'December': 'December'        }
     },
     prompts: {
         generateTitle: 'Generera en titel för denna konversation.'

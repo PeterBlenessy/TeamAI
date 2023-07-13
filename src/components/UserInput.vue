@@ -1,5 +1,5 @@
 <template>
-    <q-input dense filled autofocus autogrow style="min-width: 80%; max-width: 80%;" 
+    <q-input dense filled autofocus autogrow style="min-width: 70%; max-width: 70%;" 
         :dark="$q.dark.isActive" 
         :placeholder="t('userInput.placeholder')" @keydown.enter.prevent="handleUserInput" v-model="question">
 

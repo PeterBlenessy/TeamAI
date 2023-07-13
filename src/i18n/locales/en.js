@@ -94,7 +94,32 @@ export default {
     },
     history: {
         title: 'Conversations',
-        delete: 'Delete'
+        description: 'The conversations are grouped by age, with the most recent conversation first. Your conversations are stored locally.',
+        tooltip: {
+            show: 'Show conversation',
+            delete: 'Delete'
+        },
+        groups: {
+            'Today': 'Today',
+            'Yesterday': 'Yesterday',
+            'ThisWeek': 'This week',
+            'LastWeek': 'Last week',
+            'ThisMonth': 'This month',
+            'LastMonth': 'Last month',
+            'Older': 'Older',
+            'January': 'January',
+            'February': 'February',
+            'March': 'March',
+            'April': 'April',
+            'May': 'May',
+            'June': 'June',
+            'July': 'July',
+            'August': 'August',
+            'September': 'September',
+            'October': 'October',
+            'November': 'November',
+            'December': 'December'
+        }
     },
     prompts: {
         generateTitle: 'Generate a title for this conversation.'
