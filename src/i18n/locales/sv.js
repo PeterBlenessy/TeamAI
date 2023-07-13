@@ -27,6 +27,7 @@ export default {
         },
     },
     settings: {
+        title: 'Inställningar',
         darkMode: {
             label: 'Mörkt läge',
             caption: 'Växla mellan mörkt/auto/ljust läge',
@@ -90,9 +91,50 @@ export default {
     page: {},
 
     info: {
-        title: 'Info',
-        content: 'TeamAI-applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa uppgiften som efterfrågas av användaren som en teaminsats, där varje bot bidrar med sina respektive förmågor.'
+        title: 'Applikationsbeskrivning',
+        description: 'TeamAI-applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa uppgiften som efterfrågas av användaren som en teaminsats, där varje bot bidrar med sina respektive förmågor.',
+        features: {
+            title: 'Funktioner',
+            description: 'Applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa den uppgift som användaren begär som ett team, där varje bot bidrar med sina respektive förmågor.',
+            basic: {
+                label: 'Grundläggande läge',
+                caption: 'I sitt grundläggande läge fungerar applikationen som en chattapplikation, där användaren kan chatta med en enda AI-bot. Botten drivs av OpenAI och kan konfigureras av användaren för att ha specifika förmågor och beteenden.'
+            },
+            advanced: {
+                label: 'Avancerat läge',
+                caption: 'I avancerat läge kan användaren skapa team av flera AI-bots, där varje bot har en specifik roll, kompetens, beteende och mål i teamet. Användaren kan tilldela en uppgift till teamet som kommer att lösas i samarbete mellan AI-botsen. Varje bot drivs av OpenAI och kan konfigureras av användaren för att ha specifika förmågor och beteenden.'
+            },
+            settings: {
+                label: 'Inställningar',
+                caption: 'Användaren kan konfigurera applikationsalternativ som språk, mörkt eller ljust läge och konversationsläge. För närvarande tillgängliga språk är: Engelska, Svenska och Ungerska. Användaren kan också konfigurera OpenAI API-relaterade parametrar, som API-nyckel, modell, max antal tecken, val och temperatur. OpenAI-alternativen förklaras ytterligare i inställningsdialogen.'
+            },
+            history: {
+                label: 'Konversationshistorik',
+                caption: 'Konversationshistorik stöds både i grundläggande och avancerade lägen. Användaren kan visa konversationshistoriken och ta bort konversationer som inte längre behövs. Rubriker genereras för närvarande automatiskt, men kan i framtiden bli redigerbara om det finns efterfrågan från användarna. Konversationshistoriken lagras lokalt.'
+            },
+            personas: {
+                label: 'Personas',
+                caption: 'En persona är i grunden en AI-bot med en specifik konfiguration av förväntade kompetenser och beteenden. Användaren kan definiera och konfigurera valfritt antal personas. I grundläggande läge kan en persona väljas, och i avancerat läge kan användaren välja flera att inkludera i ett team.'
+            },
+            import: {
+                label: 'Importera frågor',
+                caption: 'Användaren kan importera frågor från Awesome ChatGPT-frågor. Denna GitHub-repositorium innehåller en samling exempel på frågor som andra användare har testat och fungerar med GPT-modeller och valt att öppna källkod. Användaren kan använda dessa frågor som inspiration för att konfigurera personas. Dessa frågor är på engelska men kan översättas till användarens önskade språk med hjälp av applikationen.'
+            }
+        },
+        privacy: {
+            title: 'Integritet',
+            description: 'Alla inställningar som användaren gör och all information som anges lagras lokalt i applikationens interna databas. Applikationen använder inte cookies. Applikationen använder inte några spårningstjänster. Applikationen använder OpenAI API:er. Läs mer om det här: https://platform.openai.com/docs/api-reference.'
+        },
+        license: {
+            title: 'Licens',
+            description: 'Applikationen är licensierad under MIT-licensen. Källkoden finns tillgänglig på GitHub: https://github.com/PeterBlenessy/TeamAI.'
+        },
+        contact: {
+            title: 'Kontakt',
+            description: 'Applikationen utvecklas av Péter Blénessy. GitHub-profil: https://github.com/PeterBlenessy.'
+        }
     },
+
     history: {
         title: 'Konversationer',
         description: 'Konversationerna är grupperade efter ålder, med den senaste konversationen först. Dina konversationer sparas lokalt.',
@@ -119,7 +161,8 @@ export default {
             'September': 'September',
             'October': 'Oktober',
             'November': 'November',
-            'December': 'December'        }
+            'December': 'December'
+        }
     },
     prompts: {
         generateTitle: 'Generera en titel för denna konversation.'

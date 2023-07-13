@@ -7,7 +7,7 @@
             {{ t('personas.description') }}
         </q-card-section>
 
-        <q-separator inset />
+        <q-separator />
 
         <q-card-section>
             <q-list>
@@ -56,8 +56,8 @@
                             <td>{{ persona.persona }}</td>
                             <td>{{ persona.prompt }}</td>
                             <td>
-                                <q-btn dense flat icon="mdi-pencil-outline" :color="iconColor" @click="" />
-                                <q-btn dense flat icon="mdi-delete-outline" :color="iconColor" @click="deletePersona(persona)" />
+                                <q-btn size="sm" dense flat icon="mdi-pencil-outline" :color="iconColor" @click="" />
+                                <q-btn size="sm" dense flat icon="mdi-delete-outline" :color="iconColor" @click="deletePersona(persona)" />
                             </td>
                         </tr>
                         <tr v-for="persona in awesomePrompts" :key="awesomePrompts.persona">

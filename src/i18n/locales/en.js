@@ -26,6 +26,7 @@ export default {
         },
     },
     settings: {
+        title: 'Settings',
         darkMode: {
             label: 'Dark mode',
             caption: 'Toggle dark/auto/light mode',
@@ -89,8 +90,48 @@ export default {
     page: {},
 
     info: {
-        title: 'Info',
-        content: 'The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.'
+        title: 'Application description',
+        description: 'The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.',
+        features: {
+            title: 'Features',
+            description: 'The application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.',
+            basic: {
+                label: 'Basic mode',
+                caption: 'In its basic mode, the application serves as a chat application, with the user being able to chat with a single AI bot. The bot is powered by OpenAI and can be configured by the user to have specific capabilities and behaviour.'
+            },
+            advanced: {
+                label: 'Advanced mode',
+                caption: 'In advanced mode, the user can create teams of several AI bots, each bot with a specific role, competences, behaviour and objective in the team. The user can assign a task to the team which will be solved in collaboration between the AI bots. Each bot is powered by OpenAI and can be configured by the user to have specific capabilities and behaviour.'
+            },
+            settings: {
+                label: 'Settings',
+                caption: 'The user can configure application options such as language, dark or light mode, and conversation mode. Currently available languages are: English, Swedish, and Hungarian. The user can also configure OpenAI API related parameters, such as API Key, model, max tokens, choices, and temperature. The OpenAI options are further explained in the settings dialog.'
+            },
+            history: {
+                label: 'Conversation history',
+                caption: 'Conversation history is supported in both basic and advanced modes. The user can view the conversation history, and delete conversations which are no longer needed. Titles are currently automatically generated, but may become editable in the future, if there is a user demand for it. The conversation history is stored locally.'
+            },
+            personas: {
+                label: 'Personas',
+                caption: 'A persona is in essence an AI bot with a specific configuration of expected competences and behaviours. The user can define and configure any number of personas. In basic mode one can be selected, and in advanced mode the user can select several to be included in a team.'
+            },
+            import: {
+                label: 'Import prompts',
+                caption: 'The user can import prompts from Awesome ChatGPT prompts. This GitHub repository holds a collection of prompt examples that other users have tested to be working with GPT models and chosen to open source. The user can use these prompts as inspiration to configure personas. These prompts are in English but can be translated to user desired languages using the application.'
+            }
+        },
+        privacy: {
+            title: 'Privacy',
+            description: 'All user settings and provided information are stored locally in the application’s internal database. The application does not use cookies. The application does not use any tracking services. The application uses OpenAI APIs. Learn more about it here: https://platform.openai.com/docs/api-reference.'
+        },
+        license: {
+            title: 'License',
+            description: 'The application is licensed under the MIT license. The source code is available on GitHub: https://github.com/PeterBlenessy/TeamAI.'
+        },
+        contact: {
+            title: 'Contact',
+            description: 'The application is developed by Péter Blénessy. GitHub profile: https://github.com/PeterBlenessy.'
+        }
     },
     history: {
         title: 'Conversations',

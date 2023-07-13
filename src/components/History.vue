@@ -6,7 +6,7 @@
             </div>
                 {{ t('history.description') }}
         </q-card-section>
-        <q-separator inset />
+        <q-separator />
 
         <q-card-section>
             <q-list>

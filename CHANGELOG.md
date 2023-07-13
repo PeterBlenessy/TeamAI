@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.7.x - [UNRELEASED]
 
+## v0.7.4 - 2023-07-13
+- Updated component headers and width to have same UX.
+- Updated default size of the application to be HD Ready, i.e. 1280x720 pixels.
+- Added more detailed application information.
+- Fixed bug where messages were not deleted when clear messages button was clicked.
+- Fixed bug where icon color was being set with undefined function.
+
 ## v0.7.3 - 2023-07-13
 - Fixed bug where newly created conversations could not be grouped in conversation history.
 

@@ -85,7 +85,7 @@ export default {
         const { darkMode, userLocale } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
-        const { deleteMessages, newConversation } = teamsStore;
+        const { newConversation, conversationId } = teamsStore;
 
         const showSettings = ref(false);
         const showInformation = ref(false);
@@ -143,6 +143,11 @@ export default {
         // Watch runtime changes to locale
         watch(locale, () => userLocale.value = locale.value);
         watch(userLocale, () => locale.value = userLocale.value);
+
+        function deleteMessages() {
+            teamsStore.deleteMessages(conversationId.value);
+        }
+
 
         return {
             showSettings,

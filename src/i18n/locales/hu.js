@@ -23,6 +23,7 @@ export default {
         },
     },
     settings: {
+        title: 'Beállítások',
         darkMode: {
             label: 'Sötét mód',
             caption: 'Sötét/auto/világos mód váltása',
@@ -86,9 +87,50 @@ export default {
     page: {},
 
     info: {
-        title: 'Információ',
-        content: 'A TeamAI alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által vezérelt botokból álló csapatot hozzon létre, amelyeknek egyedi képességei és személyiségei vannak. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, így minden bot hozzájárul a saját képességeivel.'
+        title: 'Alkalmazás leírása',
+        description: 'A TeamAI alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által vezérelt botokból álló csapatot hozzon létre, amelyeknek egyedi képességei és személyiségei vannak. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, így minden bot hozzájárul a saját képességeivel.',
+        features: {
+            title: 'Funkciók',
+            description: 'A alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által meghajtott botokból álló csapatot hozzon létre egyedi képességekkel és személyiséggel. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, minden bot hozzájárulva a saját képességeivel.',
+            basic: {
+                label: 'Alap mód',
+                caption: 'Az alap módjában az alkalmazás chat alkalmazásként szolgál, a felhasználó pedig egyetlen AI bottal tud beszélgetni. A botot az OpenAI hajtja, és a felhasználó konfigurálhatja őket, hogy konkrét képességekkel és viselkedéssel rendelkezzenek.'
+            },
+            advanced: {
+                label: 'Haladó mód',
+                caption: 'A haladó módban a felhasználó létrehozhat csapatokat több mesterséges intelligencia botból, minden botnak saját szerepe, képességei, viselkedése és célja van a csapatban. A felhasználó hozzárendelhet egy feladatot a csapatnak, amelyet az AI botok közös együttműködésével oldanak meg. Minden botot az OpenAI hajtja, és a felhasználó konfigurálhatja őket, hogy konkrét képességekkel és viselkedéssel rendelkezzenek.'
+            },
+            settings: {
+                label: 'Beállítások',
+                caption: 'A felhasználó beállíthatja az alkalmazás opcióit, például a nyelvet, a sötét vagy világos módot és a beszélgetési módot. Jelenleg elérhető nyelvek: angol, svéd és magyar. A felhasználó beállíthatja az OpenAI API-val kapcsolatos paramétereket is, például az API-kulcsot, a modellt, a maximális tokeneket, a választási lehetőségeket és a hőmérsékletet. Az OpenAI opciók további magyarázata megtalálható a beállítások párbeszédablakban.'
+            },
+            history: {
+                label: 'Beszélgetési előzmények',
+                caption: 'A beszélgetési előzmények támogatottak úgy az alap, mind a haladó módban. A felhasználó megtekintheti a beszélgetési előzményeket és törölheti azokat, amelyek már nem szükségesek. A címek jelenleg automatikusan generálódnak, de a jövőben szerkeszthetővé válhatnak, ha erre igény van a felhasználók részéről. A beszélgetési előzmények helyileg tárolódnak.'
+            },
+            personas: {
+                label: 'Personák',
+                caption: 'A persona lényegében egy AI bot, amelynek meghatározott konfigurációja van az elvárt képességek és viselkedések terén. A felhasználó meghatározhat és konfigurálhat tetszőleges számú personát. Az alap mód kiválaszthat egyet, míg az előrehaladott módban a felhasználó többet is kiválaszthat egy csapatba.'
+            },
+            import: {
+                label: 'Példák importálása',
+                caption: 'A felhasználó importálhat példákat az Awesome ChatGPT példákból. Ez a GitHub tároló egy olyan gyűjteményt tartalmaz, amelyben más felhasználók által tesztelt és GPT modellekkel működőképesnek talált példák vannak, és nyílt forráskódúvá váltak. A felhasználó ezeket a példákat használhatja inspirációként a személyiségek konfigurálásához. Ezek a példák angol nyelven vannak, de a felhasználó kívánt nyelvre fordíthatja őket az alkalmazás segítségével.'
+            }
+        },
+        privacy: {
+            title: 'Adatvédelem',
+            description: 'Az alkalmazás nem gyűjt személyes adatokat. Az alkalmazás nem használ cookie-kat. Az alkalmazás nem használ harmadik fél szolgáltatásait. Az alkalmazás nem használ analitikai szolgáltatásokat. Az alkalmazás nem használ követési szolgáltatásokat.'
+        },
+        license: {
+            title: 'Licenc',
+            description: 'Az alkalmazás az MIT licenc alatt van licenszelve. A forráskód elérhető a GitHub-on: https://github.com/PeterBlenessy/TeamAI.'
+        },
+        contact: {
+            title: 'Kapcsolat',
+            description: 'Az alkalmazást Péter Blénessy fejleszti. GitHub profil: https://github.com/PeterBlenessy.'
+        }
     },
+
     history: {
         title: "Beszélgetések",
         description: 'A beszélgetések régiség szerint vannak csoportosítva, a legújabb beszélgetés elől. A beszélgetések helyileg vannak tárolva.',

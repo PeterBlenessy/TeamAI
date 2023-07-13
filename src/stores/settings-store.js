@@ -12,7 +12,7 @@ export const useSettingsStore = defineStore('settings', () => {
     const apiKey = ref('');
     const modelOptions = ref(['gpt-3.5-turbo', 'gpt-4']);
     const model = ref('gpt-3.5-turbo');
-    const maxTokens = ref(512);
+    const maxTokens = ref(2096);
     const choices = ref(1);
     const temperature = ref(0.2);
 
