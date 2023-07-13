@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.7.x - [UNRELEASED]
 
+## v0.7.3 - 2023-07-13
+- Fixed bug where newly created conversations could not be grouped in conversation history.
+
 ## v0.7.2 - 2023-07-13
 - Fixed bug where messages could be listed on wrong order because of wrong timestamp format.
 - Fixed bug where dialogs could not be closed if window was too narrow.

@@ -70,7 +70,7 @@ export default {
             teamsStore.deleteConversation(id);
         }
 
-        function getDateGroup(date) {
+        function getDateGroup(timestamp) {
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const yesterday = new Date(today);
@@ -86,7 +86,12 @@ export default {
 
             const thisYearStart = new Date(now.getFullYear(), 0, 1);
 
-            date = new Date(date);  // convert the input to a date if it isn't already
+            // Check if the date timestamp is stored as a string
+            if (isNaN(Date.parse(timestamp))) {
+                timestamp = parseInt(timestamp);
+            }
+
+            const date = new Date(timestamp);  // convert the input to a date if it isn't already
 
             if (date >= today) {
                 return 'Today';
