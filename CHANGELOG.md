@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.7.x - [UNRELEASED]
 
+## v0.7.5 - 2023-07-14
+- Added application mode toggle for basic or advanced, to hide or show persona and team related features.
+
 ## v0.7.4 - 2023-07-13
 - Updated component headers and width to have same UX.
 - Updated default size of the application to be HD Ready, i.e. 1280x720 pixels.

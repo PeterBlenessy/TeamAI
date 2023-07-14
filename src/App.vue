@@ -9,11 +9,13 @@
                 <q-space />
 
                 <div v-for="item in toolbar" :key="item.tooltip">
-                    <q-btn @click="item.action" dense flat :icon="item.icon" :color="iconColor">
-                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                            {{ $t(item.tooltip) }}
-                        </q-tooltip>
-                    </q-btn>
+                    <div v-show="appMode ==='advanced' || item.appMode === appMode">
+                        <q-btn @click="item.action" dense flat :icon="item.icon" :color="iconColor">
+                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                {{ $t(item.tooltip) }}
+                            </q-tooltip>
+                        </q-btn>
+                    </div>
                 </div>
 
             </q-toolbar>
@@ -82,7 +84,7 @@ export default {
         const { t, locale } = useI18n();
         const $q = useQuasar();
         const settingsStore = useSettingsStore()
-        const { darkMode, userLocale } = storeToRefs(settingsStore);
+        const { appMode, darkMode, userLocale } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
         const { newConversation, conversationId } = teamsStore;
@@ -93,40 +95,47 @@ export default {
         const showPersonas = ref(false);
 
         const toolbar = [
-            { 
+            {
                 action: newConversation,
                 icon: 'mdi-chat-plus-outline',
-                tooltip: 'toolbar.tooltip.newConversation'
+                tooltip: 'toolbar.tooltip.newConversation',
+                appMode: 'basic'
             },
-            { 
+            {
                 action: deleteMessages,
                 icon: 'mdi-notification-clear-all',
-                tooltip: 'toolbar.tooltip.clear'
+                tooltip: 'toolbar.tooltip.clear',
+                appMode: 'basic'
             },
-            { 
+            {
                 action: () => { showHistory.value = true },
                 icon: 'mdi-history',
-                tooltip: 'toolbar.tooltip.history'
+                tooltip: 'toolbar.tooltip.history',
+                appMode: 'basic'
             },
             {
                 action: () => { showPersonas.value = true },
                 icon: 'mdi-card-account-details-outline',
-                tooltip: 'toolbar.tooltip.personas'
+                tooltip: 'toolbar.tooltip.personas',
+                appMode: 'advanced'
             },
             {
-                action: () => {},
+                action: () => { },
                 icon: 'mdi-account-multiple-plus-outline',
-                tooltip: 'toolbar.tooltip.addTeam'
+                tooltip: 'toolbar.tooltip.addTeam',
+                appMode: 'advanced'
             },
-            { 
+            {
                 action: () => { showSettings.value = true },
                 icon: 'mdi-tune',
-                tooltip: 'toolbar.tooltip.settings'
+                tooltip: 'toolbar.tooltip.settings',
+                appMode: 'basic'
             },
-            { 
+            {
                 action: () => { showInformation.value = true },
                 icon: 'mdi-information-outline',
-                tooltip: 'toolbar.tooltip.info'
+                tooltip: 'toolbar.tooltip.info',
+                appMode: 'basic'
             }
         ];
 
@@ -144,12 +153,13 @@ export default {
         watch(locale, () => userLocale.value = locale.value);
         watch(userLocale, () => locale.value = userLocale.value);
 
+        // Clear messages in current conversation.
         function deleteMessages() {
             teamsStore.deleteMessages(conversationId.value);
         }
 
-
         return {
+            appMode,
             showSettings,
             showInformation,
             showHistory,

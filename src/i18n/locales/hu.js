@@ -39,6 +39,11 @@ export default {
             caption: 'Egyéni üzenetek vagy teljes beszélgetéstörténet küldése',
             tooltip: 'Beszélgetés mód ki/be kapcsolása'
         },
+        appMode: {
+            label: 'Alkalmazás mód',
+            caption: 'Használja az alkalmazást alap vagy haladó módban',
+            tooltip: 'Alkalmazás alap/haladó mód váltása'
+        },
 
         openAI: {
             apiKey: {

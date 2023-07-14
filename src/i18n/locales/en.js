@@ -42,6 +42,11 @@ export default {
             caption: 'Send individual messages or entire conversation history',
             tooltip: 'Toggle conversation mode on/off'
         },
+        appMode: {
+            label: 'Application mode',
+            caption: 'Use the application in basic or advanced mode',
+            tooltip: 'Toggle basic/advanced application mode'
+        },
 
         openAI: {
             apiKey: {

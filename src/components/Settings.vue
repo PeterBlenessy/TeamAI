@@ -63,6 +63,22 @@
                     </q-item-section>
                 </q-item>
 
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon :name="appMode=='basic' ? 'mdi-account' : 'mdi-account-group'" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>{{ $t('settings.appMode.label') }}</q-item-label>
+                        <q-item-label caption>{{ $t('settings.appMode.caption') }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                        <q-toggle v-model="appMode" dense false-value="basic" true-value="advanced" />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.appMode.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
                 <q-separator />
 
                 <q-item>
@@ -141,7 +157,7 @@
 </template>
 
 <script>
-import { computed, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
@@ -153,13 +169,14 @@ export default {
     setup() {
         const { t, locale, availableLocales } = useI18n();
         const settingsStore = useSettingsStore();
-        const { darkMode, conversationMode, apiKey, model, modelOptions, maxTokens, choices, temperature } = storeToRefs(settingsStore);
+        const { appMode, darkMode, conversationMode, apiKey, model, modelOptions, maxTokens, choices, temperature } = storeToRefs(settingsStore);
         const $q = useQuasar();
 
         return {
             t,
             locale,
             availableLocales,
+            appMode,
             darkMode,
             conversationMode,
             apiKey,

@@ -43,6 +43,11 @@ export default {
             caption: 'Skicka individuella meddelanden eller hela konversationshistoriken',
             tooltip: 'Växla konversationsläge på/av'
         },
+        appMode: {
+            label: 'Applikationsläge',
+            caption: 'Använd applikationen i grundläge eller avancerat läge',
+            tooltip: 'Växla mellan grundläge och avancerat läge för applikationen'
+        },
 
         openAI: {
             apiKey: {
@@ -97,8 +102,8 @@ export default {
             title: 'Funktioner',
             description: 'Applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa den uppgift som användaren begär som ett team, där varje bot bidrar med sina respektive förmågor.',
             basic: {
-                label: 'Grundläggande läge',
-                caption: 'I sitt grundläggande läge fungerar applikationen som en chattapplikation, där användaren kan chatta med en enda AI-bot. Botten drivs av OpenAI och kan konfigureras av användaren för att ha specifika förmågor och beteenden.'
+                label: 'Grundläge',
+                caption: 'I sitt grundläge fungerar applikationen som en chattapplikation, där användaren kan chatta med en enda AI-bot. Botten drivs av OpenAI och kan konfigureras av användaren för att ha specifika förmågor och beteenden.'
             },
             advanced: {
                 label: 'Avancerat läge',

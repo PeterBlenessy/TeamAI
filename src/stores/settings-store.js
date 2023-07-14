@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 export const useSettingsStore = defineStore('settings', () => {
     
     // Application settings
+    const appMode = ref('basic');
     const darkMode = ref('auto');
     const userLocale = ref('en');
     const conversationMode = ref(true);
@@ -18,6 +19,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
     return {
         // Application settings
+        appMode,
         darkMode,
         userLocale,
         conversationMode,
