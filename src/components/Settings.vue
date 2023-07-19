@@ -49,6 +49,22 @@
 
                 <q-item>
                     <q-item-section avatar>
+                        <q-icon :name="chatDirection=='up' ? 'mdi-dock-bottom' : 'mdi-dock-top'" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>{{ $t('settings.chatDirection.label') }}</q-item-label>
+                        <q-item-label caption>{{ $t('settings.chatDirection.caption') }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                        <q-toggle v-model="chatDirection" flat dense round false-value="up" true-value="down"/>
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.chatDirection.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
+                <q-item>
+                    <q-item-section avatar>
                         <q-icon name="chat" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
@@ -157,7 +173,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
@@ -167,10 +183,21 @@ export default {
     name: "AppSettings",
 
     setup() {
+        const $q = useQuasar();
         const { t, locale, availableLocales } = useI18n();
         const settingsStore = useSettingsStore();
-        const { appMode, darkMode, conversationMode, apiKey, model, modelOptions, maxTokens, choices, temperature } = storeToRefs(settingsStore);
-        const $q = useQuasar();
+        const { 
+            appMode,
+            darkMode,
+            conversationMode,
+            chatDirection,
+            apiKey,
+            model,
+            modelOptions,
+            maxTokens,
+            choices,
+            temperature
+        } = storeToRefs(settingsStore);
 
         return {
             t,
@@ -179,6 +206,7 @@ export default {
             appMode,
             darkMode,
             conversationMode,
+            chatDirection,
             apiKey,
             model,
             modelOptions,

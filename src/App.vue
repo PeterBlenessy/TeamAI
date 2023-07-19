@@ -1,33 +1,47 @@
 <template>
-    <q-layout view="lHh lpr fFf">
+    <q-layout view="LHh Lpr LFf">
 
+        <OpenAI />
         <q-header :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
-            <q-toolbar>
-                <OpenAI />
+            <q-toolbar v-show="chatDirection === 'down'">
                 <UserInput />
+            </q-toolbar>
+        </q-header>
 
-                <q-space />
+        <q-drawer :model-value="true" :mini="true" :persistent="true" bordered
+            :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
+            <q-list padding>
 
                 <div v-for="item in toolbar" :key="item.tooltip">
-                    <div v-show="appMode ==='advanced' || item.appMode === appMode">
-                        <q-btn @click="item.action" dense flat :icon="item.icon" :color="iconColor">
+                    <div v-show="appMode === 'advanced' || item.appMode === appMode">
+
+                        <q-item clickable v-ripple @click="item.action">
+                            <q-item-section avatar>
+                                <q-icon dense flat :name="item.icon" :color="iconColor" />
+                            </q-item-section>
                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                 {{ $t(item.tooltip) }}
                             </q-tooltip>
-                        </q-btn>
+                        </q-item>
                     </div>
                 </div>
+            </q-list>
 
-            </q-toolbar>
-        </q-header>
+        </q-drawer>
 
         <q-page-container>
             <q-page>
                 <Messages />
-                <!-- place QPageScroller at end of page -->
+                <!-- place QPageScroller at top of page -->
+                <q-page-scroller position="top-right" :scroll-offset="20" :offset="[20, 20]">
+                    <q-btn round dense icon="north" />
+                </q-page-scroller>
+
+                <!-- place QPageScroller at bottom of page -->
                 <q-page-scroller reverse position="bottom-right" :scroll-offset="20" :offset="[20, 20]">
                     <q-btn round dense icon="south" />
                 </q-page-scroller>
+
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
                     <Settings />
                 </q-dialog>
@@ -46,6 +60,12 @@
 
             </q-page>
         </q-page-container>
+
+        <q-footer :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
+            <q-toolbar v-show="chatDirection === 'up'">
+                <UserInput />
+            </q-toolbar>
+        </q-footer>
 
     </q-layout>
 </template>
@@ -84,7 +104,7 @@ export default {
         const { t, locale } = useI18n();
         const $q = useQuasar();
         const settingsStore = useSettingsStore()
-        const { appMode, darkMode, userLocale } = storeToRefs(settingsStore);
+        const { appMode, darkMode, userLocale, chatDirection } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
         const { newConversation, conversationId } = teamsStore;
@@ -160,6 +180,7 @@ export default {
 
         return {
             appMode,
+            chatDirection,
             showSettings,
             showInformation,
             showHistory,

@@ -10,7 +10,9 @@
             </q-item-section>
         </q-item>
 
-        <div v-for="message in [...filteredMessages].reverse()" :key="message.timestamp">
+        <div v-for="message in filteredMessages" :key="message.timestamp">
+            <q-separator inset spaced v-show="chatDirection==='up'"/>
+
             <q-item top dense>
                 <q-item-section avatar top>
                     <q-icon rounded size="md" :name="message.role == 'user' ? 'account_box' : 'computer'" :color="iconColor" />
@@ -25,7 +27,7 @@
                 </q-item-section>
             </q-item>
 
-            <q-separator inset spaced />
+            <q-separator inset spaced v-show="chatDirection==='down'"/>
         </div>
 
     </q-list>
@@ -34,6 +36,7 @@
 <script>
 
 import { useTeamsStore } from '../stores/teams-store.js';
+import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import { QMarkdown } from '@quasar/quasar-ui-qmarkdown';
 import '@quasar/quasar-ui-qmarkdown/dist/index.css';
@@ -47,12 +50,17 @@ export default {
         QMarkdown
     },
     setup() {
+        const $q = useQuasar();
         const teamsStore = useTeamsStore();
         const { loading, conversationId, messages } = storeToRefs(teamsStore);
-        const $q = useQuasar();
+        const settingsStore = useSettingsStore();
+        const { chatDirection } = storeToRefs(settingsStore);
+        
 
         const filteredMessages = computed(() => {
-            return messages.value.filter(message => message.conversationId == conversationId.value);
+            const temp = messages.value.filter(message => message.conversationId == conversationId.value);
+            return chatDirection.value == 'up' ? temp : temp.reverse();
+            //return messages.value.filter(message => message.conversationId == conversationId.value);
         });
 
         // Watch runtime changes to conversationId and load its messages
@@ -61,6 +69,7 @@ export default {
         return {
             loading,
             filteredMessages,
+            chatDirection,
             mdPlugins: [mermaid],
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

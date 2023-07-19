@@ -4,10 +4,11 @@ import { defineStore } from 'pinia';
 export const useSettingsStore = defineStore('settings', () => {
     
     // Application settings
-    const appMode = ref('basic');
-    const darkMode = ref('auto');
-    const userLocale = ref('en');
+    const appMode = ref('basic');       // basic | advanced
+    const darkMode = ref('auto');       // auto | light | dark
+    const userLocale = ref('en');       // en | sv | hu 
     const conversationMode = ref(true);
+    const chatDirection = ref('up');    // up | down
 
     // OpenAI settings
     const apiKey = ref('');
@@ -23,6 +24,7 @@ export const useSettingsStore = defineStore('settings', () => {
         darkMode,
         userLocale,
         conversationMode,
+        chatDirection,
 
         // OpenAI settings
         apiKey,

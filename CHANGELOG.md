@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.7.x - [UNRELEASED]
 
+## v0.8.0 - 2023-07-19
+- Moved top toolbar to left mini drawer.
+- Made the chat direction configurable (up/down).
+- Changed user input field to fill entire width of page.
+- Changed the user input field location to top/bottom of the chat window, depending on chat direction.
+- Fixed a rare bug where the chat title response had an optionally escaped leading and trailing apostrophes.
+
 ## v0.7.5 - 2023-07-14
 - Added application mode toggle for basic or advanced, to hide or show persona and team related features.
 

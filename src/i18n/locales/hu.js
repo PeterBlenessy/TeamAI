@@ -44,6 +44,11 @@ export default {
             caption: 'Használja az alkalmazást alap vagy haladó módban',
             tooltip: 'Alkalmazás alap/haladó mód váltása'
         },
+        chatDirection: {
+            label: 'Beszélgetés megjelenítésének iránya',
+            caption: 'Beszélgetés üzeneteinek megjelenítésének irányváltása fel/le',
+            tooltip: 'Beszélgetés üzeneteinek megjelenítésének irányváltása fel/le'
+        },
 
         openAI: {
             apiKey: {

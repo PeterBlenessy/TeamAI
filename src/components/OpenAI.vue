@@ -65,7 +65,8 @@ export default {
                     { "role": "user", "content": t('prompts.generateTitle') },
                     ...getMessages(id)
                 ]);
-                return response.content;
+                // Remove (occasional) optionally escaped leading and trailing apostrophes
+                return response.content.trim().replace(/^\\?"|\\?"$/g, '');
             }
             catch (error) {
                 console.error(error);

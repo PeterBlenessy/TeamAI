@@ -48,6 +48,11 @@ export default {
             caption: 'Använd applikationen i grundläge eller avancerat läge',
             tooltip: 'Växla mellan grundläge och avancerat läge för applikationen'
         },
+        chatDirection: {
+            label: 'Chattriktning',
+            caption: 'Växla riktningen av chattmeddelandena upp/ner',
+            tooltip: 'Växla riktningen av chattmeddelandena upp/ner'
+        },
 
         openAI: {
             apiKey: {

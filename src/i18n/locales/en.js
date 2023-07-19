@@ -47,6 +47,11 @@ export default {
             caption: 'Use the application in basic or advanced mode',
             tooltip: 'Toggle basic/advanced application mode'
         },
+        chatDirection: {
+            label: 'Chat direction',
+            caption: 'Change the direction of the chat messages up/down',
+            tooltip: 'Change the direction of the chat messages up/down'
+        },
 
         openAI: {
             apiKey: {
