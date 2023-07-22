@@ -17,12 +17,12 @@
             </q-card>
         </div>
         <!-- place QPageScroller at top of page -->
-        <q-page-sticky position="top-right" :scroll-offset="20" :offset="[20, 20]">
+        <q-page-sticky position="top-right" :offset="[20, 20]">
             <q-btn v-show="showTopScroller" round dense icon="north" @click="scrollToTop" />
         </q-page-sticky>
 
         <!-- place QPageScroller at bottom of page -->
-        <q-page-sticky position="bottom-right" :scroll-offset="20" :offset="[20, 20]">
+        <q-page-sticky position="bottom-right" :offset="[20, 20]">
             <q-btn v-show="showBottomScroller" round dense icon="south" @click="scrollToBottom" />
         </q-page-sticky>
 
@@ -36,7 +36,6 @@ import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import { QMarkdown } from '@quasar/quasar-ui-qmarkdown';
 import '@quasar/quasar-ui-qmarkdown/dist/index.css';
-import mermaid from '@datatraccorporation/markdown-it-mermaid';
 import { useQuasar } from 'quasar';
 import { computed, ref, watch } from 'vue';
 
@@ -90,7 +89,7 @@ export default {
             getBgColor,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
             loading,
-            mdPlugins: [mermaid],
+            mdPlugins: [],
             scrollAreaMessages,
             scrollToTop: () => scrollAreaMessages.value.setScrollPosition('vertical', 0),
             scrollToBottom: () => scrollAreaMessages.value.setScrollPosition('vertical', scrollAreaVerticalSize.value),

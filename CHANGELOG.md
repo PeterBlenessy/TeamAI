@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.8.x - [UNRELEASED]
 
+## v0.8.3 - 2023-07-22
+- Upgraded package dependencies.
+- Removed Mermaid diagram support due to security issues in dependencies and low prio feature.
+
 ## v0.8.2 - 2023-07-22
 - Fixed bug where clicking scroll-to-top/ -bottom arrows did not scroll to top/bottom all the way.
 
