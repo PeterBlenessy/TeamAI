@@ -22,7 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
-## v0.7.x - [UNRELEASED]
+## v0.8.x - [UNRELEASED]
+
+## v0.8.1 - 2023-07-22
+- Changed loading state to be visualized in input field instead of with skeleton.
+- Changed chat direction icon in settings to be more intuitive.
+- Added alternating background colors for messages to make it more visually appealing.
+- Improved UX of message list by scrolling to end of messages as soon as there is an update.
 
 ## v0.8.0 - 2023-07-19
 - Moved top toolbar to left mini drawer.

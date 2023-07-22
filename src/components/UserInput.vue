@@ -1,14 +1,15 @@
 <template>
-    <q-input dense filled autofocus autogrow style="min-width: 100%; max-width: 70%;" 
+    <q-input dense filled autofocus autogrow style="width: 100%;" 
         :dark="$q.dark.isActive" 
-        :placeholder="t('userInput.placeholder')" @keydown.enter.prevent="handleUserInput" v-model="question">
+        :placeholder="t('userInput.placeholder')" @keydown.enter.prevent="handleUserInput" v-model="question"
+        :loading="loading" >
 
         <template v-slot:prepend>
-            <q-icon name="live_help" style="padding: 5px"  :color="iconColor" />
+            <q-icon name="live_help" style="padding: 5px;" :color="iconColor" />
         </template>
 
         <template v-slot:append>
-            <q-btn @click="handleUserInput" dense flat icon="send"  :color="iconColor">
+            <q-btn v-if="!loading" @click="handleUserInput" dense flat icon="send" :color="iconColor">
                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                     {{ t('userInput.tooltip.send') }}
                 </q-tooltip>
@@ -29,25 +30,24 @@ export default {
     name: 'UserInput',
     setup() {
         const teamsStore = useTeamsStore();
-        const { userInput } = storeToRefs(teamsStore);
+        const { loading, userInput } = storeToRefs(teamsStore);
         const question = ref('');
         const { t } = useI18n();
         const $q = useQuasar();
 
         function handleUserInput() {
-            
-            if (question.value == '') {
-                return;
-            }
+            if (question.value == '') { return; }
             
             userInput.value = question.value;
             question.value = '';
         }
+
         return {
             handleUserInput,
             question,
             t,
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
+            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
+            loading
         }
     }
 }

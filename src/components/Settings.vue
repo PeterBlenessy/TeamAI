@@ -49,7 +49,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon :name="chatDirection=='up' ? 'mdi-dock-bottom' : 'mdi-dock-top'" :color="iconColor" />
+                        <q-icon :name="chatDirection=='up' ? 'mdi-transfer-up' : 'mdi-transfer-down'" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ $t('settings.chatDirection.label') }}</q-item-label>
