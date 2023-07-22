@@ -32,16 +32,6 @@
         <q-page-container>
             <q-page>
                 <Messages />
-                <!-- place QPageScroller at top of page -->
-                <q-page-scroller position="top-right" :scroll-offset="20" :offset="[20, 20]">
-                    <q-btn round dense icon="north" />
-                </q-page-scroller>
-
-                <!-- place QPageScroller at bottom of page -->
-                <q-page-scroller reverse position="bottom-right" :scroll-offset="20" :offset="[20, 20]">
-                    <q-btn round dense icon="south" />
-                </q-page-scroller>
-
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
                     <Settings />
                 </q-dialog>
@@ -57,7 +47,6 @@
                 <q-dialog v-model="showHistory" position="bottom" transition-show="slide-up">
                     <History />
                 </q-dialog>
-
             </q-page>
         </q-page-container>
 
@@ -196,5 +185,8 @@ export default {
 </script>
 
 <style>
-
+/* Hide scrollbars */
+body {
+    overflow: hidden;
+}
 </style>

@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.8.x - [UNRELEASED]
 
+## v0.8.2 - 2023-07-22
+- Fixed bug where clicking scroll-to-top/ -bottom arrows did not scroll to top/bottom all the way.
+
 ## v0.8.1 - 2023-07-22
 - Changed loading state to be visualized in input field instead of with skeleton.
 - Changed chat direction icon in settings to be more intuitive.

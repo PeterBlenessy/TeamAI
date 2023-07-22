@@ -1,5 +1,5 @@
 <template>
-    <q-scroll-area ref="scrollAreaMessages" style="height:100vh" :visible="false" :delay="0">
+    <q-scroll-area ref="scrollAreaMessages" style="height:100vh">
         <div v-for="message in filteredMessages" :key="message.timestamp">
             <q-card flat square :class="'message-card ' + getBgColor(message.role)">
                 <q-item top dense>
@@ -16,6 +16,16 @@
                 </q-item>
             </q-card>
         </div>
+        <!-- place QPageScroller at top of page -->
+        <q-page-sticky position="top-right" :scroll-offset="20" :offset="[20, 20]">
+            <q-btn v-show="showTopScroller" round dense icon="north" @click="scrollToTop" />
+        </q-page-sticky>
+
+        <!-- place QPageScroller at bottom of page -->
+        <q-page-sticky position="bottom-right" :scroll-offset="20" :offset="[20, 20]">
+            <q-btn v-show="showBottomScroller" round dense icon="south" @click="scrollToBottom" />
+        </q-page-sticky>
+
     </q-scroll-area>
 </template>
 
@@ -56,17 +66,23 @@ export default {
             return chatDirection.value == 'up' ? temp : temp.reverse();
         });
 
-        // Reactive scroll area height
-        const scrollAreaHeight = computed(() => scrollAreaMessages.value == null ? 0 : scrollAreaMessages.value.getScroll().verticalSize );
+        // Computed properties for scroll area
+        const scrollAreaVerticalSize = computed(() => scrollAreaMessages.value == null ? 0 : scrollAreaMessages.value.getScroll().verticalSize);
+        const scrollAreaVerticalPosition = computed(() => scrollAreaMessages.value == null ? 0 : scrollAreaMessages.value.getScroll().verticalPosition);
+        const scrollAreaVerticalContainerSize = computed(() => scrollAreaMessages.value == null ? 0 : scrollAreaMessages.value.getScroll().verticalContainerSize);
+        const showTopScroller = computed(() => scrollAreaVerticalPosition.value > 100);
+        const showBottomScroller = computed(() => scrollAreaVerticalSize.value - scrollAreaVerticalPosition.value - scrollAreaVerticalContainerSize.value > 100);
 
         // Load messages from conversationId
         watch(conversationId, () => filteredMessages);
 
         // Scroll to bottom of messages when new message is added
-        watch(scrollAreaHeight, () => {
+        watch(scrollAreaVerticalSize, () => { scrollToEnd() }, { flush: 'post' });
+
+        const scrollToEnd = () => {
             let endOfMessages = chatDirection.value == 'up' ? 1 : 0;
             scrollAreaMessages.value.setScrollPercentage('vertical', endOfMessages);
-        }, { flush: 'post' });
+        }
 
         return {
             chatDirection,
@@ -75,7 +91,11 @@ export default {
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
             loading,
             mdPlugins: [mermaid],
-            scrollAreaMessages
+            scrollAreaMessages,
+            scrollToTop: () => scrollAreaMessages.value.setScrollPosition('vertical', 0),
+            scrollToBottom: () => scrollAreaMessages.value.setScrollPosition('vertical', scrollAreaVerticalSize.value),
+            showTopScroller,
+            showBottomScroller
         }
     }
 }
@@ -84,7 +104,7 @@ export default {
 <style>
 /* General card styling */
 .message-card {
-    padding: 20px;
+    padding-bottom: 10px;
     padding-top: 10px;
 }
 
