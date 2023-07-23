@@ -13,6 +13,22 @@
                             <q-markdown :src="message.content" :plugins="mdPlugins" />
                         </q-item-label>
                     </q-item-section>
+
+                    <q-item-section side top>
+                        <q-btn size="sm" flat dense icon="mdi-content-copy" :color="iconColor" 
+                            @click="copyMessage(message.content)">
+                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                {{ $t('messages.tooltip.copy') }}
+                            </q-tooltip>
+                        </q-btn>
+
+                        <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor" 
+                            @click="deleteMessage(message.timestamp)">
+                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                {{ $t('messages.tooltip.delete') }}
+                            </q-tooltip>
+                        </q-btn>
+                    </q-item-section>
                 </q-item>
             </q-card>
         </div>
@@ -94,7 +110,9 @@ export default {
             scrollToTop: () => scrollAreaMessages.value.setScrollPosition('vertical', 0),
             scrollToBottom: () => scrollAreaMessages.value.setScrollPosition('vertical', scrollAreaVerticalSize.value),
             showTopScroller,
-            showBottomScroller
+            showBottomScroller,
+            copyMessage: (content) => navigator.clipboard.writeText(content),
+            deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
         }
     }
 }

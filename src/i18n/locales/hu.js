@@ -98,6 +98,13 @@ export default {
 
     page: {},
 
+    messages: {
+        tooltip: {
+            copy: 'Másol',
+            delete: 'Töröl'
+        },
+    },
+
     info: {
         title: 'Alkalmazás leírása',
         description: 'A TeamAI alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által vezérelt botokból álló csapatot hozzon létre, amelyeknek egyedi képességei és személyiségei vannak. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, így minden bot hozzájárul a saját képességeivel.',

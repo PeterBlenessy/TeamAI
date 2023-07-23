@@ -100,6 +100,13 @@ export default {
 
     page: {},
 
+    messages: {
+        tooltip: {
+            copy: 'Kopiera',
+            delete: 'Ta bort'
+        },
+    },
+
     info: {
         title: 'Applikationsbeskrivning',
         description: 'TeamAI-applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa uppgiften som efterfrågas av användaren som en teaminsats, där varje bot bidrar med sina respektive förmågor.',

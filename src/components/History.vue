@@ -29,12 +29,12 @@
                         </q-item-section>
 
                         <q-item-section side>
-                            <q-icon rounded size="xs" name="mdi-delete-outline" :color="iconColor"
+                            <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor" 
                                 @click="deleteConversation(item.conversationId)">
                                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                     {{ $t('history.tooltip.delete') }}
                                 </q-tooltip>
-                            </q-icon>
+                            </q-btn>
                         </q-item-section>
 
                     </q-item>

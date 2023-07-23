@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.8.x - [UNRELEASED]
 
+## v0.9.0 - 2023-07-23
+- Added action buttons to messages: copy and delete.
+- Changed history list delete button visual style to be aligned with message action buttons.
+
 ## v0.8.4 - 2023-07-23
 - Added support for manually checking for updates. Enabled in toolbar in advanced mode.
 

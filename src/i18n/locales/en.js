@@ -100,6 +100,13 @@ export default {
 
     page: {},
 
+    messages: {
+        tooltip: {
+            copy: 'Copy',
+            delete: 'Delete'
+        },
+    },
+
     info: {
         title: 'Application description',
         description: 'The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.',
