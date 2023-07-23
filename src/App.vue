@@ -74,6 +74,7 @@ import { storeToRefs } from 'pinia';
 import { useSettingsStore } from './stores/settings-store.js';
 import { useTeamsStore } from './stores/teams-store.js';
 import { invoke } from '@tauri-apps/api';
+import { emit } from '@tauri-apps/api/event';
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
@@ -141,6 +142,12 @@ export default {
                 appMode: 'basic'
             },
             {
+                action: () => checkForUpdates,
+                icon: 'mdi-update',
+                tooltip: 'toolbar.tooltip.checkForUpdates',
+                appMode: 'advanced'
+            },
+            {
                 action: () => { showInformation.value = true },
                 icon: 'mdi-information-outline',
                 tooltip: 'toolbar.tooltip.info',
@@ -167,6 +174,11 @@ export default {
             teamsStore.deleteMessages(conversationId.value);
         }
 
+        // Check for updates
+        async function checkForUpdates() {
+            await emit('tauri://update', {});
+        }
+
         return {
             appMode,
             chatDirection,
@@ -177,6 +189,7 @@ export default {
             toolbar,
             t,
             newConversation,
+            checkForUpdates,
             deleteMessages,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

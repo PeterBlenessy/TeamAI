@@ -19,9 +19,11 @@ export default {
             addTeam: 'Új csapat',
             info: 'Információ',
             settings: 'Beállítások',
-            history: 'Korábbi beszélgetések'
+            history: 'Korábbi beszélgetések',
+            checkForUpdates: 'Frissítések ellenőrzése...',
         },
     },
+    
     settings: {
         title: 'Beállítások',
         darkMode: {

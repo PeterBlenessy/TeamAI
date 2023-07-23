@@ -22,8 +22,8 @@ export default {
             addTeam: 'Lägg till ett nytt team',
             info: 'Info',
             settings: 'Visa inställningar',
-            history: 'Visa konversationer'
-
+            history: 'Visa konversationer',
+            checkForUpdates: 'Kolla efter uppdateringar...'
         },
     },
     settings: {

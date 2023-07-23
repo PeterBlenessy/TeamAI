@@ -22,7 +22,8 @@ export default {
             addTeam: 'Add a new team',
             info: 'Info',
             settings: 'Show settings',
-            history: 'Show conversations'
+            history: 'Show conversations',
+            checkForUpdates: 'Check for updates...',
         },
     },
     settings: {
