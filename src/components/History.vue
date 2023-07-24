@@ -52,6 +52,13 @@
                                     </q-tooltip>
                                 </q-btn>
 
+                                <q-btn size="sm" flat dense icon="mdi-export-variant" :color="iconColor"
+                                    @click="shareConversation(item.conversationId)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ $t('history.tooltip.share') }}
+                                    </q-tooltip>
+                                </q-btn>
+
                                 <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor"
                                     @click="deleteConversation(item.conversationId)">
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
@@ -145,6 +152,7 @@ export default {
             showConversation: (id) => conversationId.value = id,
             copyConversation: (id) => navigator.clipboard.writeText(JSON.stringify(teamsStore.getConversation(id))),
             deleteConversation: (id) => teamsStore.deleteConversation(id),
+            shareConversation: (id) => navigator.share({ text: JSON.stringify(teamsStore.getConversation(id))}),
             history,
             groupedHistory,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')

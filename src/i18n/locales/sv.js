@@ -103,7 +103,8 @@ export default {
     messages: {
         tooltip: {
             copy: 'Kopiera',
-            delete: 'Ta bort'
+            delete: 'Ta bort',
+            share: 'Dela',
         },
     },
 
@@ -160,7 +161,8 @@ export default {
             copy: 'Kopiera konversationen till urklipp',
             delete: 'Ta bort',
             edit: 'Editera titeln',
-            save: 'Spara'
+            save: 'Spara',
+            share: 'Dela',
         },
         groups: {
             'Today': 'Idag',

@@ -101,7 +101,8 @@ export default {
     messages: {
         tooltip: {
             copy: 'Másol',
-            delete: 'Töröl'
+            delete: 'Töröl',
+            share: 'Megoszt'
         },
     },
 
@@ -158,7 +159,8 @@ export default {
             copy: 'Beszélgetés vágólapra másolása',
             delete: 'Töröl',
             edit: 'Cím szerkesztése',
-            save: 'Mentés'
+            save: 'Mentés',
+            share: 'Megoszt'
 
         },
         groups: {

@@ -107,7 +107,8 @@ export default {
     messages: {
         tooltip: {
             copy: 'Copy',
-            delete: 'Delete'
+            delete: 'Delete',
+            share: 'Share'
         },
     },
 
@@ -163,7 +164,8 @@ export default {
             copy: 'Copy conversation to clipboard',
             delete: 'Delete',
             edit: 'Edit title',
-            save: 'Save'
+            save: 'Save',
+            share: 'Share'
         },
         groups: {
             'Today': 'Today',

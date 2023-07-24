@@ -23,9 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [PATCH]
 
 ### [KNOWN-BUGS]
-- Manual check for updates is nmot working as expected.
+- Manual check for updates is not working as expected.
 
-## v0.8.x - [UNRELEASED]
+## v0.10.x - [UNRELEASED]
+
+## v0.10.1 - 2023-07-24
+- Added option to share a message or an entire conversation using native sharing.
 
 ## v0.10.0 - 2023-07-24
 - Added option to edit the title of a conversation.

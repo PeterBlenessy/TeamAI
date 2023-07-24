@@ -21,6 +21,13 @@
                         </q-tooltip>
                     </q-btn>
 
+                    <q-btn size="sm" flat dense icon="mdi-export-variant" :color="iconColor"
+                        @click="shareMessage(message.content)">
+                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                            {{ $t('messages.tooltip.share') }}
+                        </q-tooltip>
+                    </q-btn>
+
                     <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor"
                         @click="deleteMessage(message.timestamp)">
                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
@@ -91,6 +98,7 @@ export default {
             mdPlugins: [],
             copyMessage: (content) => navigator.clipboard.writeText(content),
             deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
+            shareMessage: (content) => navigator.share({ text: content }),
         }
     }
 }
