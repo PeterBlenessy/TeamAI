@@ -22,7 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [PATCH]
 
+### [KNOWN-BUGS]
+- Manual check for updates is nmot working as expected.
+
 ## v0.8.x - [UNRELEASED]
+
+## v0.10.0 - 2023-07-24
+- Added option to edit the title of a conversation.
+- Added option to copy a conversation to the clipboard.
+- Fixed bug where page was not scrolled correctly on new message to get it into focus.
+- Fixed bug where page scrollers were hidden behind user input field.
+- Changed window width that triggers left drawer to become hidden. Set it 600px.
 
 ## v0.9.0 - 2023-07-23
 - Added action buttons to messages: copy and delete.

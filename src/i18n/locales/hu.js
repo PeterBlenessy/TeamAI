@@ -155,7 +155,11 @@ export default {
         description: 'A beszélgetések régiség szerint vannak csoportosítva, a legújabb beszélgetés elől. A beszélgetések helyileg vannak tárolva.',
         tooltip: {
             show: 'Beszélgetés megjelenítése',
-            delete: 'Töröl'
+            copy: 'Beszélgetés vágólapra másolása',
+            delete: 'Töröl',
+            edit: 'Cím szerkesztése',
+            save: 'Mentés'
+
         },
         groups: {
             'Today': 'Ma',

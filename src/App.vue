@@ -1,17 +1,19 @@
 <template>
-    <q-layout view="LHh Lpr LFf">
+    <q-layout view="lHh Lpr lfF">
 
-        <OpenAI />
-        <q-header :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
-            <q-toolbar v-show="chatDirection === 'down'">
+        <!-- Conditional placement of UserInput -->
+        <q-header v-show="chatDirection === 'down'" :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
+            <q-toolbar>
                 <UserInput />
             </q-toolbar>
         </q-header>
 
-        <q-drawer :model-value="true" :mini="true" :persistent="true" bordered
+        <OpenAI />
+
+        <!--  Left drawer -->
+        <q-drawer :model-value="true" :mini="true" :persistent="true" bordered :breakpoint="600" side="left"
             :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
             <q-list padding>
-
                 <div v-for="item in toolbar" :key="item.tooltip">
                     <div v-show="appMode === 'advanced' || item.appMode === appMode">
 
@@ -26,12 +28,14 @@
                     </div>
                 </div>
             </q-list>
-
         </q-drawer>
 
         <q-page-container>
-            <q-page>
+            <q-page class="" id="page">
+                <!-- Messages -->
                 <Messages />
+
+                <!-- Settings, Information, Personas, and History dialogs -->
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
                     <Settings />
                 </q-dialog>
@@ -47,15 +51,25 @@
                 <q-dialog v-model="showHistory" position="bottom" transition-show="slide-up">
                     <History />
                 </q-dialog>
+
+                <!-- Top and bottom QPageScroller -->
+                <q-page-scroller position="top" :scroll-offset="50">
+                    <q-btn round dense icon="mdi-arrow-up" color="primary" />
+                </q-page-scroller>
+                <q-page-scroller reverse position="bottom" :scroll-offset="50">
+                    <q-btn round dense icon="mdi-arrow-down" color="primary" />
+                </q-page-scroller>
+
             </q-page>
+
+            <!-- Conditional placement of UserInput -->
+            <q-footer v-show="chatDirection === 'up'" :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
+                <q-toolbar>
+                    <UserInput />
+                </q-toolbar>
+            </q-footer>
+
         </q-page-container>
-
-        <q-footer :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
-            <q-toolbar v-show="chatDirection === 'up'">
-                <UserInput />
-            </q-toolbar>
-        </q-footer>
-
     </q-layout>
 </template>
 
@@ -198,8 +212,18 @@ export default {
 </script>
 
 <style>
-/* Hide scrollbars */
-body {
-    overflow: hidden;
+/* Hide scrollbars on Macs (and WebKit based webviews) 
+::-webkit-scrollbar {
+    display: none;
 }
+/* Hide scrollbars on Windows (in IE and Edge)
+body {
+    overflow: auto;
+    -ms-overflow-style: none;
+}
+/* Hide scrollbars in Firefox
+html {
+    scrollbar-width: none;
+}
+*/
 </style>

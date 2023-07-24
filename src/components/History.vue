@@ -4,7 +4,7 @@
             <div class="text-h6">
                 {{ t('history.title') }}
             </div>
-                {{ t('history.description') }}
+            {{ t('history.description') }}
         </q-card-section>
         <q-separator />
 
@@ -21,20 +21,44 @@
                         </q-item-section>
 
                         <q-item-section>
-                            <q-item-label caption>{{ item.title }}
+                            <q-input borderless standout dense 
+                                :input-style="item.readonly ? {cursor: 'pointer'} : {cursor: 'text'}"
+                                :readonly="item.readonly"
+                                focus="item.readonly"
+                                v-model="item.title"
+                                @blur="item.readonly=true">
+
                                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                     {{ $t('history.tooltip.show') }}
                                 </q-tooltip>
-                            </q-item-label>
+                            </q-input>
                         </q-item-section>
 
                         <q-item-section side>
-                            <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor" 
-                                @click="deleteConversation(item.conversationId)">
-                                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                    {{ $t('history.tooltip.delete') }}
-                                </q-tooltip>
-                            </q-btn>
+                            <div class="q-gutter-xs">
+                                <q-btn size="sm" flat dense :color="iconColor"
+                                    :icon="item.readonly ? 'mdi-pencil-outline':'mdi-content-save-outline'"
+                                    @click="item.readonly = !item.readonly">
+
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ item.readonly ? $t('history.tooltip.edit') : $t('history.tooltip.save') }}
+                                    </q-tooltip>
+                                </q-btn>
+
+                                <q-btn size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
+                                    @click="copyConversation(item.conversationId)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ $t('history.tooltip.copy') }}
+                                    </q-tooltip>
+                                </q-btn>
+
+                                <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor"
+                                    @click="deleteConversation(item.conversationId)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ $t('history.tooltip.delete') }}
+                                    </q-tooltip>
+                                </q-btn>
+                            </div>
                         </q-item-section>
 
                     </q-item>
@@ -51,7 +75,7 @@
 import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 export default {
@@ -61,14 +85,6 @@ export default {
         const { history, conversationId } = storeToRefs(teamsStore);
         const $q = useQuasar();
         const { t } = useI18n();
-
-        const showConversation = (id) => {
-            conversationId.value = id;
-        }
-
-        const deleteConversation = (id) => {
-            teamsStore.deleteConversation(id);
-        }
 
         function getDateGroup(timestamp) {
             const now = new Date();
@@ -115,6 +131,7 @@ export default {
             const reversedHistory = [...history.value].reverse();
             reversedHistory.forEach(item => {
                 const date = getDateGroup(item.timestamp);
+                item.readonly = true;
                 if (!grouped[date]) {
                     grouped[date] = [];
                 }
@@ -125,8 +142,9 @@ export default {
 
         return {
             t,
-            showConversation,
-            deleteConversation,
+            showConversation: (id) => conversationId.value = id,
+            copyConversation: (id) => navigator.clipboard.writeText(JSON.stringify(teamsStore.getConversation(id))),
+            deleteConversation: (id) => teamsStore.deleteConversation(id),
             history,
             groupedHistory,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')

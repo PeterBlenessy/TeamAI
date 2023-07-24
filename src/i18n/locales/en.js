@@ -95,6 +95,10 @@ export default {
         '400': {
             message: 'The request seams invalid.',
             caption: 'Please check your request and try again.'
+        },
+        '503' : {
+            message: 'The server is currently unavailable.',
+            caption: 'Please try again later.'
         }
     },
 
@@ -156,7 +160,10 @@ export default {
         description: 'The conversations are grouped by age, with the most recent conversation first. Your conversations are stored locally.',
         tooltip: {
             show: 'Show conversation',
-            delete: 'Delete'
+            copy: 'Copy conversation to clipboard',
+            delete: 'Delete',
+            edit: 'Edit title',
+            save: 'Save'
         },
         groups: {
             'Today': 'Today',

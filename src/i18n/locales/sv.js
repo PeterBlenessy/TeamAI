@@ -157,7 +157,10 @@ export default {
         description: 'Konversationerna är grupperade efter ålder, med den senaste konversationen först. Dina konversationer sparas lokalt.',
         tooltip: {
             show: 'Visa konversation',
-            delete: 'Ta bort'
+            copy: 'Kopiera konversationen till urklipp',
+            delete: 'Ta bort',
+            edit: 'Editera titeln',
+            save: 'Spara'
         },
         groups: {
             'Today': 'Idag',

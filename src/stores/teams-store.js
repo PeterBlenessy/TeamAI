@@ -64,6 +64,11 @@ export const useTeamsStore = defineStore('teams', () => {
         });
     }
 
+    // Get messages from a conversation
+    function getConversation(id) {
+        return messages.value.filter(message => message.conversationId == id);
+    }
+
     return {
         // State properties
         bots,
@@ -82,6 +87,7 @@ export const useTeamsStore = defineStore('teams', () => {
         deleteMessages,
         deleteConversation,
 
-        getMessages
+        // Getters
+        getConversation
     }
 });
