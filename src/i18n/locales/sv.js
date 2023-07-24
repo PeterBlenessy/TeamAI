@@ -11,6 +11,7 @@ export default {
         placeholder: 'Ställ din fråga',
         tooltip: {
             send: 'Skicka din fråga',
+            createImage: 'Skapa en bild'
         },
     },
 

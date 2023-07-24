@@ -11,6 +11,7 @@ export default {
         placeholder: 'Ask your question',
         tooltip: {
             send: 'Send your question',
+            createImage: 'Create an image',
         },
     },
 
@@ -98,6 +99,10 @@ export default {
         },
         '503' : {
             message: 'The server is currently unavailable.',
+            caption: 'Please try again later.'
+        },
+        undefined: {
+            message: 'An unknown error occurred.',
             caption: 'Please try again later.'
         }
     },

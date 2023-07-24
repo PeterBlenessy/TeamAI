@@ -25,7 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [KNOWN-BUGS]
 - Manual check for updates is not working as expected.
 
-## v0.10.x - [UNRELEASED]
+## v0.11.x - [UNRELEASED]
+
+## v0.11.0 - 2023-07-24
+- Changed message action items' layout to horizontal.
+- Added check that sharing is indeed available and possible before showing share button.
+- Added option to generate image from user input. Needs more work, but ready for early testing.
 
 ## v0.10.1 - 2023-07-24
 - Added option to share a message or an entire conversation using native sharing.

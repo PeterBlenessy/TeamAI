@@ -50,9 +50,43 @@ const openAI = () => {
         }
     }
 
+    const createImageCompletion = async (prompt) => {
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiKey.value
+            },
+            body: JSON.stringify({
+                "prompt": prompt,
+                "n": choices.value,
+                "size": "512x512"
+            })
+        };
+
+        try {
+            const response = await fetch("https://api.openai.com/v1/images/generations", requestOptions);
+            if (!response.ok) throw new Error(`${response.status} - ${response.statusText}`);
+
+            const json = await response.json();
+            if (json.errorCode) throw new Error(`${data.errorCode}`);
+
+            let content = "";
+            // Create a markdown list of images in json.data array
+            for (let i = 0; i < json.data.length; i++) {
+                content += "![Image](" + json.data[i].url + ")\n";
+            }
+
+            return { role: "assistant", content: content };
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }            
+
     // Public functions
     return {
-        createChatCompletion
+        createChatCompletion,
+        createImageCompletion
     }
 }
 

@@ -9,9 +9,17 @@
         </template>
 
         <template v-slot:append>
-            <q-btn v-if="!loading" @click="handleUserInput" dense flat icon="send" :color="iconColor">
+            <q-btn v-if="!loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                     {{ t('userInput.tooltip.send') }}
+                </q-tooltip>
+            </q-btn>
+            <q-btn dense flat :icon="isCreateImageSelected ? 'mdi-image-multiple':'mdi-image-multiple-outline'"
+                :color="isCreateImageSelected ? 'primary':iconColor"
+                @click="isCreateImageSelected=!isCreateImageSelected">
+
+                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                    {{ t('userInput.tooltip.createImage') }}
                 </q-tooltip>
             </q-btn>
         </template>
@@ -30,7 +38,7 @@ export default {
     name: 'UserInput',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, userInput } = storeToRefs(teamsStore);
+        const { loading, userInput, isCreateImageSelected } = storeToRefs(teamsStore);
         const question = ref('');
         const { t } = useI18n();
         const $q = useQuasar();
@@ -44,6 +52,7 @@ export default {
 
         return {
             handleUserInput,
+            isCreateImageSelected,
             question,
             t,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),

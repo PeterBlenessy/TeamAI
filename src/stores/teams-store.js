@@ -21,6 +21,7 @@ export const useTeamsStore = defineStore('teams', () => {
     const userInput = ref('');
     const conversationId = ref('');
     const loading = ref(false);
+    const isCreateImageSelected = ref(false);
 
     // Actions
 
@@ -80,6 +81,7 @@ export const useTeamsStore = defineStore('teams', () => {
         userInput,
         conversationId,
         loading,
+        isCreateImageSelected,
 
         // Actions
         newConversation,

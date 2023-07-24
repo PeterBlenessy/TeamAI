@@ -8,6 +8,7 @@ export default {
         placeholder: 'Kérdezz bátran',
         tooltip: {
             send: 'Kérdés küldése',
+            createImage: 'Kép létrehozása'
         },
     },
 

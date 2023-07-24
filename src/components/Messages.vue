@@ -14,6 +14,8 @@
                 </q-item-section>
 
                 <q-item-section side top>
+                    <div class="q-gutter-xs">
+
                     <q-btn size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
                         @click="copyMessage(message.content)">
                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
@@ -21,7 +23,7 @@
                         </q-tooltip>
                     </q-btn>
 
-                    <q-btn size="sm" flat dense icon="mdi-export-variant" :color="iconColor"
+                    <q-btn v-if="canShare(message.content)" size="sm" flat dense icon="mdi-export-variant" :color="iconColor"
                         @click="shareMessage(message.content)">
                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                             {{ $t('messages.tooltip.share') }}
@@ -34,6 +36,7 @@
                             {{ $t('messages.tooltip.delete') }}
                         </q-tooltip>
                     </q-btn>
+                    </div>
                 </q-item-section>
             </q-item>
         </q-card>
@@ -98,7 +101,8 @@ export default {
             mdPlugins: [],
             copyMessage: (content) => navigator.clipboard.writeText(content),
             deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
-            shareMessage: (content) => navigator.share({ text: content }),
+            canShare: (content) => navigator.canShare({ text: content }),
+            shareMessage: (content) => navigator.share({ text: content })
         }
     }
 }
@@ -113,6 +117,7 @@ export default {
 
 /* Markdown div styling */
 .q-markdown {
+    padding-left: 50px;
     padding-right: 50px;
 }
 </style>

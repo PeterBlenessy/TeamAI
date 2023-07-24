@@ -14,7 +14,7 @@ export default {
     name: 'OpenAI',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, conversationId, messages, history, userInput, systemMessage } = storeToRefs(teamsStore);
+        const { loading, conversationId, messages, history, userInput, systemMessage, isCreateImageSelected } = storeToRefs(teamsStore);
 
         const settingsStore = useSettingsStore();
         const { conversationMode } = storeToRefs(settingsStore);
@@ -39,25 +39,28 @@ export default {
 
         // Watch runtime changes to user input
         watch(userInput, () => {
-            if (userInput.value != '') {
 
-                // Generate conversationId if needed
-                if (conversationId.value == '') {
-                    teamsStore.newConversation();
-                }
-                // Add user input to messages
-                messages.value.push({
-                    role: 'user',
-                    content: userInput.value,
-                    timestamp: Date.now(),
-                    conversationId: conversationId.value
-                });
-
-                askQuestion(userInput.value);
-                userInput.value = '';
+            if (userInput.value == '') {
+                return;
             }
+
+            // Generate conversationId if needed
+            if (conversationId.value == '') {
+                teamsStore.newConversation();
+            }
+
+            // Add user input to messages
+            messages.value.push({
+                role: 'user',
+                content: userInput.value,
+                timestamp: Date.now(),
+                conversationId: conversationId.value
+            });
+
+            askQuestion(userInput.value);
+            userInput.value = '';
         });
-        
+
         // Generate conversation title
         const generateConversationTitle = async (id) => {
             try {
@@ -79,10 +82,13 @@ export default {
             conversation = conversation.filter(item => item !== undefined);
 
             try {
-                let response = await openAI.createChatCompletion([
-                    { "role": "system", "content": systemMessage.value },
-                    ...conversation
-                ]);
+                let response = isCreateImageSelected.value
+                    ? await openAI.createImageCompletion(question)
+                    : await openAI.createChatCompletion([
+                        { "role": "system", "content": systemMessage.value },
+                        ...conversation
+                    ]);
+                
                 const timestamp = Date.now().toString();
                 messages.value.push({
                     role: response.role,
@@ -94,16 +100,16 @@ export default {
                 // Check if conversation title exists
                 if (getConversation(conversationId.value).length == 0) {
                     generateConversationTitle(conversationId.value)
-                    .then( (title) => {
-                        history.value.push({
-                            title: title,
-                            timestamp: timestamp,
-                            created: timestamp,
-                            updated: timestamp,
-                            conversationId: conversationId.value
-                        });
-                    })
-                    .catch(error => console.error(error))
+                        .then((title) => {
+                            history.value.push({
+                                title: title,
+                                timestamp: timestamp,
+                                created: timestamp,
+                                updated: timestamp,
+                                conversationId: conversationId.value
+                            });
+                        })
+                        .catch(error => console.error(error))
                 }
                 // todo: if conversation title exists, update its 'updated' key to timestamp
             } catch (error) {
