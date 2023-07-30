@@ -19,13 +19,16 @@ export default {
         const settingsStore = useSettingsStore();
         const { conversationMode } = storeToRefs(settingsStore);
 
-        // Creates an array of OpenAI API message objects from the current conversation
+        // Creates an array of OpenAI API message objects from the current conversation.
+        // Filters out potentially undefined items and items containing images, as these cause OpenAI API errors.
         const getMessages = (id) => {
-            return messages.value.map(message => {
-                if (message && message.conversationId == id) {
+            let msg = messages.value.map(message => {
+                if (message && message.conversationId == id && message.object != 'image') {
                     return { "role": message.role, "content": message.content };
                 }
-            });
+            }).filter(item => item !== undefined)
+            
+            return msg;
         }
 
         const getConversation = (id) => {
@@ -54,7 +57,8 @@ export default {
                 role: 'user',
                 content: userInput.value,
                 timestamp: Date.now(),
-                conversationId: conversationId.value
+                conversationId: conversationId.value,
+                model: 0
             });
 
             askQuestion(userInput.value);
@@ -66,7 +70,7 @@ export default {
             try {
                 let response = await openAI.createChatCompletion([
                     { "role": "user", "content": t('prompts.generateTitle') },
-                    ...getMessages(id)
+                    [...getMessages(id)][0]
                 ]);
                 // Remove (occasional) optionally escaped leading and trailing apostrophes
                 return response.content.trim().replace(/^\\?"|\\?"$/g, '');
@@ -79,7 +83,6 @@ export default {
         const askQuestion = async (question) => {
             loading.value = true;
             let conversation = (!conversationMode.value) ? [{ "role": "user", "content": question }] : getMessages(conversationId.value);
-            conversation = conversation.filter(item => item !== undefined);
 
             try {
                 let response = isCreateImageSelected.value
@@ -88,13 +91,13 @@ export default {
                         { "role": "system", "content": systemMessage.value },
                         ...conversation
                     ]);
-                
+
                 const timestamp = Date.now().toString();
+
                 messages.value.push({
-                    role: response.role,
-                    content: response.content,
                     timestamp: timestamp,
-                    conversationId: conversationId.value
+                    conversationId: conversationId.value,
+                    ...response
                 });
 
                 // Check if conversation title exists

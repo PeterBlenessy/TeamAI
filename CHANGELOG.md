@@ -24,8 +24,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [KNOWN-BUGS]
 - Manual check for updates is not working as expected.
+- Page scrolls to end when message is deleted.
+- Second row of images loads after filteredMessages triggers a scroll-to-end-of-page.
+- Save button has to be pressed twice to save changes to conversation title.
 
-## v0.11.x - [UNRELEASED]
+## v0.12.x - [UNRELEASED]
+
+## v0.12.0 - 2023-07-30
+- Added support for displaying multiple image choices.
+- Added individual image actions: delete and share.
+- Added native draggable support to images.
+- Changed images generation output to b64_json, as URL expire after an hour.
+- Fixed error caused when messages containing images were included when using conversation mode.
+- Fixed error where conversation with image generations got titles unrelated to the conversation.
 
 ## v0.11.0 - 2023-07-24
 - Changed message action items' layout to horizontal.

@@ -18,7 +18,7 @@ const openAI = () => {
             "max_tokens": maxTokens.value,
             "temperature": temperature.value,
             "stream": false,
-            "n": choices.value
+            "n": 1
         };
 
         const options = {
@@ -44,12 +44,18 @@ const openAI = () => {
             const json = await response.json();
             if (json.errorCode) throw new Error(`${data.errorCode}`);
 
-            return json.choices[0].message;
-        } catch (error) {
+            return {
+                role: json.choices[0].message.role,
+                content: json.choices[0].message.content,
+                object: json.object,
+                usage: json.usage
+            };
+         } catch (error) {
             throw new Error(error.message);
         }
     }
 
+    // Public function. Creates an image given a user prompt.
     const createImageCompletion = async (prompt) => {
         const requestOptions = {
             method: 'POST',
@@ -60,7 +66,8 @@ const openAI = () => {
             body: JSON.stringify({
                 "prompt": prompt,
                 "n": choices.value,
-                "size": "512x512"
+                "size": "512x512",
+                "response_format": "b64_json"
             })
         };
 
@@ -71,13 +78,16 @@ const openAI = () => {
             const json = await response.json();
             if (json.errorCode) throw new Error(`${data.errorCode}`);
 
-            let content = "";
-            // Create a markdown list of images in json.data array
+            let choices = [];
             for (let i = 0; i < json.data.length; i++) {
-                content += "![Image](" + json.data[i].url + ")\n";
+                choices.push({ index: i, content: "data:image/png;base64,"+json.data[i].b64_json });
             }
 
-            return { role: "assistant", content: content };
+            return {
+                role: "assistant",
+                object: "image",
+                choices: choices
+            };
         } catch (error) {
             throw new Error(error.message);
         }

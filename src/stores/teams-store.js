@@ -14,7 +14,7 @@ export const useTeamsStore = defineStore('teams', () => {
     // State properties
     const bots = ref([]);
     const teams = ref([]);
-    const messages = ref([]);   // { conversationId, timestamp, role, content }
+    const messages = ref([]);   // { conversationId, timestamp, role, content | choices: [{index, content}], objet, usage ]
     const history = ref([]);    // { conversationId, timestamp, created, updated, title }
     const systemMessage = ref("You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.");
     const personas = ref([{persona: "Helpful assistant", prompt: "You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model."}]);   // { persona, prompt }
@@ -25,12 +25,12 @@ export const useTeamsStore = defineStore('teams', () => {
 
     // Actions
 
-    // Delete message identified by timestamp
+    // Delete message identified by 'timestamp'
     function deleteMessage(timestamp) {
         messages.value = messages.value.filter(message => message.timestamp != timestamp);
     }
 
-    // Remove all messages for the given conversationId
+    // Remove all messages for the given 'conversationId'
     function deleteMessages(id) {
         if (id == '' || id == undefined) {
             messages.value = messages.value.filter(message => message.conversationId != conversationId.value);
@@ -40,7 +40,13 @@ export const useTeamsStore = defineStore('teams', () => {
 
         loading.value = false; // Just in case UI hangs due to some unhandled error
     }
-    // Delete a conversation given a conversationId
+
+    // Create a new conversation
+    function newConversation() {
+        conversationId.value = Date.now().toString();
+    }
+
+    // Delete a conversation given a 'conversationId'
     function deleteConversation(id) {
         history.value = history.value.filter(conversation => conversation.conversationId != id);
 
@@ -51,9 +57,14 @@ export const useTeamsStore = defineStore('teams', () => {
         }
     }
 
-    // Create a new conversation
-    function newConversation() {
-        conversationId.value = Date.now().toString();
+    // Delete a 'choice' from messages, given the 'timestamp' of the message and the 'index' of the choice
+    function deleteChoice(timestamp, index) {
+        messages.value = messages.value.map(message => {
+            if (message.timestamp == timestamp) {
+                message.choices = message.choices.filter(choice => choice.index != index);
+            }
+            return message;
+        });
     }
 
     // Getters
@@ -88,6 +99,7 @@ export const useTeamsStore = defineStore('teams', () => {
         deleteMessage,
         deleteMessages,
         deleteConversation,
+        deleteChoice,
 
         // Getters
         getConversation
