@@ -1,25 +1,31 @@
 <template>
-    <q-input dense filled autofocus autogrow style="width: 100%;" 
-        :dark="$q.dark.isActive" 
+    <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive"
         :placeholder="t('userInput.placeholder')" @keydown.enter.prevent="handleUserInput" v-model="question"
-        :loading="loading" >
+        :loading="loading">
 
         <template v-slot:prepend>
-            <q-icon name="live_help" style="padding: 5px;" :color="iconColor" />
+
+            <q-btn dense flat :icon="!isCreateImageSelected ? 'mdi-tooltip-text' : 'mdi-tooltip-text-outline'"
+                :color="!isCreateImageSelected ? 'primary' : iconColor" @click="isCreateImageSelected = !isCreateImageSelected">
+                
+                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                    {{ t('userInput.tooltip.generateText') }}
+                </q-tooltip>
+            </q-btn>
+
+            <q-btn dense flat :icon="isCreateImageSelected ? 'mdi-tooltip-image' : 'mdi-tooltip-image-outline'"
+                :color="isCreateImageSelected ? 'primary' : iconColor" @click="isCreateImageSelected = !isCreateImageSelected">
+
+                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                    {{ t('userInput.tooltip.generateImage') }}
+                </q-tooltip>
+            </q-btn>
         </template>
 
         <template v-slot:append>
             <q-btn v-if="!loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                     {{ t('userInput.tooltip.send') }}
-                </q-tooltip>
-            </q-btn>
-            <q-btn dense flat :icon="isCreateImageSelected ? 'mdi-image-multiple':'mdi-image-multiple-outline'"
-                :color="isCreateImageSelected ? 'primary':iconColor"
-                @click="isCreateImageSelected=!isCreateImageSelected">
-
-                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                    {{ t('userInput.tooltip.createImage') }}
                 </q-tooltip>
             </q-btn>
         </template>
@@ -45,7 +51,7 @@ export default {
 
         function handleUserInput() {
             if (question.value == '') { return; }
-            
+
             userInput.value = question.value;
             question.value = '';
         }

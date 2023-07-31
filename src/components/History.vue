@@ -21,51 +21,50 @@
                         </q-item-section>
 
                         <q-item-section>
-                            <q-input borderless standout dense 
-                                :input-style="item.readonly ? {cursor: 'pointer'} : {cursor: 'text'}"
-                                :readonly="item.readonly"
-                                focus="item.readonly"
-                                v-model="item.title"
-                                @blur="item.readonly=true">
+                            <q-input borderless standout dense style="width: 100%;"
+                                :input-style="item.readonly ? { cursor: 'pointer' } : { cursor: 'text' }"
+                                :readonly="item.readonly" focus="item.readonly" v-model="item.title"
+                                @blur="item.readonly = true">
 
                                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                     {{ $t('history.tooltip.show') }}
                                 </q-tooltip>
+
+                                <template v-slot:append>
+                                    <q-btn size="sm" flat dense :color="iconColor"
+                                        :icon="item.readonly ? 'mdi-pencil-outline' : 'mdi-content-save-outline'"
+                                        @click="item.readonly = !item.readonly">
+
+                                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                            {{ item.readonly ? $t('history.tooltip.edit') : $t('history.tooltip.save') }}
+                                        </q-tooltip>
+                                    </q-btn>
+
+                                    <q-btn size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
+                                        @click="copyConversation(item.conversationId)">
+                                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                            {{ $t('history.tooltip.copy') }}
+                                        </q-tooltip>
+                                    </q-btn>
+
+                                    <q-btn v-if="canShare(item.conversationId)" size="sm" flat dense
+                                        icon="mdi-export-variant" :color="iconColor"
+                                        @click="shareConversation(item.conversationId)">
+                                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                            {{ $t('history.tooltip.share') }}
+                                        </q-tooltip>
+                                    </q-btn>
+
+                                    <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor"
+                                        @click="deleteConversation(item.conversationId)">
+                                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                            {{ $t('history.tooltip.delete') }}
+                                        </q-tooltip>
+                                    </q-btn>
+
+                                </template>
+
                             </q-input>
-                        </q-item-section>
-
-                        <q-item-section side>
-                            <div class="q-gutter-xs">
-                                <q-btn size="sm" flat dense :color="iconColor"
-                                    :icon="item.readonly ? 'mdi-pencil-outline':'mdi-content-save-outline'"
-                                    @click="item.readonly = !item.readonly">
-
-                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                        {{ item.readonly ? $t('history.tooltip.edit') : $t('history.tooltip.save') }}
-                                    </q-tooltip>
-                                </q-btn>
-
-                                <q-btn size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
-                                    @click="copyConversation(item.conversationId)">
-                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                        {{ $t('history.tooltip.copy') }}
-                                    </q-tooltip>
-                                </q-btn>
-
-                                <q-btn v-if="canShare(item.conversationId)" size="sm" flat dense icon="mdi-export-variant" :color="iconColor"
-                                    @click="shareConversation(item.conversationId)">
-                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                        {{ $t('history.tooltip.share') }}
-                                    </q-tooltip>
-                                </q-btn>
-
-                                <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor"
-                                    @click="deleteConversation(item.conversationId)">
-                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                        {{ $t('history.tooltip.delete') }}
-                                    </q-tooltip>
-                                </q-btn>
-                            </div>
                         </q-item-section>
 
                     </q-item>
@@ -152,8 +151,8 @@ export default {
             showConversation: (id) => conversationId.value = id,
             copyConversation: (id) => navigator.clipboard.writeText(JSON.stringify(teamsStore.getConversation(id))),
             deleteConversation: (id) => teamsStore.deleteConversation(id),
-            canShare: (id) => navigator.canShare({ text: JSON.stringify(teamsStore.getConversation(id))}),
-            shareConversation: (id) => navigator.share({ text: JSON.stringify(teamsStore.getConversation(id))}),
+            canShare: (id) => navigator.canShare({ text: JSON.stringify(teamsStore.getConversation(id)) }),
+            shareConversation: (id) => navigator.share({ text: JSON.stringify(teamsStore.getConversation(id)) }),
             history,
             groupedHistory,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')

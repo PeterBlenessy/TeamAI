@@ -7,8 +7,9 @@ export default {
     userInput: {
         placeholder: 'Kérdezz bátran',
         tooltip: {
-            send: 'Kérdés küldése',
-            createImage: 'Kép létrehozása'
+            send: 'Küld',
+            generateText: 'Szöveg generálás',
+            generateImage: 'Kép generálás'
         },
     },
 
@@ -67,13 +68,17 @@ export default {
                 label: 'Maximális tokenek száma',
                 tooltip: 'A válaszban található maximális tokenek száma.'
             },
-            choices: {
-                label: 'Választási lehetőségek',
-                tooltip: 'Alternatív válaszok száma a kérdésre.'
-            },
             temperature: {
                 label: 'Hőmérséklet',
                 tooltip: 'A hőmérséklet a szövegben található véletlenszerűség mértéke. Az alacsonyabb értékek előrejelezhetőbb szöveget eredményeznek, míg a magasabb értékek meglepőbb szöveget eredményeznek.'
+            },
+            choices: {
+                label: 'Képek száma',
+                tooltip: 'Generálandó képek száma.'
+            },
+            size: {
+                label: 'Kép mérete',
+                tooltip: 'A kép mérete.'
             }
         }
     },

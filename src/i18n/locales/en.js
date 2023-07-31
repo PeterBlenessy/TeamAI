@@ -11,7 +11,8 @@ export default {
         placeholder: 'Ask your question',
         tooltip: {
             send: 'Send your question',
-            createImage: 'Create an image',
+            generateText: 'Generate text',
+            generateImage: 'Generate images'
         },
     },
 
@@ -69,13 +70,17 @@ export default {
                 label: 'Max tokens',
                 tooltip: 'The maximum number of tokens in the response.'
             },
-            choices: {
-                label: 'Choices',
-                tooltip: 'Number of responses to generate for each question.'
-            },
             temperature: {
                 label: 'Temperature',
                 tooltip: 'Temperature is a measure of the randomness in the text. Lower values will result in more predictable text, while higher values will result in more surprising text.'
+            },
+            choices: {
+                label: 'Number of images',
+                tooltip: 'Number of images to generate.'
+            },
+            size: {
+                label: 'Image size',
+                tooltip: 'The size of the image to generate.'
             }
         }
     },

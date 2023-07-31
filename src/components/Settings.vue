@@ -49,14 +49,14 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon :name="chatDirection=='up' ? 'mdi-transfer-up' : 'mdi-transfer-down'" :color="iconColor" />
+                        <q-icon :name="chatDirection == 'up' ? 'mdi-transfer-up' : 'mdi-transfer-down'" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ $t('settings.chatDirection.label') }}</q-item-label>
                         <q-item-label caption>{{ $t('settings.chatDirection.caption') }}</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-toggle v-model="chatDirection" flat dense round false-value="up" true-value="down"/>
+                        <q-toggle v-model="chatDirection" flat dense round false-value="up" true-value="down" />
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ t('settings.chatDirection.tooltip') }}
                         </q-tooltip>
@@ -81,7 +81,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon :name="appMode=='basic' ? 'mdi-account' : 'mdi-account-group'" :color="iconColor" />
+                        <q-icon :name="appMode == 'basic' ? 'mdi-account' : 'mdi-account-group'" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ $t('settings.appMode.label') }}</q-item-label>
@@ -140,20 +140,6 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon name="alt_route" :color="iconColor" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label caption>{{ t('settings.openAI.choices.label') }} ({{ choices }})</q-item-label>
-                        <q-slider :model-value="choices" @change="val => { choices = val }" snap :min="1" :max="4" :step="1"
-                            :markers="1" label />
-                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                            {{ t('settings.openAI.choices.tooltip') }}
-                        </q-tooltip>
-                    </q-item-section>
-                </q-item>
-
-                <q-item>
-                    <q-item-section avatar>
                         <q-icon name="thermostat" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
@@ -167,13 +153,43 @@
                     </q-item-section>
                 </q-item>
 
+                <q-separator />
+
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="mdi-image-multiple-outline" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label caption>{{ t('settings.openAI.choices.label') }} ({{ choices }})</q-item-label>
+                        <q-slider :model-value="choices" @change="val => { choices = val }" snap :min="1" :max="10"
+                            :step="1" :markers="1" label />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.openAI.choices.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="mdi-image-size-select-large" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label caption>{{ t('settings.openAI.size.label') }} ({{ imageSize }})</q-item-label>
+                        <q-slider :model-value="imageSizeValue" @update:model-value="val => { imageSizeValue = val }" snap :min="0" :max="2" :step="1"
+                            :markers="1" label :label-value="imageSize" />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.openAI.size.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
             </q-list>
         </q-card-section>
     </q-card>
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
@@ -186,7 +202,7 @@ export default {
         const $q = useQuasar();
         const { t, locale, availableLocales } = useI18n();
         const settingsStore = useSettingsStore();
-        const { 
+        const {
             appMode,
             darkMode,
             conversationMode,
@@ -195,9 +211,18 @@ export default {
             model,
             modelOptions,
             maxTokens,
+            temperature,
             choices,
-            temperature
+            imageSize            
         } = storeToRefs(settingsStore);
+
+
+        const imageSizeOptions = ref(['256x256', '512x512', '1024x1024']);
+        const imageSizeValue = ref(imageSizeOptions.value.indexOf(imageSize.value));
+
+        watch(imageSizeValue, () => {
+            imageSize.value = imageSizeOptions.value[imageSizeValue.value];
+        });
 
         return {
             t,
@@ -211,8 +236,11 @@ export default {
             model,
             modelOptions,
             maxTokens,
-            choices,
             temperature,
+            choices,
+            imageSize,
+            imageSizeValue,
+            imageSizeOptions,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
     },

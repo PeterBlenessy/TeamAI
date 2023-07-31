@@ -26,9 +26,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Manual check for updates is not working as expected.
 - Page scrolls to end when message is deleted.
 - Second row of images loads after filteredMessages triggers a scroll-to-end-of-page.
-- Save button has to be pressed twice to save changes to conversation title.
 
-## v0.12.x - [UNRELEASED]
+## v0.13.x - [UNRELEASED]
+
+## v0.13.0 - 2023-07-31
+- Added image generation parameters to settings dialog.
+- Fixed share image to be correctly formatted, PNG.
+- Fixed check of availability to share a message, now that images can have multiple choices.
+- Fixed issue where save button had to be pressed twice to save changes to conversation title.
+- Improved UX of selecting between text and image generation.
 
 ## v0.12.0 - 2023-07-30
 - Added support for displaying multiple image choices.

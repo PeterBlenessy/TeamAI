@@ -18,13 +18,13 @@
                                         <q-card flat square :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
                                             <q-card-section horizontal>
                                                 <!-- Display image -->
-                                                <q-img :src="item.content" width="400px" loading="lazy" draggable/>
+                                                <q-img :src="item.content" width="400px" loading="lazy" draggable />
 
                                                 <!-- Image actions -->
                                                 <q-card-actions vertical class="justify-around">
-                                                    <q-btn v-if="canShare(item)" size="sm" flat dense round
+                                                    <q-btn v-if="canShare(item, message.object)" size="sm" flat dense round
                                                         icon="mdi-export-variant" :color="iconColor"
-                                                        @click="shareMessage(item)">
+                                                        @click="shareMessage(item, message.object)">
                                                         <q-tooltip :delay="750" transition-show="scale"
                                                             transition-hide="scale">
                                                             {{ $t("messages.tooltip.share") }}
@@ -56,7 +56,7 @@
 
                 <q-item-section side top>
                     <div class="q-gutter-xs">
-                        <q-btn size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
+                        <q-btn v-if="message.object != 'image'" size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
                             @click="copyMessage(message)">
                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                 {{ $t("messages.tooltip.copy") }}
@@ -138,16 +138,57 @@ export default {
             { flush: "post" }
         );
 
-        // Return message content or first item in 'choices' array, if present
-        const getContent = (message) => message.hasOwnProperty('choices') ? message.choices[0].content : message.content;
-
         // Check if message has 'choices' key, used to store array of generated images
         const hasChoices = (message) => message.hasOwnProperty('choices');
 
-        // Share message content via 'navigator.share', the native sharing mechanism
-        const shareMessage = async (message) => {
+        // Return message content or first item in 'choices' array, if present
+        // todo: include all image choices when sharing?
+        const getContent = async (message, type='text') => {
+            let content = hasChoices(message) ? message.choices[0].content : message.content;
+
+            if (type == 'image' || message.object == 'image') {
+                const res = await fetch(content);
+                const blob = await res.blob();
+                const imageFile = new File([blob], 'Image.png', { type: blob.type });
+
+                return imageFile;
+            } else {
+                return content;
+            }
+        };
+
+        // Copy message content to clipboard. Only for text content.
+        // Tauri user agent does not allow images to be copied to the clipboard.
+        const copyMessage = async (message, messageType='text') => {
+            const type = (messageType == 'text') ? "text/plain" : "image/png";
+            const content = await getContent(message, messageType);
+            const blob = new Blob([ content ], { type });
+            const data = [new ClipboardItem({ [type]: blob })];
+                
             try {
-                await navigator.share({ text: getContent(message) });
+                await navigator.clipboard.write(data);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+        // Check if message content can be shared via 'navigator.share'
+        const canShare = async (message, type='text') => {
+            return navigator.canShare(
+                message.object == 'image' || type == 'image'
+                    ? { files: [ await getContent(message, 'image') ]}
+                    : { text: await getContent(message) }
+            );
+        };
+
+        // Share message content via 'navigator.share', the native sharing mechanism
+        const shareMessage = async (message, type='text') => {
+            try {
+                await navigator.share(
+                    message.object == 'image' || type == 'image'
+                        ? { files: [ await getContent(message, 'image') ]}
+                        : { text: await getContent(message) }
+                );
             } catch (err) {
                 console.log(err);
             }
@@ -162,10 +203,10 @@ export default {
             loading,
             mdPlugins: [],
             hasChoices,
-            copyMessage: (message) => navigator.clipboard.writeText(getContent(message)),
-            deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
-            canShare: (message) => navigator.canShare({ text: getContent(message) }),
+            copyMessage,
+            canShare,
             shareMessage,
+            deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
             deleteChoice: (timestamp, index) => teamsStore.deleteChoice(timestamp, index)
         };
     },

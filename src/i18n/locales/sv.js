@@ -11,7 +11,8 @@ export default {
         placeholder: 'Ställ din fråga',
         tooltip: {
             send: 'Skicka din fråga',
-            createImage: 'Skapa en bild'
+            generateText: 'Generera text',
+            generateImage: 'Generera bilder'
         },
     },
 
@@ -69,13 +70,17 @@ export default {
                 label: 'Maximalt antal tokens',
                 tooltip: 'Det maximala antalet tokens i svaret.'
             },
-            choices: {
-                label: 'Val',
-                tooltip: 'Antal svarsalternativ som ska genereras för varje fråga.'
-            },
             temperature: {
                 label: 'Temperatur',
                 tooltip: 'Temperaturen är en mått på slumpmässigheten i texten. Lägre värden resulterar i mer förutsägbar text, medan högre värden resulterar i mer överraskande text.'
+            },
+            choices: {
+                label: 'Antal bilder',
+                tooltip: 'Antal bilder att generera.'
+            },
+            size: {
+                label: 'Bildstorlek',
+                tooltip: 'Bildstorlek i pixlar.'
             }
         }
     },

@@ -12,11 +12,14 @@ export const useSettingsStore = defineStore('settings', () => {
 
     // OpenAI settings
     const apiKey = ref('');
+    // Chat completion settings
     const modelOptions = ref(['gpt-3.5-turbo', 'gpt-4']);
     const model = ref('gpt-3.5-turbo');
     const maxTokens = ref(2096);
-    const choices = ref(1);
     const temperature = ref(0.2);
+    // Image settings
+    const choices = ref(1);
+    const imageSize = ref('1024x1024');
 
     return {
         // Application settings
@@ -31,7 +34,8 @@ export const useSettingsStore = defineStore('settings', () => {
         modelOptions,
         model,
         maxTokens,
+        temperature,
         choices,
-        temperature
+        imageSize
     }
 });
