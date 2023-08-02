@@ -31,7 +31,8 @@
                                 </q-tooltip>
 
                                 <template v-slot:append>
-                                    <q-btn size="sm" flat dense :color="iconColor"
+                                    <q-btn size="sm" flat dense
+                                        :color="item.readonly ? iconColor : 'primary'"
                                         :icon="item.readonly ? 'mdi-pencil-outline' : 'mdi-content-save-outline'"
                                         @click="item.readonly = !item.readonly">
 
