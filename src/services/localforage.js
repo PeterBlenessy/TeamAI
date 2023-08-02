@@ -36,8 +36,13 @@ const localForagePlugin = (({ store }) => {
     let persistedState = {};
     storage.iterate((value, key, iterationNumber) => {
         persistedState[key] = JSON.parse(value);
+        // Remove keys with empty values, so default values can be used instead
+        if ( persistedState[key] == null || persistedState[key].length == 0 ) {
+            delete persistedState[key];
+        }
     }).then(() => {
-        if (Object.keys(persistedState) != 0) store.$patch(persistedState);
+        // Restore the persisted state
+        if (Object.keys(persistedState).length != 0) store.$patch(persistedState);
     }).catch((error) => {
         console.log(error);
     }).finally(() => {

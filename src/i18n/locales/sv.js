@@ -85,25 +85,6 @@ export default {
         }
     },
 
-    apiErrors: {
-        '401': {
-            message: 'Ogiltig autentisering.',
-            caption: 'Se till att OpenAI API-nyckeln som används är korrekt.'
-        },
-        '429': {
-            message: 'Begränsningen för antalet förfrågningar har nåtts, eller motorn kan vara överbelastad.',
-            caption: 'Försök igen efter en kort väntan.'
-        },
-        '500': {
-            message: 'Servern hade ett fel när den behandlade din förfrågan.',
-            caption: 'Försök igen om en stund och kontakta oss om problemet kvarstår.'
-        },
-        '400': {
-            message: 'Förfrågan verkar ogiltig.',
-            caption: 'Kontrollera din förfrågan och försök igen.'
-        }
-    },
-
     page: {},
 
     messages: {
@@ -200,9 +181,12 @@ export default {
         description: 'Personas är AI-assistenter som konfigureras för att ha specifika förmågor och beteenden. Konfigurationen erhålls genom att använda speciellt utformade systemmeddelanden. Systemmeddelandena skickas till AI-assistenten före användarmeddelandet.',
         actions: {
             add: {
-                label: 'Lägg till en ny persona',
-                caption: 'Lägg till en ny persona och ange de önskade förmågorna och beteendet.',
-                tooltip: 'Lägg till en ny persona'
+                tooltip: 'Lägg till'
+            },
+            create: {
+                label: 'Skapa en ny persona',
+                caption: 'Skapa en ny persona och ange de önskade förmågorna och beteendet.',
+                tooltip: 'Skapa en ny persona'
             },
             import: {
                 label: 'Importera personas',
@@ -214,11 +198,44 @@ export default {
             },
             delete: {
                 tooltip: 'Ta bort'
+            },
+            save: {
+                tooltip: 'Spara'
             }
         },
         tableHeading: {
             name: 'Namn',
             prompt: 'Systemmeddelande'
+        }
+    },
+    apiErrors: {
+        '401': {
+            message: 'Ogiltig autentisering.',
+            caption: 'Se till att OpenAI API-nyckeln som används är korrekt.'
+        },
+        '429': {
+            message: 'Begränsningen för antalet förfrågningar har nåtts, eller servern kan vara överbelastad.',
+            caption: 'Försök igen om en stund.'
+        },
+        '500': {
+            message: 'Servern hade ett fel när den behandlade ditt anrop.',
+            caption: 'Försök igen om en stund och kontakta oss om problemet kvarstår.'
+        },
+        '400': {
+            message: 'Anropet verkar ogiltig.',
+            caption: 'Kontrollera ditt anrop och försök igen.'
+        },
+        '503' : {
+            message: 'Servern är för närvarande otillgänglig.',
+            caption: 'Försök igen om en stund.'
+        },
+        'Load': {
+            message: 'Det gick inte att ladda resursen: Förfrågan tog för lång tid.',
+            caption: 'Försök igen om en stund.'
+        },
+        undefined: {
+            message: 'Ett okänt fel inträffade.',
+            caption: 'Försök igen om en stund.'
         }
     }
 }

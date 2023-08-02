@@ -82,33 +82,11 @@ export default {
                 label: 'Image size',
                 tooltip: 'The size of the image to generate.'
             }
-        }
-    },
-
-    apiErrors: {
-        '401': {
-            message: 'Invalid Authentication.',
-            caption: 'Please ensure that the OpenAI API key used is correct.'
         },
-        '429': {
-            message: 'Rate limit reached for requests, or the engine may be overloaded.',
-            caption: 'Please retry your requests after a brief wait.'
-        },
-        '500': {
-            message: 'The server had an error while processing your request.',
-            caption: 'Please retry your request after a brief wait and contact us if the issue persists.'
-        },
-        '400': {
-            message: 'The request seams invalid.',
-            caption: 'Please check your request and try again.'
-        },
-        '503' : {
-            message: 'The server is currently unavailable.',
-            caption: 'Please try again later.'
-        },
-        undefined: {
-            message: 'An unknown error occurred.',
-            caption: 'Please try again later.'
+        persona: {
+            label: 'Persona',
+            caption: 'Select the persona of the AI assistant',
+            tooltip: 'Select the persona of the AI assistant'
         }
     },
 
@@ -207,9 +185,14 @@ export default {
         description: 'Personas are AI assistants configured to have specific abilities and behaviour. The configuration is obtained by using specially crafted system messages. The system messages are sent to the AI assistant before the user message.',
         actions: {
             add: {
-                label: 'Add a new persona',
-                caption: 'Add a new persona and specify the abilities and behaviour you desire it to have.',
-                tooltip: 'Add a new persona'
+                tooltip: 'Add'
+            },
+            create: {
+                label: 'Create a new persona',
+                caption: 'Create a new persona and specify the abilities and behaviour you desire it to have.',
+                tooltip: 'Create',
+                name: 'New persona',
+                prompt: 'You are a helpful assistant.'
             },
             import: {
                 label: 'Import personas',
@@ -219,13 +202,47 @@ export default {
             edit: {
                 tooltip: 'Edit'
             },
+            save: {
+                tooltip: 'Save'
+            },
             delete: {
                 tooltip: 'Delete'
             }
         },
         tableHeading: {
             name: 'Name',
-            prompt: 'System message'
+            prompt: 'Description'
+        }
+    },
+
+    apiErrors: {
+        '401': {
+            message: 'Invalid Authentication.',
+            caption: 'Please ensure that the OpenAI API key used is correct.'
+        },
+        '429': {
+            message: 'Rate limit reached for requests, or the engine may be overloaded.',
+            caption: 'Please retry your requests after a brief wait.'
+        },
+        '500': {
+            message: 'The server had an error while processing your request.',
+            caption: 'Please retry your request after a brief wait and contact us if the issue persists.'
+        },
+        '400': {
+            message: 'The request seams invalid.',
+            caption: 'Please check your request and try again.'
+        },
+        '503' : {
+            message: 'The server is currently unavailable.',
+            caption: 'Please try again later.'
+        },
+        'Load': {
+            message: 'Failed to load resource: The request timed out.',
+            caption: 'Please try again later.'
+        },
+        undefined: {
+            message: 'An unknown error occurred.',
+            caption: 'Please try again later.'
         }
     }
 }

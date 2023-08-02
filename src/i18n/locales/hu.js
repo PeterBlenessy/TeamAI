@@ -83,25 +83,6 @@ export default {
         }
     },
 
-    apiErrors: {
-        '401': {
-            message: 'Érvénytelen hitelesítés.',
-            caption: 'Győződjön meg arról, hogy az OpenAI API kulcsa helyes.'
-        },
-        '429': {
-            message: 'A kérési arány korlátja elérte, vagy a motor túlterhelt lehet.',
-            caption: 'Kérjük, próbálja újra rövid várakozás után.'
-        },
-        '500': {
-            message: 'A szerver hibát észlelt a kérés feldolgozása során.',
-            caption: 'Kérjük, próbálja újra rövid várakozás után, és lépjen velünk kapcsolatba, ha a probléma továbbra is fennáll.'
-        },
-        '400': {
-            message: 'A kérés érvénytelennek tűnik.',
-            caption: 'Ellenőrizze a kérését, majd próbálja újra.'
-        }
-    },
-
     page: {},
 
     messages: {
@@ -199,9 +180,12 @@ export default {
         description: 'A personák olyan AI asszisztensek, amelyeket konfigurálhatunk a kívánt képességek és viselkedés beállításával. A konfiguráció különlegesen kidolgozott rendszerüzenetek használatával érhető el. A rendszerüzeneteket az AI asszisztensnek a felhasználó üzenete előtt kell elküldeni.',
         actions: {
             add: {
-                label: 'Új persona hozzáadása',
-                caption: 'Adj hozzá egy új personát, és határozd meg a kívánt képességeket és viselkedést.',
-                tooltip: 'Új persona hozzáadása'
+                tooltip: 'Hozzáadás'
+            },
+            create: {
+                label: 'Új persona létrehozása',
+                caption: 'Hozz létre egy új personát, és határozd meg a kívánt képességeket és viselkedést.',
+                tooltip: 'Új persona létrehozása'
             },
             import: {
                 label: 'Personák importálása',
@@ -213,11 +197,45 @@ export default {
             },
             delete: {
                 tooltip: 'Törlés'
+            },
+            save: {
+                tooltip: 'Mentés'
             }
-        },
+       },
         tableHeading: {
             name: 'Név',
             prompt: 'Rendszerüzenet'
+        }
+    },
+
+    apiErrors: {
+        '401': {
+            message: 'Érvénytelen hitelesítés.',
+            caption: 'Győződjön meg arról, hogy az OpenAI API kulcsa helyes.'
+        },
+        '429': {
+            message: 'A kérési arány korlátja elérte, vagy a motor túlterhelt lehet.',
+            caption: 'Kérjük, próbálja újra rövid várakozás után.'
+        },
+        '500': {
+            message: 'A szerver hibát észlelt a kérés feldolgozása során.',
+            caption: 'Kérjük, próbálja újra rövid várakozás után, és lépjen velünk kapcsolatba, ha a probléma továbbra is fennáll.'
+        },
+        '400': {
+            message: 'A kérés érvénytelennek tűnik.',
+            caption: 'Ellenőrizze a kérését, majd próbálja újra.'
+        },
+        '503' : {
+            message: 'A szerver jelenleg nem elérhető.',
+            caption: 'Kérjük, próbálja újra rövid várakozás után.'
+        },
+        'Load': {
+            message: 'Nem sikerült betölteni az erőforrást: A kérelem időtúllépése történt.',
+            caption: 'Kérjük, próbálja újra rövid várakozás után.'
+        },
+        undefined: {
+            message: 'Ismeretlen hiba történt.',
+            caption: 'Kérjük, próbálja újra rövid várakozás után.'
         }
     }
 }

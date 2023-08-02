@@ -14,10 +14,10 @@ export default {
     name: 'OpenAI',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, conversationId, messages, history, userInput, systemMessage, isCreateImageSelected } = storeToRefs(teamsStore);
+        const { loading, conversationId, messages, history, userInput, personas, isCreateImageSelected } = storeToRefs(teamsStore);
 
         const settingsStore = useSettingsStore();
-        const { conversationMode } = storeToRefs(settingsStore);
+        const { conversationMode, persona } = storeToRefs(settingsStore);
 
         // Creates an array of OpenAI API message objects from the current conversation.
         // Filters out potentially undefined items and items containing images, as these cause OpenAI API errors.
@@ -27,7 +27,7 @@ export default {
                     return { "role": message.role, "content": message.content };
                 }
             }).filter(item => item !== undefined)
-            
+
             return msg;
         }
 
@@ -85,10 +85,15 @@ export default {
             let conversation = (!conversationMode.value) ? [{ "role": "user", "content": question }] : getMessages(conversationId.value);
 
             try {
+                // Add default persona prompt to system message
+                let systemMessages = [{ "role": "system", "content": personas.value[0].prompt }];
+                // Add user selected persona prompt to system message
+                if (persona.value.id != 0) systemMessages.push({ "role": "system", "content": persona.value.prompt });
+
                 let response = isCreateImageSelected.value
                     ? await openAI.createImageCompletion(question)
                     : await openAI.createChatCompletion([
-                        { "role": "system", "content": systemMessage.value },
+                        ...systemMessages,
                         ...conversation
                     ]);
 

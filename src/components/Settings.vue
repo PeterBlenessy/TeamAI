@@ -95,6 +95,25 @@
                     </q-item-section>
                 </q-item>
 
+                <q-separator v-if="appMode=='advanced'"/>
+
+                <q-item v-if="appMode=='advanced'">
+                    <q-item-section avatar>
+                        <q-icon name="mdi-card-account-details-outline" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>{{ t('settings.persona.label') }}</q-item-label>
+                        <q-item-label caption>{{ $t('settings.persona.caption') }}</q-item-label>
+                        <q-select dense options-dense 
+                            v-model="persona" :options="personas"
+                            :option-label="(item) => item === null ? 'Null value' : item.name" />
+
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ persona.prompt }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
                 <q-separator />
 
                 <q-item>
@@ -191,6 +210,7 @@
 <script>
 import { computed, ref, watch } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
+import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
@@ -213,8 +233,11 @@ export default {
             maxTokens,
             temperature,
             choices,
-            imageSize            
+            imageSize,
+            persona        
         } = storeToRefs(settingsStore);
+        const teamsStore = useTeamsStore();
+        const { personas } = teamsStore;
 
 
         const imageSizeOptions = ref(['256x256', '512x512', '1024x1024']);
@@ -241,6 +264,9 @@ export default {
             imageSize,
             imageSizeValue,
             imageSizeOptions,
+            persona,
+            personas,
+
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
     },

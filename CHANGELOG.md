@@ -26,8 +26,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Manual check for updates is not working as expected.
 - Page scrolls to end when message is deleted.
 - Second row of images loads after filteredMessages triggers a scroll-to-end-of-page.
+- Toggle text in input box based on selection of text/image generation. [Ask your question. | Describe the imaeg to generate.]
+- Occasional error when loading images: ResizeObserver loop completed with undelivered notifications. 
 
 ## v0.13.x - [UNRELEASED]
+
+## v0.14.0 - 2023-08-02
+- Fixed issue where Awesome ChatGPT promts could not be shown if all previous personas were deleted.
+- Fixed issue where default store values were not restored if missing in local storage.
+- Added default persona with default system message. It is always included, and not editable or deletable.
+- Added support for creating and editing personas. Available in advanced mode.
+- Added persona selection in settings dialog. Available in advanced mode. Displays description as tooltip.
+- Added translations for missing API error messages.
 
 ## v0.13.0 - 2023-07-31
 - Added image generation parameters to settings dialog.
