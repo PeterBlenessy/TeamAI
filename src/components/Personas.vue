@@ -1,5 +1,5 @@
 <template>
-    <q-card style="min-width: 60%; max-width: 70%">
+    <q-card style="min-width: 60%; max-width: 70%;">
         <q-card-section>
             <div class="text-h6">
                 {{ t('personas.title') }}
@@ -30,85 +30,89 @@
                         <q-item-label caption>{{ t('personas.actions.import.caption') }}</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-btn dense flat :color="iconColor" 
+                        <q-btn dense flat :color="awesomePrompts.length == 0 ? iconColor : 'primary'"
                             @click="awesomePrompts.length == 0 ? fetchAwesomePrompts() : deleteAwesomePrompts()"
-                            :icon="awesomePrompts.length == 0 ? 'mdi-account-arrow-down-outline':'mdi-account-cancel-outline'">
+                            :icon="awesomePrompts.length == 0 ? 'mdi-account-arrow-down-outline' : 'mdi-account-cancel-outline'">
 
                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                {{ awesomePrompts.length == 0 ? t('personas.actions.import.tooltip') : t('personas.actions.delete.tooltip') }}
-                            </q-tooltip>    
+                                {{ awesomePrompts.length == 0 ? t('personas.actions.import.tooltip') :
+                                    t('personas.actions.delete.tooltip') }}
+                            </q-tooltip>
                         </q-btn>
                     </q-item-section>
                 </q-item>
             </q-list>
         </q-card-section>
 
-        <!-- Show the table if there is something to show -->
-        <div v-if="personas.length != 0 || awesomePrompts.length != 0">
+        <div v-if="awesomePrompts.length != 0">
+
             <q-separator inset />
 
             <q-card-section>
-                <q-markup-table wrap-cells>
-                    <thead>
-                        <tr class="text-left">
-                            <th>{{ t('personas.tableHeading.name') }}</th>
-                            <th colspan="2">{{ t('personas.tableHeading.prompt') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="persona in personas" :key="persona.id">
-                            <td width="25%">
-                                <q-input borderless dense autogrow style="width: 100%;"
-                                    :input-style="persona.readonly ? { cursor: 'default' } : { cursor: 'text' }"
-                                    :readonly="persona.readonly" :focus="!persona.readonly" v-model="persona.name" />
-                            </td>
-                            <td colspan="2">
-                                <q-input borderless dense autogrow style="width: 100%;"
-                                    :input-style="persona.readonly ? { cursor: 'default' } : { cursor: 'text' }"
-                                    :readonly="persona.readonly" :focus="!persona.readonly" v-model="persona.prompt" >
 
-                                    <template v-slot:append>
-                                        <q-btn size="sm" flat dense 
-                                            :color="persona.readonly ? iconColor : 'primary'"
-                                            :icon="persona.readonly ? 'mdi-pencil-outline' : 'mdi-content-save-outline'"
-                                            :disabled="persona.id==0"
-                                            @click="persona.readonly = !persona.readonly">
+                <q-table wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
+                    :columns="columns" :rows="awesomePrompts" row-key="id">
 
-                                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                                {{ persona.readonly ? $t('personas.actions.edit.tooltip') :
-                                                    $t('personas.actions.save.tooltip')
-                                                }}
-                                            </q-tooltip>
-                                        </q-btn>
-                                        <q-btn size="sm" dense flat icon="mdi-delete-outline" :color="iconColor"
-                                            :disabled="persona.id==0"
-                                            @click="deletePersona(persona)">
-                                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                                {{ $t('personas.actions.delete.tooltip') }}
-                                            </q-tooltip>
-                                        </q-btn>
+                    <template v-slot:body-cell-prompt="props">
+                        <q-td :props="props">
+                            <tr>
+                                <td>{{ props.row.prompt }}</td>
+                                <td>
+                                    <q-btn dense flat icon="mdi-account-plus-outline" :color="iconColor"
+                                        @click="addAwesomePrompt(props.row)">
+                                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                            {{ $t('personas.actions.add.tooltip') }}
+                                        </q-tooltip>
+                                    </q-btn>
+                                </td>
+                            </tr>
+                        </q-td>
+                    </template>
 
-                                    </template>
-                                </q-input>
+                </q-table>
 
-                            </td>
-                        </tr>
-                        <tr v-for="persona in awesomePrompts" :key="awesomePrompts.id">
-                            <td>{{ persona.name }}</td>
-                            <td>{{ persona.prompt }}</td>
-                            <td>
-                                <q-btn dense flat icon="mdi-account-plus-outline" :color="iconColor"
-                                    @click="addAwesomePrompt(persona)">
-                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                                {{ $t('personas.actions.add.tooltip') }}
-                                            </q-tooltip>
-                                        </q-btn>
-                            </td>
-                        </tr>
-                    </tbody>
-                </q-markup-table>
             </q-card-section>
         </div>
+
+        <!-- Show the table if there is something to show -->
+        <q-separator inset />
+
+        <q-card-section>
+
+            <q-table wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
+                :columns="columns" :rows="personas" row-key="id">
+
+                <template v-slot:body-cell-prompt="props">
+                    <q-td :props="props">
+                        <q-input borderless dense autogrow style="width: 100%;"
+                            :input-style="props.row.readonly ? { cursor: 'default' } : { cursor: 'text' }"
+                            :readonly="props.row.readonly" :focus="!props.row.readonly" v-model="props.row.prompt">
+
+                            <template v-slot:append>
+                                <q-btn size="sm" flat dense :color="props.row.readonly ? iconColor : 'primary'"
+                                    :icon="props.row.readonly ? 'mdi-pencil-outline' : 'mdi-content-save-outline'"
+                                    :disabled="props.row.id == 0" @click="props.row.readonly = !props.row.readonly">
+
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ props.row.readonly ? $t('personas.actions.edit.tooltip') :
+                                            $t('personas.actions.save.tooltip')
+                                        }}
+                                    </q-tooltip>
+                                </q-btn>
+                                <q-btn size="sm" dense flat icon="mdi-delete-outline" :color="iconColor"
+                                    :disabled="props.row.id == 0" @click="deletePersona(props.row)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ $t('personas.actions.delete.tooltip') }}
+                                    </q-tooltip>
+                                </q-btn>
+
+                            </template>
+                        </q-input>
+                    </q-td>
+                </template>
+
+            </q-table>
+        </q-card-section>
     </q-card>
 </template>
 
@@ -130,19 +134,25 @@ export default {
         const { personas } = storeToRefs(teamsStore);
         const awesomePrompts = ref([]);
 
+        const columns = [
+            { name: 'name', align: 'left', label: t('personas.tableHeading.name'), field: 'name', sortable: true, style: 'width: 150px' },
+            { name: 'prompt', align: 'left', label: t('personas.tableHeading.prompt'), field: 'prompt', sortable: true }
+        ];
+
         const fetchAwesomePrompts = () => {
             fetch("https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv")
                 .then(response => response.text())
                 .then(data => {
                     awesomePrompts.value = data.toString()
-                        .split("\n")
+                    .trim()    
+                    .split("\n")
                         .map((row, index) => {
                             let id = Date.now().toString() + index.toString();
                             let readonly = true;
                             let [name, prompt] = row.split('","').map(item => item.trim().replace(/^"|"$/g, ''));
                             return { id, name, prompt, readonly };
                         });
-                    awesomePrompts.value.shift();
+                        awesomePrompts.value.shift();
                 })
                 .catch(error => console.error(error))
                 .finally(() => console.log("fetchPersonas() done"));
@@ -168,6 +178,8 @@ export default {
             personas,
             awesomePrompts,
 
+            columns,
+
             addAwesomePrompt,
             createNewPersona,
             deleteAwesomePrompts: () => awesomePrompts.value = [],
@@ -180,4 +192,44 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.my-sticky-header-table {
+    /* height or max-height is important */
+    height: calc(50vh);
+}
+
+.my-sticky-header-table .q-table__top,
+.my-sticky-header-table .q-table__bottom,
+.my-sticky-header-table thead tr:first-child th {
+    /* bg color is important for th; just specify one */
+    background-color: #181919;
+    background-color: #c5c5c5;
+}
+
+.my-sticky-header-table thead tr th {
+    position: sticky;
+    z-index: 1;
+    text-transform: uppercase;
+}
+
+.q-table--dark .q-table__top,
+.q-table--dark .q-table__bottom,
+.q-table--dark thead tr:first-child th {
+    /* bg color is important for th; just specify one */
+    background-color: #181919;
+}
+
+.my-sticky-header-table thead tr:first-child th {
+    top: 0;
+}
+
+.my-sticky-header-table.q-table--loading thead tr:last-child th {
+    /* height of all previous header rows */
+    top: 48px;
+}
+
+.my-sticky-header-table tbody {
+    /* height of all previous header rows */
+    scroll-margin-top: 48px;
+}
+</style>

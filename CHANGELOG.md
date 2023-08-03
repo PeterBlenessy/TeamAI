@@ -28,8 +28,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Second row of images loads after filteredMessages triggers a scroll-to-end-of-page.
 - Toggle text in input box based on selection of text/image generation. [Ask your question. | Describe the imaeg to generate.]
 - Occasional error when loading images: ResizeObserver loop completed with undelivered notifications. 
+- Loading personas dialog is slow.
+- Adding a new persona ends up at the end of the personas list with no indication of it. Really bad UX.
+- Personas list shoule be possible search in.
 
-## v0.13.x - [UNRELEASED]
+## v0.14.x - [UNRELEASED]
+
+## v0.14.1 - 2023-08-03
+- Changed save button color to improve UX when editing conversation title.
+- Improved load speed of personas dialog from about 7s to less than 1s.
+- Added support for sorting the personas table, and also the awesome prompts table.
+- Fixed issue where import of awesome prompts had an empty last element.
+- Added indication that it is possible to remove awsesome prompts.
 
 ## v0.14.0 - 2023-08-02
 - Fixed issue where Awesome ChatGPT promts could not be shown if all previous personas were deleted.
