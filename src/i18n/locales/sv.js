@@ -128,7 +128,7 @@ export default {
         },
         privacy: {
             title: 'Integritet',
-            description: 'Alla inställningar som användaren gör och all information som anges lagras lokalt i applikationens interna databas. Applikationen använder inte cookies. Applikationen använder inte några spårningstjänster. Applikationen använder OpenAI API:er. Läs mer om det här: https://platform.openai.com/docs/api-reference.'
+            description: 'Alla inställningar som användaren gör och all information som anges lagras lokalt i applikationens interna databas. Applikationen använder inte cookies. Applikationen använder inte några spårningstjänster. Applikationen använder OpenAI API:er. Lär dig mer om OpenAI API här: https://platform.openai.com/docs/api-reference, och om dess datahanteringspolicy här: https://openai.com/policies/api-data-usage-policies'
         },
         license: {
             title: 'Licens',
@@ -201,6 +201,9 @@ export default {
             },
             save: {
                 tooltip: 'Spara'
+            },
+            search: {
+                placeholder: 'Sök...'
             }
         },
         tableHeading: {

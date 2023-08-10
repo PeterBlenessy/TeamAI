@@ -126,7 +126,7 @@ export default {
         },
         privacy: {
             title: 'Adatvédelem',
-            description: 'Az alkalmazás nem gyűjt személyes adatokat. Az alkalmazás nem használ cookie-kat. Az alkalmazás nem használ harmadik fél szolgáltatásait. Az alkalmazás nem használ analitikai szolgáltatásokat. Az alkalmazás nem használ követési szolgáltatásokat.'
+            description: 'Az alkalmazás nem gyűjt személyes adatokat. Az alkalmazás nem használ cookie-kat. Az alkalmazás nem használ harmadik fél szolgáltatásait. Az alkalmazás nem használ analitikai szolgáltatásokat. Az alkalmazás nem használ követési szolgáltatásokat. Tudjon meg többet az OpenAI API-ról itt: https://platform.openai.com/docs/api-reference, és annak adatfelhasználási irányelveiről itt: https://openai.com/policies/api-data-usage-policies.'
         },
         license: {
             title: 'Licenc',
@@ -200,6 +200,9 @@ export default {
             },
             save: {
                 tooltip: 'Mentés'
+            },
+            search: {
+                placeholder: 'Keresés...'
             }
        },
         tableHeading: {

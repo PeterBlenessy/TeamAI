@@ -51,21 +51,30 @@
             <q-card-section>
 
                 <q-table wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
-                    :columns="columns" :rows="awesomePrompts" row-key="id">
+                    :columns="columns" :rows="awesomePrompts" row-key="id" :filter="awesomePromptsfilter"
+                    title="Awesome ChatGPT prompts">
+
+                    <template v-slot:top-right>
+                        <q-input filled dense debounce="300" v-model="awesomePromptsfilter" :placeholder="t('personas.actions.search.placeholder')">
+                            <template v-slot:append>
+                                <q-icon name="search" />
+                            </template>
+                        </q-input>
+                    </template>
 
                     <template v-slot:body-cell-prompt="props">
                         <q-td :props="props">
-                            <tr>
-                                <td>{{ props.row.prompt }}</td>
-                                <td>
-                                    <q-btn dense flat icon="mdi-account-plus-outline" :color="iconColor"
+                            <div class="row">
+                                <div class="col">{{ props.row.prompt }}</div>
+                                <div class="col-auto">
+                                    <q-btn size="sm" dense flat icon="mdi-account-plus-outline" :color="iconColor"
                                         @click="addAwesomePrompt(props.row)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('personas.actions.add.tooltip') }}
                                         </q-tooltip>
                                     </q-btn>
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                         </q-td>
                     </template>
 
@@ -80,7 +89,15 @@
         <q-card-section>
 
             <q-table wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
-                :columns="columns" :rows="personas" row-key="id">
+                :columns="columns" :rows="personas" row-key="id" :filter="personasFilter" :title="t('personas.title')">
+
+                <template v-slot:top-right>
+                    <q-input filled dense debounce="300" v-model="personasFilter" :placeholder="t('personas.actions.search.placeholder')">
+                        <template v-slot:append>
+                            <q-icon name="search" />
+                        </template>
+                    </q-input>
+                </template>
 
                 <template v-slot:body-cell-prompt="props">
                     <q-td :props="props">
@@ -144,15 +161,15 @@ export default {
                 .then(response => response.text())
                 .then(data => {
                     awesomePrompts.value = data.toString()
-                    .trim()    
-                    .split("\n")
+                        .trim()
+                        .split("\n")
                         .map((row, index) => {
                             let id = Date.now().toString() + index.toString();
                             let readonly = true;
                             let [name, prompt] = row.split('","').map(item => item.trim().replace(/^"|"$/g, ''));
                             return { id, name, prompt, readonly };
                         });
-                        awesomePrompts.value.shift();
+                    awesomePrompts.value.shift();
                 })
                 .catch(error => console.error(error))
                 .finally(() => console.log("fetchPersonas() done"));
@@ -179,6 +196,8 @@ export default {
             awesomePrompts,
 
             columns,
+            awesomePromptsfilter: ref(''),
+            personasFilter: ref(''),
 
             addAwesomePrompt,
             createNewPersona,

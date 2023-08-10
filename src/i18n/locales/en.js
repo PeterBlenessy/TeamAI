@@ -133,7 +133,7 @@ export default {
         },
         privacy: {
             title: 'Privacy',
-            description: 'All user settings and provided information are stored locally in the application’s internal database. The application does not use cookies. The application does not use any tracking services. The application uses OpenAI APIs. Learn more about it here: https://platform.openai.com/docs/api-reference.'
+            description: 'All user settings and provided information are stored locally in the application’s internal database. The application does not use cookies. The application does not use any tracking services. The application uses OpenAI APIs. Learn more about the OpenAI API here: https://platform.openai.com/docs/api-reference, and about it\'s data usage policies here: https://openai.com/policies/api-data-usage-policies.'
         },
         license: {
             title: 'License',
@@ -207,6 +207,9 @@ export default {
             },
             delete: {
                 tooltip: 'Delete'
+            },
+            search: {
+                placeholder: 'Search...'
             }
         },
         tableHeading: {
