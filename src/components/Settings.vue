@@ -49,7 +49,8 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon :name="chatDirection == 'up' ? 'mdi-transfer-up' : 'mdi-transfer-down'" :color="iconColor" />
+                        <q-icon :name="chatDirection == 'up' ? 'mdi-transfer-up' : 'mdi-transfer-down'"
+                            :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ $t('settings.chatDirection.label') }}</q-item-label>
@@ -95,18 +96,18 @@
                     </q-item-section>
                 </q-item>
 
-                <q-separator v-if="appMode=='advanced'"/>
+                <q-separator v-if="appMode == 'advanced'" />
 
-                <q-item v-if="appMode=='advanced'">
+                <q-item v-if="appMode == 'advanced'">
                     <q-item-section avatar>
                         <q-icon name="mdi-card-account-details-outline" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ t('settings.persona.label') }}</q-item-label>
                         <q-item-label caption>{{ $t('settings.persona.caption') }}</q-item-label>
-                        <q-select dense options-dense 
-                            v-model="persona" :options="personas"
-                            :option-label="(item) => item === null ? 'Null value' : item.name" />
+                        <q-select dense options-dense use-input input-debounce="0"
+                            :option-label="(item) => item === null ? 'Null value' : item.name" v-model="persona"
+                            :options="personaOptions" @filter="personaFilterFn" />
 
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ persona.prompt }}
@@ -194,8 +195,8 @@
                     </q-item-section>
                     <q-item-section>
                         <q-item-label caption>{{ t('settings.openAI.size.label') }} ({{ imageSize }})</q-item-label>
-                        <q-slider :model-value="imageSizeValue" @update:model-value="val => { imageSizeValue = val }" snap :min="0" :max="2" :step="1"
-                            :markers="1" label :label-value="imageSize" />
+                        <q-slider :model-value="imageSizeValue" @update:model-value="val => { imageSizeValue = val }" snap
+                            :min="0" :max="2" :step="1" :markers="1" label :label-value="imageSize" />
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ t('settings.openAI.size.tooltip') }}
                         </q-tooltip>
@@ -234,11 +235,26 @@ export default {
             temperature,
             choices,
             imageSize,
-            persona        
+            persona
         } = storeToRefs(settingsStore);
         const teamsStore = useTeamsStore();
         const { personas } = teamsStore;
+        const personaOptions = ref(personas);
 
+        // Filters personas based on input characters in the select box
+        function personaFilterFn(val, update) {
+            if (val === '') {
+                update(() => {
+                    personaOptions.value = personas;
+                });
+                return;
+            }
+
+            update(() => {
+                const needle = val.toLowerCase();
+                personaOptions.value = personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
+            });
+        }
 
         const imageSizeOptions = ref(['256x256', '512x512', '1024x1024']);
         const imageSizeValue = ref(imageSizeOptions.value.indexOf(imageSize.value));
@@ -265,7 +281,8 @@ export default {
             imageSizeValue,
             imageSizeOptions,
             persona,
-            personas,
+            personaOptions,
+            personaFilterFn,
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

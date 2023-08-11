@@ -28,10 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Second row of images loads after filteredMessages triggers a scroll-to-end-of-page.
 - Toggle text in input box based on selection of text/image generation. [Ask your question. | Describe the imaeg to generate.]
 - Occasional error when loading images: ResizeObserver loop completed with undelivered notifications. 
-- Adding a new persona ends up at the end of the personas list with no indication of it. Really bad UX.
-- Add filtering to personas selection in settings.
+- Check table header and footer background color in light mode.
 
 ## v0.14.x - [UNRELEASED]
+
+## v0.14.3 - 2023-08-11
+- Added filtering to personas selection in settings.
+- Changed UX when adding new persona. Now, it is first edited, and added to the table only when saved.
 
 ## v0.14.2 - 2023-08-10
 - Updated privacy information to link to OpenAI API data usage policies.

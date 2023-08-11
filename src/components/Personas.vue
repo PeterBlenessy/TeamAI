@@ -11,18 +11,34 @@
 
         <q-card-section>
             <q-list>
-                <q-item>
-                    <q-item-section>
-                        <q-item-label>{{ t('personas.actions.create.label') }}</q-item-label>
-                        <q-item-label caption>{{ t('personas.actions.create.caption') }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                        <q-btn dense flat icon="mdi-account-plus-outline" :color="iconColor" @click="createNewPersona()">
-                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                {{ t('personas.actions.create.tooltip') }}
-                            </q-tooltip>
-                        </q-btn>
-                    </q-item-section>
+                <q-item class="no-padding">
+                    <q-expansion-item style="width: 100%;" expand-icon="mdi-account-plus-outline"
+                        expanded-icon="mdi-account-plus-outline" :label="t('personas.actions.create.label')"
+                        :caption="t('personas.actions.create.caption')">
+                        <q-card>
+                            <q-card-section>
+                                <q-input filled dense autogrow style="width: 100%;" v-model="newPersona.name"
+                                    :label="t('personas.tableHeading.name')" />
+                                <q-space />
+                                <q-input filled dense autogrow style="width: 100%;" v-model="newPersona.prompt"
+                                    :label="t('personas.tableHeading.prompt')">
+
+                                    <template v-slot:append>
+                                        <q-btn size="sm" flat dense :color="newPersona.readonly ? iconColor : 'primary'"
+                                            icon="mdi-content-save-outline"
+                                            @click="saveNewPersona()">
+
+                                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                                {{ $t('personas.actions.save.tooltip') }}
+                                            </q-tooltip>
+                                        </q-btn>
+
+                                    </template>
+
+                                </q-input>
+                            </q-card-section>
+                        </q-card>
+                    </q-expansion-item>
                 </q-item>
                 <q-item>
                     <q-item-section>
@@ -44,18 +60,20 @@
             </q-list>
         </q-card-section>
 
+        <!-- Show the table if there is something to show -->
         <div v-if="awesomePrompts.length != 0">
 
             <q-separator inset />
 
             <q-card-section>
 
-                <q-table wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
+                <q-table dense wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
                     :columns="columns" :rows="awesomePrompts" row-key="id" :filter="awesomePromptsfilter"
                     title="Awesome ChatGPT prompts">
 
                     <template v-slot:top-right>
-                        <q-input filled dense debounce="300" v-model="awesomePromptsfilter" :placeholder="t('personas.actions.search.placeholder')">
+                        <q-input filled dense debounce="300" v-model="awesomePromptsfilter"
+                            :placeholder="t('personas.actions.search.placeholder')">
                             <template v-slot:append>
                                 <q-icon name="search" />
                             </template>
@@ -83,32 +101,41 @@
             </q-card-section>
         </div>
 
-        <!-- Show the table if there is something to show -->
         <q-separator inset />
 
         <q-card-section>
 
-            <q-table wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
+            <q-table dense wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
                 :columns="columns" :rows="personas" row-key="id" :filter="personasFilter" :title="t('personas.title')">
 
                 <template v-slot:top-right>
-                    <q-input filled dense debounce="300" v-model="personasFilter" :placeholder="t('personas.actions.search.placeholder')">
+                    <q-input filled dense debounce="300" v-model="personasFilter"
+                        :label="t('personas.actions.search.placeholder')">
                         <template v-slot:append>
                             <q-icon name="search" />
                         </template>
                     </q-input>
                 </template>
 
+                <template v-slot:body-cell-name="props">
+                    <q-td :props="props">
+                        <q-input borderless :filled="!props.row.readonly" dense autogrow style="width: 100%;"
+                            :input-style="props.row.readonly ? { cursor: 'default' } : { cursor: 'text' }"
+                            :readonly="props.row.readonly" :focus="!props.row.readonly" v-model="props.row.name" />
+
+                    </q-td>
+                </template>
+
                 <template v-slot:body-cell-prompt="props">
                     <q-td :props="props">
-                        <q-input borderless dense autogrow style="width: 100%;"
+                        <q-input borderless :filled="!props.row.readonly" dense autogrow style="width: 100%;"
                             :input-style="props.row.readonly ? { cursor: 'default' } : { cursor: 'text' }"
                             :readonly="props.row.readonly" :focus="!props.row.readonly" v-model="props.row.prompt">
 
                             <template v-slot:append>
                                 <q-btn size="sm" flat dense :color="props.row.readonly ? iconColor : 'primary'"
                                     :icon="props.row.readonly ? 'mdi-pencil-outline' : 'mdi-content-save-outline'"
-                                    :disabled="props.row.id == 0" @click="props.row.readonly = !props.row.readonly">
+                                    :disabled="props.row.id == 0" @click="savePersona(props.row)">
 
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                         {{ props.row.readonly ? $t('personas.actions.edit.tooltip') :
@@ -180,15 +207,11 @@ export default {
             personas.value.push(persona);
         }
 
-        function createNewPersona() {
-            let persona = {
-                id: Date.now().toString(),
-                name: t('personas.actions.create.name'),
-                prompt: t('personas.actions.create.prompt'),
-                readonly: false
-            };
-            personas.value.push(persona);
-        }
+        const newPersona = {
+            name: t('personas.actions.create.name'),
+            prompt: t('personas.actions.create.prompt'),
+            expanded: true
+        };
 
         return {
             t,
@@ -200,7 +223,17 @@ export default {
             personasFilter: ref(''),
 
             addAwesomePrompt,
-            createNewPersona,
+            newPersona,
+            saveNewPersona: () => {
+                personas.value.push({
+                    id: Date.now().toString(),
+                    name: newPersona.name,
+                    prompt: newPersona.prompt,
+                    readonly: true
+                });
+                newPersona.expanded = false;
+            },
+            savePersona: (persona) => persona.readonly = !persona.readonly,
             deleteAwesomePrompts: () => awesomePrompts.value = [],
             deletePersona: (persona) => personas.value = personas.value.filter(item => item.id != persona.id),
             fetchAwesomePrompts,
