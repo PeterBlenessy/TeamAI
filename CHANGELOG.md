@@ -32,6 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.14.x - [UNRELEASED]
 
+## v0.14.4 - 2023-08-13
+- Fixed issue where persona dialog with many peronas took several seconds to load. It is now instant.
+
 ## v0.14.3 - 2023-08-11
 - Added filtering to personas selection in settings.
 - Changed UX when adding new persona. Now, it is first edited, and added to the table only when saved.

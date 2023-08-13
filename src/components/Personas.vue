@@ -25,8 +25,7 @@
 
                                     <template v-slot:append>
                                         <q-btn size="sm" flat dense :color="newPersona.readonly ? iconColor : 'primary'"
-                                            icon="mdi-content-save-outline"
-                                            @click="saveNewPersona()">
+                                            icon="mdi-content-save-outline" @click="saveNewPersona()">
 
                                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                                 {{ $t('personas.actions.save.tooltip') }}
@@ -119,39 +118,66 @@
 
                 <template v-slot:body-cell-name="props">
                     <q-td :props="props">
-                        <q-input borderless :filled="!props.row.readonly" dense autogrow style="width: 100%;"
-                            :input-style="props.row.readonly ? { cursor: 'default' } : { cursor: 'text' }"
-                            :readonly="props.row.readonly" :focus="!props.row.readonly" v-model="props.row.name" />
-
+                        <div v-if="!props.row.readonly">
+                            <q-input borderless filled dense autogrow style="width: 100%;" input-style="{ cursor: 'text' }"
+                                focus v-model="props.row.name" />
+                        </div>
+                        <div v-else>
+                            {{ props.row.name }}
+                        </div>
                     </q-td>
                 </template>
 
                 <template v-slot:body-cell-prompt="props">
                     <q-td :props="props">
-                        <q-input borderless :filled="!props.row.readonly" dense autogrow style="width: 100%;"
-                            :input-style="props.row.readonly ? { cursor: 'default' } : { cursor: 'text' }"
-                            :readonly="props.row.readonly" :focus="!props.row.readonly" v-model="props.row.prompt">
 
-                            <template v-slot:append>
-                                <q-btn size="sm" flat dense :color="props.row.readonly ? iconColor : 'primary'"
-                                    :icon="props.row.readonly ? 'mdi-pencil-outline' : 'mdi-content-save-outline'"
-                                    :disabled="props.row.id == 0" @click="savePersona(props.row)">
+                        <div v-if="!props.row.readonly">
+                            <div class="row">
+                                <div class="col">
+                                    <q-input borderless filled dense autogrow style="width: 100%;"
+                                        input-style="{ cursor: 'text' }" focus v-model="props.row.prompt">
 
-                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                        {{ props.row.readonly ? $t('personas.actions.edit.tooltip') :
-                                            $t('personas.actions.save.tooltip')
-                                        }}
-                                    </q-tooltip>
-                                </q-btn>
-                                <q-btn size="sm" dense flat icon="mdi-delete-outline" :color="iconColor"
-                                    :disabled="props.row.id == 0" @click="deletePersona(props.row)">
-                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                        {{ $t('personas.actions.delete.tooltip') }}
-                                    </q-tooltip>
-                                </q-btn>
-
-                            </template>
-                        </q-input>
+                                        <template v-slot:append>
+                                            <q-btn size="sm" flat dense color="primary" icon="mdi-content-save-outline"
+                                                :disabled="props.row.id == 0" @click="savePersona(props.row)">
+                                                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                                    {{ props.row.readonly ? $t('personas.actions.edit.tooltip') :
+                                                        $t('personas.actions.save.tooltip')
+                                                    }}
+                                                </q-tooltip>
+                                            </q-btn>
+                                        </template>
+                                    </q-input>
+                                </div>
+                                <div class="col-auto">
+                                    <q-btn size="sm" dense flat icon="mdi-delete-outline" :color="iconColor"
+                                        :disabled="props.row.id == 0" @click="deletePersona(props.row)">
+                                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                            {{ $t('personas.actions.delete.tooltip') }}
+                                        </q-tooltip>
+                                    </q-btn>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="row">
+                                <div class="col">{{ props.row.prompt }}</div>
+                                <div class="col-auto">
+                                    <q-btn size="sm" dense flat icon="mdi-pencil-outline" :color="iconColor"
+                                        :disabled="props.row.id == 0" @click="props.row.readonly = false">
+                                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                            {{ $t('personas.actions.add.tooltip') }}
+                                        </q-tooltip>
+                                    </q-btn>
+                                    <q-btn size="sm" dense flat icon="mdi-delete-outline" :color="iconColor"
+                                        :disabled="props.row.id == 0" @click="deletePersona(props.row)">
+                                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                            {{ $t('personas.actions.delete.tooltip') }}
+                                        </q-tooltip>
+                                    </q-btn>
+                                </div>
+                            </div>
+                        </div>
                     </q-td>
                 </template>
 
