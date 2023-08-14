@@ -30,7 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Occasional error when loading images: ResizeObserver loop completed with undelivered notifications. 
 - Check table header and footer background color in light mode.
 
-## v0.14.x - [UNRELEASED]
+## v0.15.x - [UNRELEASED]
+
+## v0.15.0 - 2023-08-14
+- Added support for persisting and displaying API parameters, usage statistics, conversation mode, and system message(s) with each message.
+- Fixed issue where image size was hard coded and settings did not have any effect.
 
 ## v0.14.4 - 2023-08-13
 - Fixed issue where persona dialog with many peronas took several seconds to load. It is now instant.

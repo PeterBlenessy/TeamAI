@@ -92,7 +92,16 @@ export default {
             copy: 'Kopiera',
             delete: 'Ta bort',
             share: 'Dela',
+            info: 'Info'
         },
+        info: {
+            title: 'Meddelandeinfo',
+            apiParameters: 'API-parametrar',
+            conversationMode: 'Konversationsläge',
+            systemMessages: 'Systemmeddelanden',
+            timestamp: 'Tidsstämpel',
+            usage: 'Token användning'
+        }
     },
 
     info: {

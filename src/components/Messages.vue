@@ -2,11 +2,14 @@
     <div v-for="message in filteredMessages" :key="message.timestamp" scroll>
         <q-card flat square :class="'message-card ' + getBgColor(message.role)">
             <q-item top dense>
+
+                <!-- Message avatar -->
                 <q-item-section avatar top>
                     <q-icon rounded size="md" :name="message.role == 'user' ? 'account_box' : 'computer'"
                         :color="iconColor" />
                 </q-item-section>
 
+                <!-- Message content -->
                 <q-item-section top>
                     <!-- Is 'choices' a key in message object. Images are stored in choices: [{ index, content }] -->
                     <div v-if="hasChoices(message) && message.object == 'image'">
@@ -54,32 +57,48 @@
                     </div>
                 </q-item-section>
 
+                <!-- Message actions -->
                 <q-item-section side top>
                     <div class="q-gutter-xs">
-                        <q-btn v-if="message.object != 'image'" size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
-                            @click="copyMessage(message)">
-                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                {{ $t("messages.tooltip.copy") }}
-                            </q-tooltip>
-                        </q-btn>
+                        <div class="column items-end">
+                            <div class="col">
+                                <q-btn v-if="message.object != 'image'" size="sm" flat dense icon="mdi-content-copy"
+                                    :color="iconColor" @click="copyMessage(message)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ $t("messages.tooltip.copy") }}
+                                    </q-tooltip>
+                                </q-btn>
 
-                        <q-btn v-if="canShare(message)" size="sm" flat dense icon="mdi-export-variant" :color="iconColor"
-                            @click="shareMessage(message)">
-                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                {{ $t("messages.tooltip.share") }}
-                            </q-tooltip>
-                        </q-btn>
+                                <q-btn v-if="canShare(message)" size="sm" flat dense icon="mdi-export-variant"
+                                    :color="iconColor" @click="shareMessage(message)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ $t("messages.tooltip.share") }}
+                                    </q-tooltip>
+                                </q-btn>
 
-                        <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor"
-                            @click="deleteMessage(message.timestamp)">
-                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                {{ $t("messages.tooltip.delete") }}
-                            </q-tooltip>
-                        </q-btn>
+                                <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor"
+                                    @click="deleteMessage(message.timestamp)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ $t("messages.tooltip.delete") }}
+                                    </q-tooltip>
+                                </q-btn>
+                            </div>
+                        </div>
+                        <div class="column items-end">
+                            <div class="col">
+                                <q-btn v-if="message.role != 'user'" size="sm" flat dense icon="mdi-information-outline"
+                                    :color="iconColor" @click="showMessageInfo(message)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ $t("messages.tooltip.info") }}
+                                    </q-tooltip>
+                                </q-btn>
+                            </div>
+                        </div>
                     </div>
                 </q-item-section>
             </q-item>
         </q-card>
+
     </div>
 </template>
 
@@ -92,6 +111,8 @@ import "@quasar/quasar-ui-qmarkdown/dist/index.css";
 import { useQuasar } from "quasar";
 import { computed, ref, watch } from "vue";
 import { scroll } from "quasar";
+import { useI18n } from 'vue-i18n';
+
 export default {
     name: "Messages",
     components: {
@@ -99,6 +120,7 @@ export default {
     },
     setup() {
         const $q = useQuasar();
+        const { t } = useI18n();
         const teamsStore = useTeamsStore();
         const { loading, conversationId, messages } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
@@ -143,7 +165,7 @@ export default {
 
         // Return message content or first item in 'choices' array, if present
         // todo: include all image choices when sharing?
-        const getContent = async (message, type='text') => {
+        const getContent = async (message, type = 'text') => {
             let content = hasChoices(message) ? message.choices[0].content : message.content;
 
             if (type == 'image' || message.object == 'image') {
@@ -159,12 +181,12 @@ export default {
 
         // Copy message content to clipboard. Only for text content.
         // Tauri user agent does not allow images to be copied to the clipboard.
-        const copyMessage = async (message, messageType='text') => {
+        const copyMessage = async (message, messageType = 'text') => {
             const type = (messageType == 'text') ? "text/plain" : "image/png";
             const content = await getContent(message, messageType);
-            const blob = new Blob([ content ], { type });
+            const blob = new Blob([content], { type });
             const data = [new ClipboardItem({ [type]: blob })];
-                
+
             try {
                 await navigator.clipboard.write(data);
             } catch (err) {
@@ -173,25 +195,67 @@ export default {
         };
 
         // Check if message content can be shared via 'navigator.share'
-        const canShare = async (message, type='text') => {
+        const canShare = async (message, type = 'text') => {
             return navigator.canShare(
                 message.object == 'image' || type == 'image'
-                    ? { files: [ await getContent(message, 'image') ]}
+                    ? { files: [await getContent(message, 'image')] }
                     : { text: await getContent(message) }
             );
         };
 
         // Share message content via 'navigator.share', the native sharing mechanism
-        const shareMessage = async (message, type='text') => {
+        const shareMessage = async (message, type = 'text') => {
             try {
                 await navigator.share(
                     message.object == 'image' || type == 'image'
-                        ? { files: [ await getContent(message, 'image') ]}
+                        ? { files: [await getContent(message, 'image')] }
                         : { text: await getContent(message) }
                 );
             } catch (err) {
                 console.log(err);
             }
+        };
+
+        // Show message info
+        const showMessageInfo = (message) => {
+            let info = `
+                <div class="text-subtitle1">${t('messages.info.timestamp')}</div>
+                <div class="text-caption">${Date(message.timestamp)}</div>
+            `;
+
+            if (message.apiParameters) info += `<br />
+                <div class="text-subtitle1">${t('messages.info.apiParameters')}</div>
+                <div class="text-caption"><pre>${JSON.stringify(message.apiParameters, null, 2)}</pre></div>
+            `;
+
+            if (message.usage) info += `<br />
+                <div class="text-subtitle1">${t('messages.info.usage')}</div>
+                <div class="text-caption"><pre>${JSON.stringify(message.usage, null, 2)}</pre></div>
+            `;
+
+            if (message.systemMessages) info += `<br />
+                <div class="text-subtitle1">${t('messages.info.systemMessages')}</div>
+                <div class="text-caption"><pre>${JSON.stringify(message.systemMessages, null, 2)}</pre></div>
+            `;
+
+            if (message.conversationMode) info += `<br />
+                <div class="text-subtitle1">${t('messages.info.conversationMode')}</div>
+                <div class="text-caption"><pre>${JSON.stringify(message.conversationMode, null, 2)}</pre></div>
+            `;
+
+
+            $q.dialog({
+                title: t('messages.info.title'),
+                message: info,
+                html: true,
+                cancel: false,
+                persistent: false,
+                ok: {
+                    label: 'Ok',
+                    color: 'primary',
+                    flat: true
+                }
+            });
         };
 
         return {
@@ -207,7 +271,8 @@ export default {
             canShare,
             shareMessage,
             deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
-            deleteChoice: (timestamp, index) => teamsStore.deleteChoice(timestamp, index)
+            deleteChoice: (timestamp, index) => teamsStore.deleteChoice(timestamp, index),
+            showMessageInfo
         };
     },
 };

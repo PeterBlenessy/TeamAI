@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 
 // Quasar stuff
-import { Quasar, Dark, Notify } from 'quasar';
+import { Quasar, Dark, Dialog, Notify } from 'quasar';
 import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import '@quasar/extras/material-icons/material-icons.css';
 import '@quasar/extras/mdi-v7/mdi-v7.css'
@@ -45,7 +45,7 @@ app.use(pinia);
 // ---------------------------------------------------------------------------------------------
 // Make Quasar available in the app
 app.use(Quasar, {
-    plugins: { Dark, Notify }, // import Quasar plugins and add here
+    plugins: { Dark, Dialog, Notify }, // import Quasar plugins and add here
     config: {
         dark: 'auto',
         notify: {},
@@ -57,7 +57,8 @@ app.use(Quasar, {
     extras: [
         'material-icons',
         'mdi-v7',
-        'bootstrap-icons'    ],
+        'bootstrap-icons'
+    ],
     /*
     config: {
       brand: {

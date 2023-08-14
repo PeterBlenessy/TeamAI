@@ -89,8 +89,17 @@ export default {
         tooltip: {
             copy: 'Másol',
             delete: 'Töröl',
-            share: 'Megoszt'
+            share: 'Megoszt',
+            info: 'Információ'
         },
+        info: {
+            title: 'Üzenet információk',
+            apiParameters: 'API paraméterek',
+            conversationMode: 'Beszélgetés mód',
+            systemMessages: 'Rendszer üzenetek',
+            timestamp: 'Időbélyeg',
+            usage: 'Token használat'
+        }
     },
 
     info: {

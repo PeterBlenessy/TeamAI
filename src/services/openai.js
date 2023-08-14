@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 
 const openAI = () => {
     const settingsStore = useSettingsStore()
-    const { apiKey, model, maxTokens, choices, temperature } = storeToRefs(settingsStore);
+    const { apiKey, model, maxTokens, temperature, choices, imageSize } = storeToRefs(settingsStore);
 
     // Private function. Sets the fetch init options.
     const setOptions = (messages) => {
@@ -48,7 +48,12 @@ const openAI = () => {
                 role: json.choices[0].message.role,
                 content: json.choices[0].message.content,
                 object: json.object,
-                usage: json.usage
+                usage: json.usage,
+                apiParameters: {
+                    model: model.value,
+                    maxTokens: maxTokens.value,
+                    temperature: temperature.value
+                }
             };
          } catch (error) {
             throw new Error(error.message);
@@ -66,7 +71,7 @@ const openAI = () => {
             body: JSON.stringify({
                 "prompt": prompt,
                 "n": choices.value,
-                "size": "512x512",
+                "size": imageSize.value,
                 "response_format": "b64_json"
             })
         };
@@ -82,11 +87,17 @@ const openAI = () => {
             for (let i = 0; i < json.data.length; i++) {
                 choices.push({ index: i, content: "data:image/png;base64,"+json.data[i].b64_json });
             }
+                //apiParameters: {model, maxTokens, temperature } | {choices, imageSize}
 
             return {
                 role: "assistant",
                 object: "image",
-                choices: choices
+                choices: choices,
+                apiParameters: {
+                    model: "dall-e",
+                    choices: choices.length,
+                    imageSize: imageSize.value
+                }
             };
         } catch (error) {
             throw new Error(error.message);

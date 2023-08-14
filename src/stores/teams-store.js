@@ -11,18 +11,27 @@ import { defineStore } from 'pinia';
 
 export const useTeamsStore = defineStore('teams', () => {
 
+    // ---------------------------------------------------------------------------------------------
     // State properties
-    const bots = ref([]);
-    const teams = ref([]);
-    const messages = ref([]);   // { conversationId, timestamp, role, content | choices: [{index, content}], objet, usage ]
+    // ---------------------------------------------------------------------------------------------
+
+    // Long term state properties
+    const messages = ref([]);   // { conversationId, timestamp, role, content | choices: [{index, content}], object, usage, apiParameters: {model, maxTokens, temperature } | {choices, imageSize}]
     const history = ref([]);    // { conversationId, timestamp, created, updated, title }
-    const personas = ref([{id: 0, name: "Default assistant", prompt: "You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.", readonly: true}]);   // { id, name, prompt, readonly }
+    const personas = ref([{ id: 0, name: "Default assistant", prompt: "You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.", readonly: true }]);   // { id, name, prompt, readonly }
+    const teams = ref([]);
+
+    // Active conversation states
     const userInput = ref('');
     const conversationId = ref('');
     const loading = ref(false);
+
+    // Generate chat or image
     const isCreateImageSelected = ref(false);
 
+    // ---------------------------------------------------------------------------------------------
     // Actions
+    // ---------------------------------------------------------------------------------------------
 
     // Delete message identified by 'timestamp'
     function deleteMessage(timestamp) {
@@ -66,7 +75,9 @@ export const useTeamsStore = defineStore('teams', () => {
         });
     }
 
+    // ---------------------------------------------------------------------------------------------
     // Getters
+    // ---------------------------------------------------------------------------------------------
     function getMessages() {
         return messages.value.map(message => {
             if (message.conversationId == conversationId.value) {
@@ -81,15 +92,16 @@ export const useTeamsStore = defineStore('teams', () => {
     }
 
     return {
-        // State properties
-        bots,
-        teams,
+        // Long term state properties
         messages,
         history,
         personas,
+        teams,
+        // Active conversation states
         userInput,
         conversationId,
         loading,
+        // Generate chat or image
         isCreateImageSelected,
 
         // Actions

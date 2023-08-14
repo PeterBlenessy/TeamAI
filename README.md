@@ -6,18 +6,21 @@ The application is based on [tauri-app-boilerplate](https://github.com/PeterBlen
 
 
 ## Features
-- [x] Application wide OpenAI settings.
-- [x] Simple OpenAI conversation.
-- [ ] Create personas.
-- [ ] Create teams.
-- [ ] Bot configuration templates.
+- [x] OpenAI API parameter settings
+- [x] Conversations using OpenAI chat completion API
+- [x] Conversation history
+- [x] Generate images using DALL·E
+- [x] Personas with specific bahaviour and competence
+- [x] Import Awesome Chat GPT prompts to use as personas
+- [ ] Teams of personas to solve a specific objective
+- [ ] Templates
 
 ## Contributions
 Contributions, issues and feature requests are welcome!
 
 ### Getting started
 
-* Clone the repo or download the zip-archive](https://github.com/PeterBlenessy/TeamAI/archive/refs/heads/master.zip) and unpack it.
+* Clone the repo or download the [zip-archive](https://github.com/PeterBlenessy/TeamAI/archive/refs/heads/master.zip) and unpack it.
 * Install [prerequisites for developing Tauri apps](https://tauri.app/v1/guides/getting-started/prerequisites)
 * Run `yarn tauri dev` to launch the app.
 

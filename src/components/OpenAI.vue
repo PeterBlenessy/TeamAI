@@ -102,7 +102,9 @@ export default {
                 messages.value.push({
                     timestamp: timestamp,
                     conversationId: conversationId.value,
-                    ...response
+                    ...response,
+                    systemMessages: systemMessages,
+                    conversationMode: conversationMode.value,
                 });
 
                 // Check if conversation title exists

@@ -96,8 +96,17 @@ export default {
         tooltip: {
             copy: 'Copy',
             delete: 'Delete',
-            share: 'Share'
+            share: 'Share',
+            info: 'Info'
         },
+        info: {
+            title: 'Message info',
+            apiParameters: 'API parameters',
+            conversationMode: 'Conversation mode',
+            systemMessages: 'System messages',
+            timestamp: 'Timestamp',
+            usage: 'Token usage',
+        }
     },
 
     info: {
