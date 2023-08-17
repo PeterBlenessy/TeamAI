@@ -92,7 +92,9 @@ export default {
             copy: 'Kopiera',
             delete: 'Ta bort',
             share: 'Dela',
-            info: 'Info'
+            info: 'Info',
+            speak: 'Läs upp texten',
+            stop: 'Sluta läsa upp texten'
         },
         info: {
             title: 'Meddelandeinfo',

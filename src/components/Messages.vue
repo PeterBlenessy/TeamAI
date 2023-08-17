@@ -86,6 +86,13 @@
                         </div>
                         <div class="column items-end">
                             <div class="col">
+                                <q-btn v-if="message.role != 'user' && message.object != 'image'" size="sm" flat dense :color="iconColor" 
+                                    :icon="speaking ? 'mdi-stop-circle-outline' : 'mdi-play-circle-outline'"
+                                    @click="speaking ? stopSpeech() : speakText(message)">
+                                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                        {{ speaking ?  $t("messages.tooltip.stop") :$t("messages.tooltip.speak") }}
+                                    </q-tooltip>
+                                </q-btn>
                                 <q-btn v-if="message.role != 'user'" size="sm" flat dense icon="mdi-information-outline"
                                     :color="iconColor" @click="showMessageInfo(message)">
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
@@ -258,6 +265,26 @@ export default {
             });
         };
 
+        const speaking = ref(false);
+
+        // Speak message content
+        const speakText = async (message) => {
+            const content = message.content
+            const utterance = new SpeechSynthesisUtterance(content);
+
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            speechSynthesis.speak(utterance);
+            speaking.value = true;
+        };
+        const stopSpeech = () => {
+            speechSynthesis.cancel();
+            speaking.value = false;
+        }
+
         return {
             slide: ref(0),
             chatDirection,
@@ -272,7 +299,10 @@ export default {
             shareMessage,
             deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
             deleteChoice: (timestamp, index) => teamsStore.deleteChoice(timestamp, index),
-            showMessageInfo
+            showMessageInfo,
+            speakText,
+            stopSpeech,
+            speaking,
         };
     },
 };

@@ -32,6 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.15.x - [UNRELEASED]
 
+## v0.16.0 - 2023-08-17
+- Added option to read message text aloud using text-to-speech. Only English in this release.
+
 ## v0.15.0 - 2023-08-14
 - Added support for persisting and displaying API parameters, usage statistics, conversation mode, and system message(s) with each message.
 - Fixed issue where image size was hard coded and settings did not have any effect.

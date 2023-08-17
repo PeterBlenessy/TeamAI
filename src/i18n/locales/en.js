@@ -97,7 +97,9 @@ export default {
             copy: 'Copy',
             delete: 'Delete',
             share: 'Share',
-            info: 'Info'
+            info: 'Info',
+            speak: 'Read text aloud',
+            stop: 'Stop reading'
         },
         info: {
             title: 'Message info',

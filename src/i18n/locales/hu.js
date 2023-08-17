@@ -90,7 +90,10 @@ export default {
             copy: 'Másol',
             delete: 'Töröl',
             share: 'Megoszt',
-            info: 'Információ'
+            info: 'Információ',
+            speak: 'Olvasd fel a szöveget',
+            stop: 'Hagyd abba a felolvasást'
+
         },
         info: {
             title: 'Üzenet információk',
