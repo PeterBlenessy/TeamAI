@@ -12,9 +12,9 @@
         <q-card-section>
             <q-list>
                 <q-item class="no-padding">
-                    <q-expansion-item style="width: 100%;" expand-icon="mdi-account-plus-outline"
-                        expanded-icon="mdi-account-plus-outline" :label="t('personas.actions.create.label')"
-                        :caption="t('personas.actions.create.caption')">
+                    <q-expansion-item style="width: 100%;" v-model="newPersona.expanded"
+                        expand-icon="mdi-account-plus-outline" expanded-icon="mdi-account-plus-outline"
+                        :label="t('personas.actions.create.label')" :caption="t('personas.actions.create.caption')">
                         <q-card>
                             <q-card-section>
                                 <q-input filled dense autogrow style="width: 100%;" v-model="newPersona.name"
@@ -233,11 +233,11 @@ export default {
             personas.value.push(persona);
         }
 
-        const newPersona = {
+        const newPersona = ref({
             name: t('personas.actions.create.name'),
             prompt: t('personas.actions.create.prompt'),
-            expanded: true
-        };
+            expanded: false
+        });
 
         return {
             t,
@@ -253,11 +253,13 @@ export default {
             saveNewPersona: () => {
                 personas.value.push({
                     id: Date.now().toString(),
-                    name: newPersona.name,
-                    prompt: newPersona.prompt,
+                    name: newPersona.value.name,
+                    prompt: newPersona.value.prompt,
                     readonly: true
                 });
-                newPersona.expanded = false;
+                newPersona.value.name = t('personas.actions.create.name'),
+                    newPersona.value.prompt = t('personas.actions.create.prompt'),
+                    newPersona.value.expanded = false;
             },
             savePersona: (persona) => persona.readonly = !persona.readonly,
             deleteAwesomePrompts: () => awesomePrompts.value = [],

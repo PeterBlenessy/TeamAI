@@ -52,8 +52,8 @@ export default {
             tooltip: 'Select the preferred application language'
         },
         speech: {
-            label: 'Speech configuration',
-            caption: 'Configure text-to-speech and speech-to-text language',
+            label: 'Speech language',
+            caption: 'Select the prefered speech language',
             tooltip: 'Select the prefered speech language'
         },
         conversationMode: {

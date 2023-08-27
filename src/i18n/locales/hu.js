@@ -49,6 +49,11 @@ export default {
             caption: 'Válaszd ki az alkalmazás nyelvét',
             tooltip: 'Válaszd ki az alkalmazás nyelvét'
         },
+        speech: {
+            label: 'Beszéd nyelv',
+            caption: 'Válszd ki a beszéd nyelvét',
+            tooltip: 'Válszd ki a beszéd nyelvét'
+        },
         conversationMode: {
             label: 'Beszélgetés mód',
             caption: 'Egyéni üzenetek vagy teljes beszélgetéstörténet küldése',
@@ -91,7 +96,12 @@ export default {
                 label: 'Kép mérete',
                 tooltip: 'A kép mérete.'
             }
-        }
+        },
+        persona: {
+            label: 'Persona',
+            caption: 'Válaszd ki az AI asszisztens personáját',
+            tooltip: 'Válaszd ki az AI asszisztens personáját'
+        },
     },
 
     page: {},

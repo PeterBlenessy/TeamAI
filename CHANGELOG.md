@@ -28,10 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Page scrolls to end when message is deleted.
 - Second row of images loads after filteredMessages triggers a scroll-to-end-of-page.
 - Occasional error when loading images: ResizeObserver loop completed with undelivered notifications. 
-- Check table header and footer background color in light mode.
-- Fix issue: when creating a new persona, written text is cleared when focus is lost by moving between the input boxes.
+- Check UX of table header and footer background color in light mode.
 
 ## v0.15.x - [UNRELEASED]
+
+## v0.17.2 - 2023-08-27
+- Added missing translations for personas and speech.
+- Fixed issues where create new persona input fields were cleared on lost focus.
 
 ## v0.17.1 - 2023-08-27
 - Fixed default locale formatting to be in line with language selector.

@@ -51,6 +51,11 @@ export default {
             caption: 'Välj språk för applikationstext',
             tooltip: 'Välj språk för applikationstext'
         },
+        speech: {
+            label: 'Talspråk',
+            caption: 'Välj språk för tal-till-text och text-till-tal',
+            tooltip: 'Välj språk för tal'
+        },
         conversationMode: {
             label: 'Konversationsläge',
             caption: 'Skicka individuella meddelanden eller hela konversationshistoriken',
@@ -93,7 +98,12 @@ export default {
                 label: 'Bildstorlek',
                 tooltip: 'Bildstorlek i pixlar.'
             }
-        }
+        },
+        persona: {
+            label: 'Persona',
+            caption: 'Välj AI assistentens persona.',
+            tooltip: 'Välj AI assistentens persona.'
+        },
     },
 
     page: {},
