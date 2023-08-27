@@ -1,7 +1,7 @@
 <template>
     <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive"
-        :placeholder="isCreateImageSelected ? t('userInput.placeholder.image'): t('userInput.placeholder.text')" @keydown.enter.prevent="handleUserInput" v-model="question"
-        :loading="loading">
+        :placeholder="isCreateImageSelected ? t('userInput.placeholder.image') : t('userInput.placeholder.text')"
+        @keydown.enter.prevent="handleUserInput" v-model="question">
 
         <template v-slot:prepend>
 
@@ -41,12 +41,17 @@
         </template>
 
         <template v-slot:append>
-            <q-btn v-if="!loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
+            <q-btn :loading="loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                     {{ t('userInput.tooltip.send') }}
                 </q-tooltip>
+                <template v-slot:loading>
+                    <q-spinner color="primary" />
+                </template>
+
             </q-btn>
         </template>
+
 
     </q-input>
 </template>

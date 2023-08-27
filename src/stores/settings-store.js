@@ -8,7 +8,7 @@ export const useSettingsStore = defineStore('settings', () => {
         appMode: ref('basic'),          // basic | advanced
         darkMode: ref('auto'),          // auto | light | dark
         userLocale: ref('en'),          // en | sv | hu
-        speechLanguage: ref('en-US'),   // en-US | sv-SE | hu-HU
+        speechLanguage: ref('en'),      // en | sv | hu
         conversationMode: ref(true),
         chatDirection: ref('up'),       // up | down
 

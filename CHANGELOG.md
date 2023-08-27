@@ -33,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.15.x - [UNRELEASED]
 
+## v0.17.1 - 2023-08-27
+- Fixed default locale formatting to be in line with language selector.
+- Changed loading spinner to be more visible and better indicate activity.
+
 ## v0.17.0 - 2023-08-27
 - Fixed issue where text-to-speech state affected all messages.
 - Added visual indication of text-to-speech state.
