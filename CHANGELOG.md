@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Security in case of vulnerabilities.
 
 ## [BACKLOG]
+- Add language information to messages.
 
 ### [MAJOR]
 
@@ -26,11 +27,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Manual check for updates is not working as expected.
 - Page scrolls to end when message is deleted.
 - Second row of images loads after filteredMessages triggers a scroll-to-end-of-page.
-- Toggle text in input box based on selection of text/image generation. [Ask your question. | Describe the imaeg to generate.]
 - Occasional error when loading images: ResizeObserver loop completed with undelivered notifications. 
 - Check table header and footer background color in light mode.
+- Fix issue: when creating a new persona, written text is cleared when focus is lost by moving between the input boxes.
 
 ## v0.15.x - [UNRELEASED]
+
+## v0.17.0 - 2023-08-27
+- Fixed issue where text-to-speech state affected all messages.
+- Added visual indication of text-to-speech state.
+- Added optional speech-to-text to user input, along with macOS entitlements for microphone access.
+- Updated Privacy information to include text-to-speech and speech-to-text.
+- Changed language selector to display languages instead of language codes.
+- Fixed multiple system messages
+- Added toggle of text in input box based on selection of text/image generation.
 
 ## v0.16.0 - 2023-08-17
 - Added option to read message text aloud using text-to-speech. Only English in this release.

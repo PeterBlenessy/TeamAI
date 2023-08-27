@@ -13,24 +13,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon name="language" :color="iconColor" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label>{{ t('settings.locale.label') }}</q-item-label>
-                        <q-item-label caption>{{ t('settings.locale.caption') }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-
-                        <q-select v-model="locale" :options="availableLocales" dense options-dense />
-                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                            {{ t('settings.locale.tooltip') }}
-                        </q-tooltip>
-                    </q-item-section>
-                </q-item>
-
-                <q-item>
-                    <q-item-section avatar>
-                        <q-icon name="dark_mode" :color="iconColor" />
+                        <q-icon name="mdi-theme-light-dark" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ t('settings.darkMode.label') }}</q-item-label>
@@ -42,6 +25,41 @@
                             {{ t('settings.darkMode.tooltip') }}
                         </q-tooltip>
 
+                    </q-item-section>
+                </q-item>
+
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="mdi-web" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>{{ t('settings.locale.label') }}</q-item-label>
+                        <q-item-label caption>{{ t('settings.locale.caption') }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                        <q-select :option-label="(item) => t('locale.' + item)" v-model="locale" :options="availableLocales"
+                            dense options-dense />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.locale.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="mdi-microphone-message" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>{{ t('settings.speech.label') }}</q-item-label>
+                        <q-item-label caption>{{ t('settings.speech.caption') }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+
+                        <q-select v-model="speechLanguage" dense options-dense :options="availableLocales"
+                            :option-label="(item) => t('locale.' + item)" />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.speech.tooltip') }}
+                        </q-tooltip>
                     </q-item-section>
                 </q-item>
 
@@ -235,7 +253,8 @@ export default {
             temperature,
             choices,
             imageSize,
-            persona
+            persona,
+            speechLanguage
         } = storeToRefs(settingsStore);
         const teamsStore = useTeamsStore();
         const { personas } = teamsStore;
@@ -267,6 +286,7 @@ export default {
             t,
             locale,
             availableLocales,
+            speechLanguage,
             appMode,
             darkMode,
             conversationMode,

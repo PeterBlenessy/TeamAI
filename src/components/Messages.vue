@@ -86,11 +86,17 @@
                         </div>
                         <div class="column items-end">
                             <div class="col">
-                                <q-btn v-if="message.role != 'user' && message.object != 'image'" size="sm" flat dense :color="iconColor" 
-                                    :icon="speaking ? 'mdi-stop-circle-outline' : 'mdi-play-circle-outline'"
-                                    @click="speaking ? stopSpeech() : speakText(message)">
+                                <q-btn v-if="message.role != 'user' && message.object != 'image'" size="sm" flat dense
+                                    color="iconColor" icon="mdi-play-circle-outline"
+                                    :loading="readingMessage == message.timestamp" @click="startSpeech(message)">
+
+                                    <template v-slot:loading>
+                                        <q-spinner-bars @click.stop="stopSpeech(message)" color="primary"/>
+                                    </template>
+
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                        {{ speaking ?  $t("messages.tooltip.stop") :$t("messages.tooltip.speak") }}
+                                        {{ readingMessage == message.timestamp ? $t("messages.tooltip.stop")
+                                            : $t("messages.tooltip.speak") }}
                                     </q-tooltip>
                                 </q-btn>
                                 <q-btn v-if="message.role != 'user'" size="sm" flat dense icon="mdi-information-outline"
@@ -131,7 +137,7 @@ export default {
         const teamsStore = useTeamsStore();
         const { loading, conversationId, messages } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
-        const { chatDirection } = storeToRefs(settingsStore);
+        const { chatDirection, speechLanguage } = storeToRefs(settingsStore);
 
         // Get message background color
         const getBgColor = (role) => {
@@ -265,24 +271,39 @@ export default {
             });
         };
 
-        const speaking = ref(false);
+        // The message being read out loud
+        const readingMessage = ref('');
 
         // Speak message content
-        const speakText = async (message) => {
-            const content = message.content
+        const startSpeech = async (message) => {
+            const content = message.content;
             const utterance = new SpeechSynthesisUtterance(content);
 
-            utterance.lang = 'en-US';
+            utterance.lang = speechLanguage.value;
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
             utterance.volume = 1.0;
 
+            utterance.onend = () => {
+                readingMessage.value = '';
+            };
+            utterance.onerror = (event) => {
+                console.log("Error: " + event.error + " - " + event.message);
+                readingMessage.value = '';
+            };
+
+            // Check if there is already speechSynthesis is ongoing and cancel it
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            // Speak message content
             speechSynthesis.speak(utterance);
-            speaking.value = true;
+            readingMessage.value = message.timestamp;
         };
-        const stopSpeech = () => {
+
+        const stopSpeech = (message) => {
             speechSynthesis.cancel();
-            speaking.value = false;
+            readingMessage.value = '';
         }
 
         return {
@@ -300,9 +321,9 @@ export default {
             deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
             deleteChoice: (timestamp, index) => teamsStore.deleteChoice(timestamp, index),
             showMessageInfo,
-            speakText,
+            startSpeech,
             stopSpeech,
-            speaking,
+            readingMessage,
         };
     },
 };

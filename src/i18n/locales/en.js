@@ -7,12 +7,23 @@ export default {
         success: 'Action was successful'
     },
 
+    locale: {
+        en: 'English',
+        sv: 'Swedish',
+        hu: 'Hungarian'
+    },
+
     userInput: {
-        placeholder: 'Ask your question',
+        placeholder: {
+            text: 'Ask your question',
+            image: 'Describe the image to generate'
+        },
         tooltip: {
-            send: 'Send your question',
+            send: 'Send',
             generateText: 'Generate text',
-            generateImage: 'Generate images'
+            generateImage: 'Generate images',
+            speechStart: 'Start dictation',
+            speechStop: 'Stop',
         },
     },
 
@@ -39,6 +50,11 @@ export default {
             label: 'Application language',
             caption: 'Select the preferred application language',
             tooltip: 'Select the preferred application language'
+        },
+        speech: {
+            label: 'Speech configuration',
+            caption: 'Configure text-to-speech and speech-to-text language',
+            tooltip: 'Select the prefered speech language'
         },
         conversationMode: {
             label: 'Conversation mode',
@@ -144,7 +160,7 @@ export default {
         },
         privacy: {
             title: 'Privacy',
-            description: 'All user settings and provided information are stored locally in the application’s internal database. The application does not use cookies. The application does not use any tracking services. The application uses OpenAI APIs. Learn more about the OpenAI API here: https://platform.openai.com/docs/api-reference, and about it\'s data usage policies here: https://openai.com/policies/api-data-usage-policies.'
+            description: 'All user settings and provided information are stored locally in the application’s internal database. The application does not use cookies. The application does not use any tracking services. The application uses OpenAI APIs. Learn more about the OpenAI API here: https://platform.openai.com/docs/api-reference, and about it’s data usage policies here: https://openai.com/policies/api-data-usage-policies. The application offers text-to-speech and speech-to-text functionality through the Web Speech API. Learn more about the Web Speech API here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API. If the default webview on the host operating system is Chome, it will use Chome´s implementation of the Web Speech API and will use Google´s servers to perform speech-to-text conversion. Read more about this in Google´s privacy whitepaper: https://www.google.com/chrome/privacy/whitepaper.html#speech.'
         },
         license: {
             title: 'License',

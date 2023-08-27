@@ -98,7 +98,7 @@ export default {
                     ]);
 
                 const timestamp = Date.now().toString();
-
+                
                 messages.value.push({
                     timestamp: timestamp,
                     conversationId: conversationId.value,
@@ -154,7 +154,7 @@ export default {
                         color: 'white',
                         handler: () => { /* ... */ }
                     }]
-                })
+                });
             } finally {
                 loading.value = false;
             }

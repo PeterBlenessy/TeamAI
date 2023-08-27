@@ -7,12 +7,23 @@ export default {
         success: 'Åtgärden lyckades'
     },
 
+    locale: {
+        en: 'Engelska',
+        sv: 'Svenska',
+        hu: 'Ungerska'
+    },
+
     userInput: {
-        placeholder: 'Ställ din fråga',
+        placeholder: {
+            text: 'Ställ din fråga',
+            image: 'Beskriv bilden du vill generera'
+        },
         tooltip: {
             send: 'Skicka din fråga',
             generateText: 'Generera text',
-            generateImage: 'Generera bilder'
+            generateImage: 'Generera bilder',
+            speechStart: 'Starta diktering',
+            speechStop: 'Stoppa',
         },
     },
 
@@ -139,7 +150,7 @@ export default {
         },
         privacy: {
             title: 'Integritet',
-            description: 'Alla inställningar som användaren gör och all information som anges lagras lokalt i applikationens interna databas. Applikationen använder inte cookies. Applikationen använder inte några spårningstjänster. Applikationen använder OpenAI API:er. Lär dig mer om OpenAI API här: https://platform.openai.com/docs/api-reference, och om dess datahanteringspolicy här: https://openai.com/policies/api-data-usage-policies'
+            description: 'Alla inställningar som användaren gör och all information som anges lagras lokalt i applikationens interna databas. Applikationen använder inte cookies. Applikationen använder inte några spårningstjänster. Applikationen använder OpenAI API:er. Lär dig mer om OpenAI API här: https://platform.openai.com/docs/api-reference, och om dess datahanteringspolicy här: https://openai.com/policies/api-data-usage-policies. Applikationen erbjuder text-till-tal och tal-till-text funktionalitet genom Web Speech API. Lär dig mer om Web Speech API här: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API. Om standardwebbvisningen på värdoperativsystemet är Chome, kommer den att använda Chomes implementering av Web Speech API och kommer att använda Googles servrar för att utföra tal-till-text konvertering. Läs mer om detta i Googles förtydligande om sekretess: https://www.google.com/chrome/privacy/whitepaper.html#speech.'
         },
         license: {
             title: 'Licens',

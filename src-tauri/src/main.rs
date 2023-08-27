@@ -10,7 +10,6 @@ async fn show_main_window(window: tauri::Window) {
     window.get_window("main").unwrap().show().unwrap();
 }
 
-
 fn main() {
     let tray = SystemTray::new();
 

@@ -33,6 +33,7 @@
             "identifier": "com.addable.team-ai",
             "targets": "all",
             "macOS": {
+                "entitlements": "./entitlements.plist",
                 "license": "./LICENSE"
             }
         },

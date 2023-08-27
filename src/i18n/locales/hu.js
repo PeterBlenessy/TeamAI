@@ -4,12 +4,23 @@ export default {
         success: 'Sikeres művelet'
     },
 
+    locale: {
+        en: 'Angol',
+        sv: 'Svéd',
+        hu: 'Magyar'
+    },
+
     userInput: {
-        placeholder: 'Kérdezz bátran',
+        placeholder: {
+            text: 'Kérdezz bátran',
+            image: 'Írd le a képet amit generálni akarsz'
+        },
         tooltip: {
             send: 'Küld',
             generateText: 'Szöveg generálás',
-            generateImage: 'Kép generálás'
+            generateImage: 'Kép generálás',
+            speechStart: 'Diktálás indítása',
+            speechStop: 'Leállítás',
         },
     },
 
@@ -138,7 +149,7 @@ export default {
         },
         privacy: {
             title: 'Adatvédelem',
-            description: 'Az alkalmazás nem gyűjt személyes adatokat. Az alkalmazás nem használ cookie-kat. Az alkalmazás nem használ harmadik fél szolgáltatásait. Az alkalmazás nem használ analitikai szolgáltatásokat. Az alkalmazás nem használ követési szolgáltatásokat. Tudjon meg többet az OpenAI API-ról itt: https://platform.openai.com/docs/api-reference, és annak adatfelhasználási irányelveiről itt: https://openai.com/policies/api-data-usage-policies.'
+            description: 'Az alkalmazás nem gyűjt személyes adatokat. Az alkalmazás nem használ cookie-kat. Az alkalmazás nem használ harmadik fél szolgáltatásait. Az alkalmazás nem használ analitikai szolgáltatásokat. Az alkalmazás nem használ követési szolgáltatásokat. Tudjon meg többet az OpenAI API-ról itt: https://platform.openai.com/docs/api-reference, és annak adatfelhasználási irányelveiről itt: https://openai.com/policies/api-data-usage-policies. Az alkalmazás szöveg-beszéd és beszéd-szöveg funkciókat kínál a Web Speech API-n keresztül. További információ a Web Speech API-ról itt: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API. Ha az operációs rendszer alapértelmezett böngészője a Chome, akkor a Chome Web Speech API implementációját fogja használni, és a Google szervereit fogja használni a beszéd-szöveg konverzióhoz. További információ erről a Google adatvédelmi célkitűzéseiben: https://www.google.com/chrome/privacy/whitepaper.html#speech.'
         },
         license: {
             title: 'Licenc',
