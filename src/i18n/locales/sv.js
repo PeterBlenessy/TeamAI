@@ -119,8 +119,7 @@ export default {
         },
         info: {
             title: 'Meddelandeinfo',
-            apiParameters: 'API-parametrar',
-            conversationMode: 'Konversationsläge',
+            settings: 'Inställningar',
             systemMessages: 'Systemmeddelanden',
             timestamp: 'Tidsstämpel',
             usage: 'Token användning'

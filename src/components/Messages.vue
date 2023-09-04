@@ -156,8 +156,23 @@ export default {
             return chatDirection.value == "up" ? temp : temp.reverse();
         });
 
+        // Restore settings from last message in conversation
+        const restoreSettings = () => {
+            const settings = teamsStore.getSettingsFromLastMessage(conversationId.value);
+
+            if (settings) {
+                // For each key in settings, set the corresponding store value
+                Object.keys(settings).forEach((key) => {
+                    settingsStore[key] = settings[key];
+                });
+            }
+        };
+
         // Load messages from conversationId
-        watch(conversationId, () => filteredMessages);
+        watch(conversationId, () => {
+            restoreSettings();
+            filteredMessages;
+        });
 
         // Scroll new message into view
         watch(
@@ -236,11 +251,6 @@ export default {
                 <div class="text-caption">${Date(message.timestamp)}</div>
             `;
 
-            if (message.apiParameters) info += `<br />
-                <div class="text-subtitle1">${t('messages.info.apiParameters')}</div>
-                <div class="text-caption"><pre>${JSON.stringify(message.apiParameters, null, 2)}</pre></div>
-            `;
-
             if (message.usage) info += `<br />
                 <div class="text-subtitle1">${t('messages.info.usage')}</div>
                 <div class="text-caption"><pre>${JSON.stringify(message.usage, null, 2)}</pre></div>
@@ -251,11 +261,10 @@ export default {
                 <div class="text-caption"><pre>${JSON.stringify(message.systemMessages, null, 2)}</pre></div>
             `;
 
-            if (message.conversationMode) info += `<br />
-                <div class="text-subtitle1">${t('messages.info.conversationMode')}</div>
-                <div class="text-caption"><pre>${JSON.stringify(message.conversationMode, null, 2)}</pre></div>
+            if (message.settings) info += `<br />
+                <div class="text-subtitle1">${t('messages.info.settings')}</div>
+                <div class="text-caption"><pre>${JSON.stringify(message.settings, null, 2)}</pre></div>
             `;
-
 
             $q.dialog({
                 title: t('messages.info.title'),

@@ -49,7 +49,7 @@ const openAI = () => {
                 content: json.choices[0].message.content,
                 object: json.object,
                 usage: json.usage,
-                apiParameters: {
+                settings: {
                     model: model.value,
                     maxTokens: maxTokens.value,
                     temperature: temperature.value
@@ -87,13 +87,12 @@ const openAI = () => {
             for (let i = 0; i < json.data.length; i++) {
                 choices.push({ index: i, content: "data:image/png;base64,"+json.data[i].b64_json });
             }
-                //apiParameters: {model, maxTokens, temperature } | {choices, imageSize}
 
             return {
                 role: "assistant",
                 object: "image",
                 choices: choices,
-                apiParameters: {
+                settings: {
                     model: "dall-e",
                     choices: choices.length,
                     imageSize: imageSize.value

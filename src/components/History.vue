@@ -17,7 +17,9 @@
                         @click="showConversation(item.conversationId)">
 
                         <q-item-section avatar>
-                            <q-icon rounded size="xs" name="mdi-chat-outline" :color="iconColor" />
+                            <q-icon rounded size="xs" 
+                            :name="item.conversationId == conversationId ? 'mdi-chat' : 'mdi-chat-outline'" 
+                            :color="item.conversationId == conversationId ? 'primary' : iconColor" />
                         </q-item-section>
 
                         <q-item-section>
@@ -154,6 +156,7 @@ export default {
             deleteConversation: (id) => teamsStore.deleteConversation(id),
             canShare: (id) => navigator.canShare({ text: JSON.stringify(teamsStore.getConversation(id)) }),
             shareConversation: (id) => navigator.share({ text: JSON.stringify(teamsStore.getConversation(id)) }),
+            conversationId,
             history,
             groupedHistory,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')

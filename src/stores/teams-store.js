@@ -16,7 +16,7 @@ export const useTeamsStore = defineStore('teams', () => {
     // ---------------------------------------------------------------------------------------------
 
     // Long term state properties
-    const messages = ref([]);   // { conversationId, timestamp, role, content | choices: [{index, content}], object, usage, apiParameters: {model, maxTokens, temperature } | {choices, imageSize}]
+    const messages = ref([]);   // { conversationId, timestamp, role, content | choices: [{index, content}], object, usage, settings: { (model, maxTokens, temperature) | (choices, imageSize), personas, speechLanguage, conversationMode } ]
     const history = ref([]);    // { conversationId, timestamp, created, updated, title }
     const personas = ref([{ id: 0, name: "Default assistant", prompt: "You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.", readonly: true }]);   // { id, name, prompt, readonly }
     const teams = ref([]);
@@ -91,6 +91,21 @@ export const useTeamsStore = defineStore('teams', () => {
         return messages.value.filter(message => message.conversationId == id);
     }
 
+    // Get settings from last assistant message in a conversation
+    function getSettingsFromLastMessage(id) {
+        const conversation = messages.value.filter(message => message.conversationId == id);
+
+        // Find latest assistant message with settings
+        for (let i = conversation.length - 1; i >= 0; i--) {
+            if (conversation[i].role == "assistant" &&
+                conversation[i].hasOwnProperty("settings") && 
+                Object.keys(conversation[i].settings).length !== 0) {
+                
+                    return conversation[i].settings;
+            }
+        }
+    }
+
     return {
         // Long term state properties
         messages,
@@ -112,6 +127,7 @@ export const useTeamsStore = defineStore('teams', () => {
         deleteChoice,
 
         // Getters
-        getConversation
+        getConversation,
+        getSettingsFromLastMessage
     }
 });

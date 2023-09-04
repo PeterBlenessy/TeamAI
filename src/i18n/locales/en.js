@@ -119,8 +119,7 @@ export default {
         },
         info: {
             title: 'Message info',
-            apiParameters: 'API parameters',
-            conversationMode: 'Conversation mode',
+            settings: 'Settings',
             systemMessages: 'System messages',
             timestamp: 'Timestamp',
             usage: 'Token usage',

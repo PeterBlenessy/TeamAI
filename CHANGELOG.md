@@ -32,6 +32,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v0.15.x - [UNRELEASED]
 
+## v0.18.0 - 2023-09-04
+- Added support for storing relevant settings with assistant messages.
+- Added support for restoring settings from last assistant message when changing conversation.
+- Added support for indicating current conversation in the conversation history.
+
 ## v0.17.2 - 2023-08-27
 - Added missing translations for personas and speech.
 - Fixed issues where create new persona input fields were cleared on lost focus.

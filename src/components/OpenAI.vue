@@ -17,7 +17,7 @@ export default {
         const { loading, conversationId, messages, history, userInput, personas, isCreateImageSelected } = storeToRefs(teamsStore);
 
         const settingsStore = useSettingsStore();
-        const { conversationMode, persona } = storeToRefs(settingsStore);
+        const { conversationMode, persona, speechLanguage } = storeToRefs(settingsStore);
 
         // Creates an array of OpenAI API message objects from the current conversation.
         // Filters out potentially undefined items and items containing images, as these cause OpenAI API errors.
@@ -99,12 +99,19 @@ export default {
 
                 const timestamp = Date.now().toString();
                 
+                // Add additional settings
+                if (!isCreateImageSelected.value) {
+                    response.settings.personas = [ persona.value ];
+                    response.settings.conversationMode = conversationMode.value;
+                }
+                response.settings.speechLanguage = speechLanguage.value;
+
+                // Store response in messages
                 messages.value.push({
                     timestamp: timestamp,
                     conversationId: conversationId.value,
                     ...response,
-                    systemMessages: systemMessages,
-                    conversationMode: conversationMode.value,
+                    systemMessages: systemMessages
                 });
 
                 // Check if conversation title exists
@@ -116,7 +123,8 @@ export default {
                                 timestamp: timestamp,
                                 created: timestamp,
                                 updated: timestamp,
-                                conversationId: conversationId.value
+                                conversationId: conversationId.value,
+                                persona: persona.value
                             });
                         })
                         .catch(error => console.error(error))

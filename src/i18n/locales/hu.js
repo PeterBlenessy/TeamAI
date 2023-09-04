@@ -118,8 +118,7 @@ export default {
         },
         info: {
             title: 'Üzenet információk',
-            apiParameters: 'API paraméterek',
-            conversationMode: 'Beszélgetés mód',
+            settings: 'Beállítások',
             systemMessages: 'Rendszer üzenetek',
             timestamp: 'Időbélyeg',
             usage: 'Token használat'
