@@ -91,7 +91,7 @@
                                     :loading="readingMessage == message.timestamp" @click="startSpeech(message)">
 
                                     <template v-slot:loading>
-                                        <q-spinner-bars @click.stop="stopSpeech(message)" color="primary"/>
+                                        <q-spinner-bars @click.stop="stopSpeech(message)" color="primary" />
                                     </template>
 
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
@@ -139,6 +139,9 @@ export default {
         const settingsStore = useSettingsStore();
         const { chatDirection, speechLanguage } = storeToRefs(settingsStore);
 
+        // Page should scroll to end (latest message), only when new messages are added.
+        let shouldScroll = true;
+
         // Get message background color
         const getBgColor = (role) => {
             return role == "user"
@@ -178,12 +181,16 @@ export default {
         watch(
             filteredMessages,
             () => {
-                const { getScrollTarget, setVerticalScrollPosition } = scroll;
+                if (shouldScroll) {
+                    const { getScrollTarget, setVerticalScrollPosition } = scroll;
 
-                const page = document.getElementById("page");
-                const target = getScrollTarget(page);
-                const offset = chatDirection.value == "up" ? page.offsetHeight : 0;
-                setVerticalScrollPosition(target, offset, 100);
+                    const page = document.getElementById("page");
+                    const target = getScrollTarget(page);
+                    const offset = chatDirection.value == "up" ? page.offsetHeight : 0;
+                    setVerticalScrollPosition(target, offset, 100);
+                } else {
+                    shouldScroll = true;
+                }
             },
             { flush: "post" }
         );
@@ -327,8 +334,8 @@ export default {
             copyMessage,
             canShare,
             shareMessage,
-            deleteMessage: (timestamp) => teamsStore.deleteMessage(timestamp),
-            deleteChoice: (timestamp, index) => teamsStore.deleteChoice(timestamp, index),
+            deleteMessage: (timestamp) => { teamsStore.deleteMessage(timestamp); shouldScroll = false; },
+            deleteChoice: (timestamp, index) => { teamsStore.deleteChoice(timestamp, index); shouldScroll = false; },
             showMessageInfo,
             startSpeech,
             stopSpeech,
