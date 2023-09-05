@@ -337,7 +337,13 @@ export default {
             canShare,
             shareMessage,
             deleteMessage: (timestamp) => { teamsStore.deleteMessage(timestamp); shouldScroll = false; },
-            deleteChoice: (timestamp, index) => { teamsStore.deleteChoice(timestamp, index); shouldScroll = false; },
+            deleteChoice: (timestamp, index) => { 
+                teamsStore.deleteChoice(timestamp, index);
+                if (teamsStore.getMessage(timestamp).choices.length == 0) {
+                    teamsStore.deleteMessage(timestamp);
+                }
+                shouldScroll = false;
+            },
             showMessageInfo,
             startSpeech,
             stopSpeech,

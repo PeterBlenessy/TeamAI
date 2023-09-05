@@ -86,6 +86,11 @@ export const useTeamsStore = defineStore('teams', () => {
         });
     }
 
+    // Get message from timestamp
+    function getMessage(timestamp) {
+        return messages.value.filter(message => message.timestamp == timestamp)[0];
+    }
+
     // Get messages from a conversation
     function getConversation(id) {
         return messages.value.filter(message => message.conversationId == id);
@@ -128,6 +133,7 @@ export const useTeamsStore = defineStore('teams', () => {
 
         // Getters
         getConversation,
+        getMessage,
         getSettingsFromLastMessage
     }
 });
