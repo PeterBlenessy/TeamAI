@@ -15,13 +15,15 @@
                     <div v-if="hasChoices(message) && message.object == 'image'">
                         <div class="q-pa-md">
                             <div class="q-col-gutter-md row justify-center items-start">
-                                <!-- Iterate thwough the image choices -->
+                                <!-- Iterate through the image choices -->
                                 <div v-for="(item) in message.choices">
                                     <div class="col-6 ">
                                         <q-card flat square :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
                                             <q-card-section horizontal>
                                                 <!-- Display image -->
-                                                <q-img :src="item.content" width="400px" loading="lazy" draggable />
+                                                <q-img :src="item.content" width="400px" loading="lazy" draggable :ratio="1"
+                                                    placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAAG1BMVEXMzMyWlpaqqqq3t7fFxcW+vr6xsbGjo6OcnJyLKnDGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAElEQVRoge3SMW+DMBiE4YsxJqMJtHOTITPeOsLQnaodGImEUMZEkZhRUqn92f0MaTubtfeMh/QGHANEREREREREREREtIJJ0xbH299kp8l8FaGtLdTQ19HjofxZlJ0m1+eBKZcikd9PWtXC5DoDotRO04B9YOvFIXmXLy2jEbiqE6Df7DTleA5socLqvEFVxtJyrpZFWz/pHM2CVte0lS8g2eDe6prOyqPglhzROL+Xye4tmT4WvRcQ2/m81p+/rdguOi8Hc5L/8Qk4vhZzy08DduGt9eVQyP2qoTM1zi0/uf4hvBWf5c77e69Gf798y08L7j0RERERERERERH9P99ZpSVRivB/rgAAAABJRU5ErkJggg=="
+                                                />
 
                                                 <!-- Image actions -->
                                                 <q-card-actions vertical class="justify-around">
