@@ -25,12 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [KNOWN-BUGS]
 - Manual check for updates is not working as expected.
-- Page scrolls to end when message is deleted.
-- Second row of images loads after filteredMessages triggers a scroll-to-end-of-page.
 - Occasional error when loading images: ResizeObserver loop completed with undelivered notifications. 
-- Check UX of table header and footer background color in light mode.
 
-## v0.15.x - [UNRELEASED]
+## [UNRELEASED]
+
+## v0.18.1 - 2023-09-05
+- Fixed bug where image completion message was not deleted when last image choice was deleted.
+- Fixed bug where second row of images loads after page scroll and ends up outside of page.
+- Fixed bug where page scrolled to end when message was deleted.
 
 ## v0.18.0 - 2023-09-04
 - Added support for storing relevant settings with assistant messages.
