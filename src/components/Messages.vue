@@ -5,8 +5,14 @@
 
                 <!-- Message avatar -->
                 <q-item-section avatar top>
-                    <q-icon rounded size="md" :name="message.role == 'user' ? 'account_box' : 'computer'"
-                        :color="iconColor" />
+                    <q-avatar v-if="message.role == 'user'" size="xl" color="primary">
+                        <q-img v-if="userAvatar" :src="userAvatar" />
+                        <q-icon v-else rounded size="md" name="mdi-account-circle" :color="iconColor" />    
+                    </q-avatar>
+
+                    <q-avatar v-if="message.role == 'assistant'" size="xl">
+                        <q-icon rounded size="md" name="computer" :color="iconColor" />
+                    </q-avatar>
                 </q-item-section>
 
                 <!-- Message content -->
@@ -139,7 +145,7 @@ export default {
         const teamsStore = useTeamsStore();
         const { loading, conversationId, messages } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
-        const { chatDirection, speechLanguage } = storeToRefs(settingsStore);
+        const { chatDirection, speechLanguage, userAvatar } = storeToRefs(settingsStore);
 
         // Page should scroll to end (latest message), only when new messages are added.
         let shouldScroll = true;
@@ -348,6 +354,7 @@ export default {
             startSpeech,
             stopSpeech,
             readingMessage,
+            userAvatar
         };
     },
 };

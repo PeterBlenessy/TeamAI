@@ -39,6 +39,11 @@ export default {
     
     settings: {
         title: 'Beállítások',
+        avatar: {
+            label: 'Profilkép',
+            caption: 'Válaszd ki a profilképedet',
+            tooltip: 'Válaszd ki a profilképedet'
+        },
         darkMode: {
             label: 'Sötét mód',
             caption: 'Sötét/auto/világos mód váltása',

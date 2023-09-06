@@ -41,6 +41,11 @@ export default {
     },
     settings: {
         title: 'Inställningar',
+        avatar: {
+            label: 'Avatar',
+            caption: 'Välj din avatar',
+            tooltip: 'Klicka för att välja din avatar'
+        },
         darkMode: {
             label: 'Mörkt läge',
             caption: 'Växla mellan mörkt/auto/ljust läge',

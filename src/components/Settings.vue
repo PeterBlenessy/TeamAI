@@ -1,9 +1,25 @@
 <template>
     <q-card style="min-width: 50%; max-width: 60%">
         <q-card-section>
-            <div class="text-h6">
-                {{ t('settings.title') }}
-            </div>
+            <q-item>
+                <q-item-section>
+                    <div class="text-h6">
+                        {{ t('settings.title') }}
+                    </div>
+                </q-item-section>
+                <q-item-section avatar>
+                    <q-file ref="avatarPicker" v-model="avatarImage" @update:model-value="handleAvatarSelected()"
+                        style="display:none" />
+
+                    <q-avatar color="primary" size="xl" @click="handleAvatarPicker()" >
+                        <q-icon v-if="!userAvatar" name="mdi-account" />
+                        <img v-else :src="userAvatar" />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.avatar.tooltip') }}
+                        </q-tooltip>
+                    </q-avatar>
+                </q-item-section>
+            </q-item>
         </q-card-section>
 
         <q-separator />
@@ -13,7 +29,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon name="mdi-theme-light-dark" :color="iconColor" />
+                        <q-icon name="mdi-compare" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ t('settings.darkMode.label') }}</q-item-label>
@@ -254,7 +270,8 @@ export default {
             choices,
             imageSize,
             persona,
-            speechLanguage
+            speechLanguage,
+            userAvatar
         } = storeToRefs(settingsStore);
         const teamsStore = useTeamsStore();
         const { personas } = teamsStore;
@@ -282,6 +299,23 @@ export default {
             imageSize.value = imageSizeOptions.value[imageSizeValue.value];
         });
 
+        // Avatar related
+        const avatarImage = ref(null);
+        const avatarPicker = ref(null);
+
+        // Opens the avatar picker dialog
+        const handleAvatarPicker = () => {
+            avatarPicker.value.pickFiles();
+        }
+        // Converts image from the avatar picker dialog to base64 and stores it as user avatar
+        const handleAvatarSelected = () => {
+            if (avatarImage.value) {
+                const reader = new FileReader();
+                reader.onload = () => userAvatar.value = reader.result;
+                reader.readAsDataURL(avatarImage.value);
+            }
+        }
+
         return {
             t,
             locale,
@@ -303,6 +337,11 @@ export default {
             persona,
             personaOptions,
             personaFilterFn,
+            userAvatar,
+            handleAvatarPicker,
+            handleAvatarSelected,
+            avatarPicker,
+            avatarImage,
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

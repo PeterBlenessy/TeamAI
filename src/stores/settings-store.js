@@ -7,6 +7,7 @@ export const useSettingsStore = defineStore('settings', () => {
         // Application settings
         appMode: ref('basic'),          // basic | advanced
         darkMode: ref('auto'),          // auto | light | dark
+        userAvatar: ref(''),            // base64 encoded image
         userLocale: ref('en'),          // en | sv | hu
         speechLanguage: ref('en'),      // en | sv | hu
         conversationMode: ref(true),

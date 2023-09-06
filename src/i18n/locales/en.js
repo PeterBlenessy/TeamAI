@@ -41,6 +41,11 @@ export default {
     },
     settings: {
         title: 'Settings',
+        avatar: {
+            label: 'Avatar',
+            caption: 'Select a user avatar avatar',
+            tooltip: 'Click to select a user avatar'
+        },
         darkMode: {
             label: 'Dark mode',
             caption: 'Toggle dark/auto/light mode',
