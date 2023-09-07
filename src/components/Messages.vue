@@ -341,6 +341,11 @@ export default {
                     if (persona && 'avatar' in persona) {
                         return persona.avatar;
                     }
+
+                    // Use avatar potentially stored with message
+                    if ('avatar' in message.settings.personas[0]) {
+                        return message.settings.personas[0].avatar;
+                    }
                 }
             }
             // No valid avatar found -> return default persona avatar or null

@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.19.0 - 2023-09-07
+- Added support for displaying assistant avatars in conversations and in settings.
+- Added support for assistant persona avatars.
+- Added support for user avatar.
+
 ## v0.18.1 - 2023-09-05
 - Fixed bug where image completion message was not deleted when last image choice was deleted.
 - Fixed bug where second row of images loads after page scroll and ends up outside of page.
