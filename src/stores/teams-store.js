@@ -112,7 +112,7 @@ export const useTeamsStore = defineStore('teams', () => {
     }
 
     function getPersona(id) {
-        return personas.value.filter(persona => persona.id == id);
+        return personas.value.filter(persona => persona.id == id)[0];
     }
 
     return {

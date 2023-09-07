@@ -137,15 +137,27 @@
                         <q-icon name="mdi-card-account-details-outline" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label>{{ t('settings.persona.label') }}</q-item-label>
-                        <q-item-label caption>{{ $t('settings.persona.caption') }}</q-item-label>
-                        <q-select dense options-dense use-input input-debounce="0"
-                            :option-label="(item) => item === null ? 'Null value' : item.name" v-model="persona"
-                            :options="personaOptions" @filter="personaFilterFn" />
+                        <q-item class="no-padding">
+                            <q-item-section>
+                                <q-item-label>{{ t('settings.persona.label') }}</q-item-label>
+                                <q-item-label caption>{{ $t('settings.persona.caption') }}</q-item-label>
+                            </q-item-section>
+                            <q-item-section side top>
+                                <q-avatar color="primary" size="md">
+                                    <img v-if="persona.avatar" :src="persona.avatar" />
+                                </q-avatar>
+                            </q-item-section>
+                        </q-item>
+                        <q-item-section>
+                            <q-select dense options-dense use-input input-debounce="0"
+                                :option-label="(item) => item === null ? 'Null value' : item.name" v-model="persona"
+                                :options="personaOptions" @filter="personaFilterFn" />
 
-                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                            {{ persona.prompt }}
-                        </q-tooltip>
+                            <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                                {{ persona.prompt }}
+                            </q-tooltip>
+                        </q-item-section>
+
                     </q-item-section>
                 </q-item>
 

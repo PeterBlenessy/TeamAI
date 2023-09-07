@@ -336,15 +336,15 @@ export default {
             if ('settings' in message) {
                 if ('personas' in message.settings) {
                     // Specific persona is set
+                    // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
                     persona = teamsStore.getPersona(message.settings.personas[0].id);
-                    if ('avatar' in persona) {
+                    if (persona && 'avatar' in persona) {
                         return persona.avatar;
                     }
                 }
             }
-            // Get default persona
+            // No valid avatar found -> return default persona avatar or null
             persona = teamsStore.getPersona(0);
-
             return ('avatar' in persona) ? persona.avatar : null;
         }
 
