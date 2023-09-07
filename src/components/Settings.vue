@@ -9,9 +9,9 @@
                 </q-item-section>
                 <q-item-section avatar>
                     <q-file ref="avatarPicker" v-model="avatarImage" @update:model-value="handleAvatarSelected()"
-                        style="display:none" />
+                        accept=".png, .jpg, .jpeg, .svg" style="display:none" />
 
-                    <q-avatar color="primary" size="xl" @click="handleAvatarPicker()" >
+                    <q-avatar color="primary" size="xl" @click="handleAvatarPicker()">
                         <q-icon v-if="!userAvatar" name="mdi-account" />
                         <img v-else :src="userAvatar" />
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">

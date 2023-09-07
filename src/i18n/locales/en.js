@@ -241,9 +241,13 @@ export default {
             },
             search: {
                 placeholder: 'Search...'
+            },
+            avatar: {
+                tooltip: 'Select avatar'
             }
         },
         tableHeading: {
+            avatar: 'Avatar',
             name: 'Name',
             prompt: 'Description'
         }

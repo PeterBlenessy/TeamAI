@@ -104,16 +104,36 @@
 
         <q-card-section>
 
+            <!-- Personas table -->
             <q-table dense wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
                 :columns="columns" :rows="personas" row-key="id" :filter="personasFilter" :title="t('personas.title')">
 
                 <template v-slot:top-right>
+                    <!-- File picker input (hidden). Put here to avoid being created for each table row. -->
+                    <q-file ref="avatarPicker" v-model="avatarImage" @update:model-value="handleAvatarSelected()"
+                        accept=".png, .jpg, .jpeg, .svg" style="display:none" />
+
+                    <!-- Search input for table content -->
                     <q-input filled dense debounce="300" v-model="personasFilter"
                         :label="t('personas.actions.search.placeholder')">
                         <template v-slot:append>
                             <q-icon name="search" />
                         </template>
                     </q-input>
+                </template>
+
+                <template v-slot:body-cell-avatar="props">
+                    <q-td :props="props">
+                        <q-item-section avatar>
+                            <q-avatar size="xl" @click="handleAvatarPicker(props.row.id)">
+                                <img v-if="'avatar' in props.row" :src="props.row.avatar" />
+                                <q-icon v-else name="mdi-account" />
+                                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                                    {{ t('personas.actions.avatar.tooltip') + props.row.id }}
+                                </q-tooltip>
+                            </q-avatar>
+                        </q-item-section>
+                    </q-td>
                 </template>
 
                 <template v-slot:body-cell-name="props">
@@ -205,6 +225,7 @@ export default {
         const awesomePrompts = ref([]);
 
         const columns = [
+            { name: 'avatar', align: 'left', label: t('personas.tableHeading.avatar'), field: 'avatar', sortable: false, style: 'width: 50px' },
             { name: 'name', align: 'left', label: t('personas.tableHeading.name'), field: 'name', sortable: true, style: 'width: 150px' },
             { name: 'prompt', align: 'left', label: t('personas.tableHeading.prompt'), field: 'prompt', sortable: true }
         ];
@@ -239,6 +260,35 @@ export default {
             expanded: false
         });
 
+        // Avatar related
+        const avatarPicker = ref(null);
+        const avatarImage = ref(null);
+        let selectedPersonaId = '';
+        const handleAvatarPicker = (personaId) => {
+            selectedPersonaId = personaId;
+            avatarPicker.value.pickFiles();
+        }
+
+        // Converts image from the avatar picker dialog to base64 and stores it as user avatar
+        const handleAvatarSelected = () => {
+            if (avatarImage.value) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Set avatar for selected persona in personas array
+                    personas.value = personas.value.map(item => {
+                        if (item.id == selectedPersonaId) {
+                            item.avatar = reader.result;
+                        }
+                        return item;
+                    });
+                    // Reset values
+                    selectedPersonaId = '';
+                    avatarImage.value = null;
+                }
+                reader.readAsDataURL(avatarImage.value);
+            }
+        }
+
         return {
             t,
             personas,
@@ -265,6 +315,11 @@ export default {
             deleteAwesomePrompts: () => awesomePrompts.value = [],
             deletePersona: (persona) => personas.value = personas.value.filter(item => item.id != persona.id),
             fetchAwesomePrompts,
+
+            handleAvatarPicker,
+            handleAvatarSelected,
+            avatarPicker,
+            avatarImage,
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
