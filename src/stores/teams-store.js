@@ -18,7 +18,7 @@ export const useTeamsStore = defineStore('teams', () => {
     // Long term state properties
     const messages = ref([]);   // { conversationId, timestamp, role, content | choices: [{index, content}], object, usage, settings: { (model, maxTokens, temperature) | (choices, imageSize), personas, speechLanguage, conversationMode } ]
     const history = ref([]);    // { conversationId, timestamp, created, updated, title }
-    const personas = ref([{ id: 0, name: "Default assistant", prompt: "You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.", readonly: true }]);   // { id, name, prompt, readonly }
+    const personas = ref([{ id: 0, name: "Default assistant", prompt: "You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.", avatar: null, readonly: true }]);   // { id, name, prompt, avatar, readonly }
     const teams = ref([]);
 
     // Active conversation states
@@ -111,6 +111,10 @@ export const useTeamsStore = defineStore('teams', () => {
         }
     }
 
+    function getPersona(id) {
+        return personas.value.filter(persona => persona.id == id);
+    }
+
     return {
         // Long term state properties
         messages,
@@ -134,6 +138,7 @@ export const useTeamsStore = defineStore('teams', () => {
         // Getters
         getConversation,
         getMessage,
-        getSettingsFromLastMessage
+        getSettingsFromLastMessage,
+        getPersona
     }
 });

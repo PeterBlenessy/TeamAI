@@ -7,11 +7,12 @@
                 <q-item-section avatar top>
                     <q-avatar v-if="message.role == 'user'" size="xl" color="primary">
                         <q-img v-if="userAvatar" :src="userAvatar" />
-                        <q-icon v-else rounded size="md" name="mdi-account-circle" :color="iconColor" />    
+                        <q-icon v-else rounded size="md" name="mdi-account-circle" :color="iconColor" />
                     </q-avatar>
 
                     <q-avatar v-if="message.role == 'assistant'" size="xl">
-                        <q-icon rounded size="md" name="computer" :color="iconColor" />
+                        <q-img v-if="getAssistantAvatar(message)" :src="getAssistantAvatar(message)" />
+                        <q-icon v-else rounded size="md" name="computer" :color="iconColor" />
                     </q-avatar>
                 </q-item-section>
 
@@ -28,8 +29,7 @@
                                             <q-card-section horizontal>
                                                 <!-- Display image -->
                                                 <q-img :src="item.content" width="400px" loading="lazy" draggable :ratio="1"
-                                                    placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAAG1BMVEXMzMyWlpaqqqq3t7fFxcW+vr6xsbGjo6OcnJyLKnDGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAElEQVRoge3SMW+DMBiE4YsxJqMJtHOTITPeOsLQnaodGImEUMZEkZhRUqn92f0MaTubtfeMh/QGHANEREREREREREREtIJJ0xbH299kp8l8FaGtLdTQ19HjofxZlJ0m1+eBKZcikd9PWtXC5DoDotRO04B9YOvFIXmXLy2jEbiqE6Df7DTleA5socLqvEFVxtJyrpZFWz/pHM2CVte0lS8g2eDe6prOyqPglhzROL+Xye4tmT4WvRcQ2/m81p+/rdguOi8Hc5L/8Qk4vhZzy08DduGt9eVQyP2qoTM1zi0/uf4hvBWf5c77e69Gf798y08L7j0RERERERERERH9P99ZpSVRivB/rgAAAABJRU5ErkJggg=="
-                                                />
+                                                    placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAAG1BMVEXMzMyWlpaqqqq3t7fFxcW+vr6xsbGjo6OcnJyLKnDGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAElEQVRoge3SMW+DMBiE4YsxJqMJtHOTITPeOsLQnaodGImEUMZEkZhRUqn92f0MaTubtfeMh/QGHANEREREREREREREtIJJ0xbH299kp8l8FaGtLdTQ19HjofxZlJ0m1+eBKZcikd9PWtXC5DoDotRO04B9YOvFIXmXLy2jEbiqE6Df7DTleA5socLqvEFVxtJyrpZFWz/pHM2CVte0lS8g2eDe6prOyqPglhzROL+Xye4tmT4WvRcQ2/m81p+/rdguOi8Hc5L/8Qk4vhZzy08DduGt9eVQyP2qoTM1zi0/uf4hvBWf5c77e69Gf798y08L7j0RERERERERERH9P99ZpSVRivB/rgAAAABJRU5ErkJggg==" />
 
                                                 <!-- Image actions -->
                                                 <q-card-actions vertical class="justify-around">
@@ -330,6 +330,24 @@ export default {
             readingMessage.value = '';
         }
 
+        const getAssistantAvatar = (message) => {
+            let persona = null;
+
+            if ('settings' in message) {
+                if ('personas' in message.settings) {
+                    // Specific persona is set
+                    persona = teamsStore.getPersona(message.settings.personas[0].id);
+                    if ('avatar' in persona) {
+                        return persona.avatar;
+                    }
+                }
+            }
+            // Get default persona
+            persona = teamsStore.getPersona(0);
+
+            return ('avatar' in persona) ? persona.avatar : null;
+        }
+
         return {
             slide: ref(0),
             chatDirection,
@@ -343,7 +361,7 @@ export default {
             canShare,
             shareMessage,
             deleteMessage: (timestamp) => { teamsStore.deleteMessage(timestamp); shouldScroll = false; },
-            deleteChoice: (timestamp, index) => { 
+            deleteChoice: (timestamp, index) => {
                 teamsStore.deleteChoice(timestamp, index);
                 if (teamsStore.getMessage(timestamp).choices.length == 0) {
                     teamsStore.deleteMessage(timestamp);
@@ -354,7 +372,8 @@ export default {
             startSpeech,
             stopSpeech,
             readingMessage,
-            userAvatar
+            userAvatar,
+            getAssistantAvatar
         };
     },
 };
