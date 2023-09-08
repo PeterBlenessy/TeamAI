@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.19.1 - 2023-09-08
+- Added indicators on hover to user avatar in settings.
+- Fixed missing persona avatar related issues in settings and in messages.
+
 ## v0.19.0 - 2023-09-07
 - Added support for displaying assistant avatars in conversations and in settings.
 - Added support for assistant persona avatars.
