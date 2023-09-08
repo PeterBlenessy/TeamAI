@@ -12,8 +12,12 @@
                         accept=".png, .jpg, .jpeg, .svg" style="display:none" />
 
                     <q-avatar size="xl" @click="handleAvatarPicker()">
-                        <img v-if="userAvatar" :src="userAvatar" />
-                        <q-icon v-else name="mdi-account-circle" size="xl" :color="iconColor" />
+                        <q-img v-if="userAvatar" :src="userAvatar" @mouseover="showActionButton=true" @mouseleave="showActionButton=false">
+                            <q-btn class="absolute-bottom" size="sm" icon="mdi-swap-horizontal" v-show="showActionButton"/>
+                        </q-img>
+                        <q-icon v-else name="mdi-account-circle" size="xl" :color="iconColor" @mouseover="showActionButton=true" @mouseleave="showActionButton=false">
+                            <q-btn class="absolute-bottom" size="sm" icon="mdi-plus-circle" v-show="showActionButton"/>
+                        </q-icon>
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ t('settings.avatar.tooltip') }}
                         </q-tooltip>
@@ -354,6 +358,7 @@ export default {
             handleAvatarSelected,
             avatarPicker,
             avatarImage,
+            showActionButton: ref(false),
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
