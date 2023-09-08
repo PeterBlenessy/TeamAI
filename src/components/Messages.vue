@@ -5,14 +5,14 @@
 
                 <!-- Message avatar -->
                 <q-item-section avatar top>
-                    <q-avatar v-if="message.role == 'user'" size="xl" color="primary">
+                    <q-avatar v-if="message.role == 'user'" size="xl">
                         <q-img v-if="userAvatar" :src="userAvatar" />
-                        <q-icon v-else rounded size="md" name="mdi-account-circle" :color="iconColor" />
+                        <q-icon v-else rounded size="xl" name="mdi-account-circle" :color="iconColor" />
                     </q-avatar>
 
                     <q-avatar v-if="message.role == 'assistant'" size="xl">
                         <q-img v-if="getAssistantAvatar(message)" :src="getAssistantAvatar(message)" />
-                        <q-icon v-else rounded size="md" name="computer" :color="iconColor" />
+                        <q-icon v-else rounded size="md" name="mdi-laptop" :color="iconColor" />
                     </q-avatar>
                 </q-item-section>
 

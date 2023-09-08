@@ -2,18 +2,18 @@
     <q-card style="min-width: 50%; max-width: 60%">
         <q-card-section>
             <q-item>
-                <q-item-section>
+                <q-item-section top>
                     <div class="text-h6">
                         {{ t('settings.title') }}
                     </div>
                 </q-item-section>
-                <q-item-section avatar>
+                <q-item-section side avatar>
                     <q-file ref="avatarPicker" v-model="avatarImage" @update:model-value="handleAvatarSelected()"
                         accept=".png, .jpg, .jpeg, .svg" style="display:none" />
 
-                    <q-avatar color="primary" size="xl" @click="handleAvatarPicker()">
-                        <q-icon v-if="!userAvatar" name="mdi-account" />
-                        <img v-else :src="userAvatar" />
+                    <q-avatar size="xl" @click="handleAvatarPicker()">
+                        <img v-if="userAvatar" :src="userAvatar" />
+                        <q-icon v-else name="mdi-account-circle" size="xl" :color="iconColor" />
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ t('settings.avatar.tooltip') }}
                         </q-tooltip>
@@ -143,7 +143,7 @@
                                 <q-item-label caption>{{ $t('settings.persona.caption') }}</q-item-label>
                             </q-item-section>
                             <q-item-section side top>
-                                <q-avatar color="primary" size="md">
+                                <q-avatar size="xl">
                                     <img v-if="persona.avatar" :src="persona.avatar" />
                                 </q-avatar>
                             </q-item-section>
