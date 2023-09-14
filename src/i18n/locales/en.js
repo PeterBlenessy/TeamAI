@@ -76,6 +76,11 @@ export default {
             caption: 'Change the direction of the chat messages up/down',
             tooltip: 'Change the direction of the chat messages up/down'
         },
+        quickSettings: {
+            label: 'Quick settings',
+            caption: 'Show quick settings in chat window',
+            tooltip: 'Show quick settings'
+        },
 
         openAI: {
             apiKey: {
@@ -105,9 +110,9 @@ export default {
             }
         },
         persona: {
-            label: 'Persona',
-            caption: 'Select the persona of the AI assistant',
-            tooltip: 'Select the persona of the AI assistant'
+            label: 'Personas',
+            caption: 'Select the personas of the AI assistant',
+            tooltip: 'Select the personas of the AI assistant'
         }
     },
 

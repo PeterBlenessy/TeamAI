@@ -74,6 +74,11 @@ export default {
             caption: 'Beszélgetés üzeneteinek megjelenítésének irányváltása fel/le',
             tooltip: 'Beszélgetés üzeneteinek megjelenítésének irányváltása fel/le'
         },
+        quickSettings: {
+            label: 'Gyors beállítások',
+            caption: 'Gyors beállítások megjelenítése/elrejtése a chat ablakban',
+            tooltip: 'Gyors beállítások megjelenítése/elrejtése'
+        },
 
         openAI: {
             apiKey: {
@@ -103,9 +108,9 @@ export default {
             }
         },
         persona: {
-            label: 'Persona',
-            caption: 'Válaszd ki az AI asszisztens personáját',
-            tooltip: 'Válaszd ki az AI asszisztens personáját'
+            label: 'Personas',
+            caption: 'Válaszd ki az AI asszisztens personáit',
+            tooltip: 'Válaszd ki az AI asszisztens personáit'
         },
     },
 

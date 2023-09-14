@@ -6,6 +6,7 @@
             <q-toolbar>
                 <UserInput />
             </q-toolbar>
+            <QuickSettings v-if="quickSettings == 'true'"/>
         </q-header>
 
         <OpenAI />
@@ -64,6 +65,8 @@
 
             <!-- Conditional placement of UserInput -->
             <q-footer v-show="chatDirection === 'up'" :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
+
+                <QuickSettings v-if="quickSettings == 'true'"/>
                 <q-toolbar>
                     <UserInput />
                 </q-toolbar>
@@ -76,6 +79,7 @@
 <script>
 import { computed, onMounted, ref, watch } from 'vue';
 import Settings from "./components/Settings.vue";
+import QuickSettings from "./components/QuickSettings.vue";
 import UserInput from "./components/UserInput.vue";
 import Messages from "./components/Messages.vue";
 import OpenAI from './components/OpenAI.vue';
@@ -96,6 +100,7 @@ export default {
 
     components: {
         Settings,
+        QuickSettings,
         UserInput,
         Messages,
         OpenAI,
@@ -108,7 +113,7 @@ export default {
         const { t, locale } = useI18n();
         const $q = useQuasar();
         const settingsStore = useSettingsStore()
-        const { appMode, darkMode, userLocale, chatDirection } = storeToRefs(settingsStore);
+        const { appMode, darkMode, quickSettings, userLocale, chatDirection } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
         const { newConversation, conversationId } = teamsStore;
@@ -200,6 +205,7 @@ export default {
             showInformation,
             showHistory,
             showPersonas,
+            quickSettings,
             toolbar,
             t,
             newConversation,

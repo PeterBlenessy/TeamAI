@@ -170,13 +170,7 @@ export default {
         // Restore settings from last message in conversation
         const restoreSettings = () => {
             const settings = teamsStore.getSettingsFromLastMessage(conversationId.value);
-
-            if (settings) {
-                // For each key in settings, set the corresponding store value
-                Object.keys(settings).forEach((key) => {
-                    settingsStore[key] = settings[key];
-                });
-            }
+            if (settings) settingsStore.$patch(settings);
         };
 
         // Load messages from conversationId

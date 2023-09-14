@@ -14,10 +14,10 @@ export default {
     name: 'OpenAI',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, conversationId, messages, history, userInput, personas, isCreateImageSelected } = storeToRefs(teamsStore);
+        const { loading, conversationId, messages, history, userInput, isCreateImageSelected } = storeToRefs(teamsStore);
 
         const settingsStore = useSettingsStore();
-        const { conversationMode, persona, speechLanguage } = storeToRefs(settingsStore);
+        const { conversationMode, personas, speechLanguage } = storeToRefs(settingsStore);
 
         // Creates an array of OpenAI API message objects from the current conversation.
         // Filters out potentially undefined items and items containing images, as these cause OpenAI API errors.
@@ -85,10 +85,14 @@ export default {
             let conversation = (!conversationMode.value) ? [{ "role": "user", "content": question }] : getMessages(conversationId.value);
 
             try {
-                // Add default persona prompt to system message
-                let systemMessages = [{ "role": "system", "content": personas.value[0].prompt }];
-                // Add user selected persona prompt to system message
-                if (persona.value.id != 0) systemMessages.push({ "role": "system", "content": persona.value.prompt });
+                // Always add default persona prompt as system message
+                let systemMessages = [{ "role": "system", "content": teamsStore.personas[0].prompt }];
+                // Add user selected persona prompts as system messages
+                if (personas.value.length != 0) {
+                    personas.value.forEach(persona => {
+                        if (persona.id != 0) systemMessages.push({ "role": "system", "content": persona.prompt });
+                    });
+                }
 
                 let response = isCreateImageSelected.value
                     ? await openAI.createImageCompletion(question)
@@ -101,7 +105,7 @@ export default {
                 
                 // Add additional settings
                 if (!isCreateImageSelected.value) {
-                    response.settings.personas = [ persona.value ];
+                    response.settings.personas = personas.value;
                     response.settings.conversationMode = conversationMode.value;
                 }
                 response.settings.speechLanguage = speechLanguage.value;
@@ -124,7 +128,7 @@ export default {
                                 created: timestamp,
                                 updated: timestamp,
                                 conversationId: conversationId.value,
-                                persona: persona.value
+                                personas: personas.value
                             });
                         })
                         .catch(error => console.error(error))

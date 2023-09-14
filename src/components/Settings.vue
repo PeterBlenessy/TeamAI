@@ -12,11 +12,13 @@
                         accept=".png, .jpg, .jpeg, .svg" style="display:none" />
 
                     <q-avatar size="xl" @click="handleAvatarPicker()">
-                        <q-img v-if="userAvatar" :src="userAvatar" @mouseover="showActionButton=true" @mouseleave="showActionButton=false">
-                            <q-btn class="absolute-bottom" size="sm" icon="mdi-swap-horizontal" v-show="showActionButton"/>
+                        <q-img v-if="userAvatar" :src="userAvatar" @mouseover="showActionButton = true"
+                            @mouseleave="showActionButton = false">
+                            <q-btn class="absolute-bottom" size="sm" icon="mdi-swap-horizontal" v-show="showActionButton" />
                         </q-img>
-                        <q-icon v-else name="mdi-account-circle" size="xl" :color="iconColor" @mouseover="showActionButton=true" @mouseleave="showActionButton=false">
-                            <q-btn class="absolute-bottom" size="sm" icon="mdi-plus-circle" v-show="showActionButton"/>
+                        <q-icon v-else name="mdi-account-circle" size="xl" :color="iconColor"
+                            @mouseover="showActionButton = true" @mouseleave="showActionButton = false">
+                            <q-btn class="absolute-bottom" size="sm" icon="mdi-plus-circle" v-show="showActionButton" />
                         </q-icon>
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ t('settings.avatar.tooltip') }}
@@ -134,6 +136,22 @@
                     </q-item-section>
                 </q-item>
 
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon :name="quickSettings == 'true' ? 'mdi-cog' : 'mdi-cog-off'" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>{{ $t('settings.quickSettings.label') }}</q-item-label>
+                        <q-item-label caption>{{ $t('settings.quickSettings.caption') }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                        <q-toggle v-model="quickSettings" dense false-value="false" true-value="true" />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.quickSettings.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
                 <q-separator v-if="appMode == 'advanced'" />
 
                 <q-item v-if="appMode == 'advanced'">
@@ -141,27 +159,49 @@
                         <q-icon name="mdi-card-account-details-outline" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item class="no-padding">
-                            <q-item-section>
-                                <q-item-label>{{ t('settings.persona.label') }}</q-item-label>
-                                <q-item-label caption>{{ $t('settings.persona.caption') }}</q-item-label>
-                            </q-item-section>
-                            <q-item-section side top>
-                                <q-avatar size="xl">
-                                    <img v-if="persona.avatar" :src="persona.avatar" />
-                                </q-avatar>
-                            </q-item-section>
-                        </q-item>
-                        <q-item-section>
-                            <q-select dense options-dense use-input input-debounce="0"
-                                :option-label="(item) => item === null ? 'Null value' : item.name" v-model="persona"
-                                :options="personaOptions" @filter="personaFilterFn" />
+                        <q-item-label>{{ t('settings.persona.label') }}</q-item-label>
+                        <q-item-label caption>{{ $t('settings.persona.caption') }}</q-item-label>
+                        <q-select dense options-dense use-input input-debounce="0" use-chips multiple
+                            :option-label="(item) => item === null ? 'Null value' : item.name" v-model="personas"
+                            :options="personaOptions" @filter="personaFilterFn">
 
-                            <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                                {{ persona.prompt }}
-                            </q-tooltip>
-                        </q-item-section>
+                            <template v-slot:selected-item="scope">
+                                <q-chip dense size="sm" class="q-ma-none" removable @remove="scope.removeAtIndex(scope.index)"
+                                    color="primary">
+                                    <q-avatar size="sm">
+                                        <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
+                                        <q-icon v-else name="mdi-account-circle" size="sm" />
+                                    </q-avatar>
+                                    {{ scope.opt.name }}
+                                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale"
+                                        transition-hide="scale">
+                                        {{ scope.opt.prompt }}
+                                    </q-tooltip>
 
+                                </q-chip>
+                            </template>
+
+                            <template v-slot:option="scope">
+                                <q-item v-bind="scope.itemProps">
+                                    <q-item-section avatar>
+                                        <q-avatar size="sm">
+                                            <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
+                                            <q-icon v-else name="mdi-account-circle" size="sm" />
+                                        </q-avatar>
+                                    </q-item-section>
+                                    <q-item-section>
+                                        <q-item-label>{{ scope.opt.name }}</q-item-label>
+                                    </q-item-section>
+                                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale"
+                                        transition-hide="scale">
+                                        {{ scope.opt.prompt }}
+                                    </q-tooltip>
+
+                                </q-item>
+
+                            </template>
+
+                        </q-select>
                     </q-item-section>
                 </q-item>
 
@@ -285,26 +325,24 @@ export default {
             temperature,
             choices,
             imageSize,
-            persona,
+            personas,
+            quickSettings,
             speechLanguage,
             userAvatar
         } = storeToRefs(settingsStore);
         const teamsStore = useTeamsStore();
-        const { personas } = teamsStore;
-        const personaOptions = ref(personas);
+        const personaOptions = ref(teamsStore.personas);
 
         // Filters personas based on input characters in the select box
         function personaFilterFn(val, update) {
             if (val === '') {
-                update(() => {
-                    personaOptions.value = personas;
-                });
+                update(() => personaOptions.value = teamsStore.personas);
                 return;
             }
 
             update(() => {
                 const needle = val.toLowerCase();
-                personaOptions.value = personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
+                personaOptions.value = teamsStore.personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
             });
         }
 
@@ -350,15 +388,16 @@ export default {
             imageSize,
             imageSizeValue,
             imageSizeOptions,
-            persona,
             personaOptions,
             personaFilterFn,
+            personas,
             userAvatar,
             handleAvatarPicker,
             handleAvatarSelected,
             avatarPicker,
             avatarImage,
             showActionButton: ref(false),
+            quickSettings,
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

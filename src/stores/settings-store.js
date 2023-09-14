@@ -12,7 +12,7 @@ export const useSettingsStore = defineStore('settings', () => {
         speechLanguage: ref('en'),      // en | sv | hu
         conversationMode: ref(true),
         chatDirection: ref('up'),       // up | down
-
+        quickSettings: ref(true),
         // OpenAI settings
         apiKey: ref(''),
 
@@ -27,6 +27,6 @@ export const useSettingsStore = defineStore('settings', () => {
         imageSize: ref('1024x1024'),
 
         // Persona settings
-        persona: ref({id: 0, name: "Default assistant" })
+        personas: ref([])
     }
 });

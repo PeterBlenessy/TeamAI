@@ -76,6 +76,11 @@ export default {
             caption: 'Växla riktningen av chattmeddelandena upp/ner',
             tooltip: 'Växla riktningen av chattmeddelandena upp/ner'
         },
+        quickSettings: {
+            label: 'Snabbinställningar',
+            caption: 'Visa snabbinställningar i chatfönstret',
+            tooltip: 'Visa snabbinställningar'
+        },
 
         openAI: {
             apiKey: {
@@ -105,9 +110,9 @@ export default {
             }
         },
         persona: {
-            label: 'Persona',
-            caption: 'Välj AI assistentens persona.',
-            tooltip: 'Välj AI assistentens persona.'
+            label: 'Personas',
+            caption: 'Välj AI assistentens personas.',
+            tooltip: 'Välj AI assistentens personas.'
         },
     },
 

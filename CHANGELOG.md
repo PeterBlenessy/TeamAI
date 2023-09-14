@@ -25,9 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [KNOWN-BUGS]
 - Manual check for updates is not working as expected.
-- Occasional error when loading images: ResizeObserver loop completed with undelivered notifications. 
+- ResizeObserver loop completed with undelivered notifications. Triggered when resizing messages view.
+- Length of persona name should restricted to e.g. 32 characters.
+- Avatars should be scaled down to save storage space. Unless stored as separate files, only once.
 
 ## [UNRELEASED]
+
+## v0.20.0 - 2023-09-14
+- Fixed bug where persona settings was not restored as expected when changing conversation.
+- Added support for selecting multiple personas.
+- Added support for displaying persona avatars in persona selection options.
+- Added support for displaying persona prompt as tooltip in persona selection options in settings.
+- Added support for displaying quick settings above/below user input based on chat direction.
 
 ## v0.19.1 - 2023-09-08
 - Added indicators on hover to user avatar in settings.
