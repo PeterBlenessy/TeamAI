@@ -25,11 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [KNOWN-BUGS]
 - Manual check for updates is not working as expected.
-- ResizeObserver loop completed with undelivered notifications. Triggered when resizing messages view.
+- ResizeObserver loop completed with undelivered notifications. https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
 - Length of persona name should restricted to e.g. 32 characters.
 - Avatars should be scaled down to save storage space. Unless stored as separate files, only once.
+- Should make iconColor() a utility function.
+- Personas cannot be removed in QuickSettings when outside of col-6 boundary.
 
 ## [UNRELEASED]
+
+## v0.20.1 - 2023-09-14
+- Added support for changing OpenAI model from QuickSettings.
+- Auto hide QuickSettings slider when not in use for 30 seconds.
+- Removed shadow below QuickSettings to make it more visually appealing.
 
 ## v0.20.0 - 2023-09-14
 - Fixed bug where persona settings was not restored as expected when changing conversation.

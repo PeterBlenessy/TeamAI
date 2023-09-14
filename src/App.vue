@@ -3,10 +3,8 @@
 
         <!-- Conditional placement of UserInput -->
         <q-header v-show="chatDirection === 'down'" :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
-            <q-toolbar>
-                <UserInput />
-            </q-toolbar>
-            <QuickSettings v-if="quickSettings == 'true'"/>
+            <UserInput />
+            <QuickSettings v-if="quickSettings == 'true'" />
         </q-header>
 
         <OpenAI />
@@ -66,10 +64,8 @@
             <!-- Conditional placement of UserInput -->
             <q-footer v-show="chatDirection === 'up'" :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
 
-                <QuickSettings v-if="quickSettings == 'true'"/>
-                <q-toolbar>
-                    <UserInput />
-                </q-toolbar>
+                <QuickSettings v-if="quickSettings == 'true'" />
+                <UserInput />
             </q-footer>
 
         </q-page-container>

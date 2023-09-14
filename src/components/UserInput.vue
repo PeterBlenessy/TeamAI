@@ -1,59 +1,60 @@
 <template>
-    <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive"
-        :placeholder="isCreateImageSelected ? t('userInput.placeholder.image') : t('userInput.placeholder.text')"
-        @keydown.enter.prevent="handleUserInput" v-model="question">
+    <q-toolbar>
+        <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive"
+            :placeholder="isCreateImageSelected ? t('userInput.placeholder.image') : t('userInput.placeholder.text')"
+            @keydown.enter.prevent="handleUserInput" v-model="question">
 
-        <template v-slot:prepend>
+            <template v-slot:prepend>
 
-            <q-btn dense flat :icon="!isCreateImageSelected ? 'mdi-tooltip-text' : 'mdi-tooltip-text-outline'"
-                :color="!isCreateImageSelected ? 'primary' : iconColor"
-                @click="isCreateImageSelected = !isCreateImageSelected">
+                <q-btn dense flat :icon="!isCreateImageSelected ? 'mdi-tooltip-text' : 'mdi-tooltip-text-outline'"
+                    :color="!isCreateImageSelected ? 'primary' : iconColor"
+                    @click="isCreateImageSelected = !isCreateImageSelected">
 
-                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                    {{ t('userInput.tooltip.generateText') }}
-                </q-tooltip>
-            </q-btn>
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                        {{ t('userInput.tooltip.generateText') }}
+                    </q-tooltip>
+                </q-btn>
 
-            <q-btn dense flat :icon="isCreateImageSelected ? 'mdi-tooltip-image' : 'mdi-tooltip-image-outline'"
-                :color="isCreateImageSelected ? 'primary' : iconColor"
-                @click="isCreateImageSelected = !isCreateImageSelected">
+                <q-btn dense flat :icon="isCreateImageSelected ? 'mdi-tooltip-image' : 'mdi-tooltip-image-outline'"
+                    :color="isCreateImageSelected ? 'primary' : iconColor"
+                    @click="isCreateImageSelected = !isCreateImageSelected">
 
-                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                    {{ t('userInput.tooltip.generateImage') }}
-                </q-tooltip>
-            </q-btn>
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                        {{ t('userInput.tooltip.generateImage') }}
+                    </q-tooltip>
+                </q-btn>
 
-            <q-btn v-model="isMicrophoneActive" push dense flat
-                :icon="isMicrophoneActive ? 'mdi-microphone' : 'mdi-microphone-off'"
-                :color="isMicrophoneActive ? 'primary' : iconColor"
-                @click.stop="isMicrophoneActive ? stopSpeechRecognition() : startSpeechRecognition()"
-                :loading="speechDetected">
+                <q-btn v-model="isMicrophoneActive" push dense flat
+                    :icon="isMicrophoneActive ? 'mdi-microphone' : 'mdi-microphone-off'"
+                    :color="isMicrophoneActive ? 'primary' : iconColor"
+                    @click.stop="isMicrophoneActive ? stopSpeechRecognition() : startSpeechRecognition()"
+                    :loading="speechDetected">
 
-                <template v-slot:loading>
-                    <q-spinner-bars color="primary" @click.stop="stopSpeechRecognition()" />
-                </template>
+                    <template v-slot:loading>
+                        <q-spinner-bars color="primary" @click.stop="stopSpeechRecognition()" />
+                    </template>
 
-                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                    {{ isMicrophoneActive ? t('userInput.tooltip.speechStop') : t('userInput.tooltip.speechStart') }}
-                </q-tooltip>
-            </q-btn>
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                        {{ isMicrophoneActive ? t('userInput.tooltip.speechStop') : t('userInput.tooltip.speechStart') }}
+                    </q-tooltip>
+                </q-btn>
 
-        </template>
+            </template>
 
-        <template v-slot:append>
-            <q-btn :loading="loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
-                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                    {{ t('userInput.tooltip.send') }}
-                </q-tooltip>
-                <template v-slot:loading>
-                    <q-spinner color="primary" />
-                </template>
+            <template v-slot:append>
+                <q-btn :loading="loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
+                    <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                        {{ t('userInput.tooltip.send') }}
+                    </q-tooltip>
+                    <template v-slot:loading>
+                        <q-spinner color="primary" />
+                    </template>
 
-            </q-btn>
-        </template>
+                </q-btn>
+            </template>
 
-
-    </q-input>
+        </q-input>
+    </q-toolbar>
 </template>
 
 <script>
