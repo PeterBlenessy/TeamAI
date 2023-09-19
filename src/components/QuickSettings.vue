@@ -1,22 +1,29 @@
 <template>
     <div class="row">
-        <q-toolbar class="col-6">
+        <q-toolbar>
             <q-chip v-if="!isCreateImageSelected" icon="model_training" :label="model" size="sm" clickable
                 @click="nextModel()">
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.model.label') }}
                 </q-tooltip>
             </q-chip>
-
-            <q-chip v-if="!isCreateImageSelected" icon="short_text" :label="maxTokens" size="sm" clickable
-                @click="showQuickSettings = (showQuickSettings != 'maxTokens') ? 'maxTokens' : ''">
+            <q-chip v-if="!isCreateImageSelected" icon="short_text" :label="maxTokens" size="sm" clickable>
+                <q-menu anchor="top middle" self="bottom middle">
+                    <div class="q-pa-sm">
+                        <q-slider v-model="maxTokens" :min="64" :max="4096" :step="16" :markers="1024" vertical reverse/>
+                    </div>
+                </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.maxTokens.label') }}
                 </q-tooltip>
             </q-chip>
 
-            <q-chip v-if="!isCreateImageSelected" icon="thermostat" :label="temperature" size="sm" clickable
-                @click="showQuickSettings = (showQuickSettings != 'temperature') ? 'temperature' : ''">
+            <q-chip v-if="!isCreateImageSelected" icon="thermostat" :label="temperature" size="sm" clickable>
+                <q-menu anchor="top middle" self="bottom middle">
+                    <div class="q-pa-sm">
+                        <q-slider v-model="temperature" :min="0" :max="2" :step="0.1" :markers="0.5" vertical reverse/>
+                    </div>
+                </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.temperature.label') }}
                 </q-tooltip>
@@ -24,46 +31,66 @@
 
             <q-separator v-if="!isCreateImageSelected" vertical inset class="q-ma-sm" />
 
-            <q-chip v-if="isCreateImageSelected" icon="mdi-image-multiple-outline" :label="choices" size="sm" clickable
-                @click="showQuickSettings = (showQuickSettings != 'choices') ? 'choices' : ''">
+            <q-chip v-if="isCreateImageSelected" icon="mdi-image-multiple-outline" :label="choices" size="sm" clickable>
+                <q-menu anchor="top middle" self="bottom middle">
+                    <div class="q-pa-sm">
+                        <q-slider v-model="choices" snap :min="1" :max="10" :step="1" :markers="1" vertical reverse />
+                    </div>
+                </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.choices.label') }}
                 </q-tooltip>
             </q-chip>
 
-            <q-chip v-if="isCreateImageSelected" icon="mdi-image-size-select-large" :label="imageSize" size="sm" clickable
-                @click="showQuickSettings = (showQuickSettings != 'imageSize') ? 'imageSize' : ''">
+            <q-chip v-if="isCreateImageSelected" icon="mdi-image-size-select-large" :label="imageSize" size="sm" clickable>
+                <q-menu anchor="top middle" self="bottom middle">
+                    <div class="q-pa-sm">
+                        <q-slider v-model="imageSizeValue" snap :min="0" :max="2" :step="1" :markers="1" vertical reverse/>
+                    </div>
+                </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.size.label') }}
                 </q-tooltip>
             </q-chip>
 
-            <q-chip v-if="!isCreateImageSelected" v-for="persona in personas" :key="persona.id" size="sm" clickable
-                removable @remove="removePersona(persona.id)">
-                <q-avatar size="sm">
-                    <img v-if="persona.avatar" :src="persona.avatar" />
-                    <q-icon v-else name="mdi-account-circle" size="sm" />
-                </q-avatar>
-                {{ persona.name }}
-            </q-chip>
-        </q-toolbar>
+            <q-select v-if="!isCreateImageSelected" dense options-dense use-input input-debounce="0" use-chips multiple
+                borderless :option-label="(item) => item === null ? 'Null value' : item.name" v-model="personas"
+                :options="personaOptions" @filter="personaFilterFn">
 
-        <q-space />
+                <template v-slot:selected-item="scope">
+                    <q-chip dense size="sm" class="q-ma-none" removable @remove="scope.removeAtIndex(scope.index)">
+                        <q-avatar size="sm">
+                            <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
+                            <q-icon v-else name="mdi-account-circle" size="sm" />
+                        </q-avatar>
+                        {{ scope.opt.name }}
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ scope.opt.prompt }}
+                        </q-tooltip>
 
-        <q-toolbar class="col-6">
-            <q-slider v-if="showQuickSettings == 'maxTokens'" :model-value="maxTokens" @change="val => { maxTokens = val }"
-                :min="64" :max="4096" :step="16" :markers="1024" label />
+                    </q-chip>
+                </template>
 
-            <q-slider v-if="showQuickSettings == 'temperature'" :model-value="temperature"
-                @change="val => { temperature = val }" :min="0" :max="2" :step="0.1" :markers="0.5" label />
+                <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                        <q-item-section avatar>
+                            <q-avatar size="sm">
+                                <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
+                                <q-icon v-else name="mdi-account-circle" size="sm" />
+                            </q-avatar>
+                        </q-item-section>
+                        <q-item-section>
+                            <q-item-label>{{ scope.opt.name }}</q-item-label>
+                        </q-item-section>
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ scope.opt.prompt }}
+                        </q-tooltip>
 
-            <q-slider v-if="showQuickSettings == 'choices'" :model-value="choices" @change="val => { choices = val }" snap
-                :min="1" :max="10" :step="1" :markers="1" label />
+                    </q-item>
 
-            <q-slider v-if="showQuickSettings == 'imageSize'" :model-value="imageSizeValue"
-                @update:model-value="val => { imageSizeValue = val }" snap :min="0" :max="2" :step="1" :markers="1" label
-                :label-value="imageSize" />
+                </template>
 
+            </q-select>
         </q-toolbar>
     </div>
 </template>
@@ -96,19 +123,22 @@ export default {
             userAvatar
         } = storeToRefs(settingsStore);
 
-        const showQuickSettings = ref('');
-
-        watch(showQuickSettings, () => {
-            if (showQuickSettings.value != '') {
-                // Set timer to hide quick settings after 30 seconds
-                setTimeout(() => {
-                    showQuickSettings.value = '';
-                }, 30000);
-            }
-        });
-
         const teamsStore = useTeamsStore();
         const { isCreateImageSelected } = storeToRefs(teamsStore);
+        const personaOptions = ref(teamsStore.personas);
+
+        // Filters personas based on input characters in the select box
+        function personaFilterFn(val, update) {
+            if (val === '') {
+                update(() => personaOptions.value = teamsStore.personas);
+                return;
+            }
+
+            update(() => {
+                const needle = val.toLowerCase();
+                personaOptions.value = teamsStore.personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
+            });
+        }
 
         const imageSizeOptions = ref(['256x256', '512x512', '1024x1024']);
         const imageSizeValue = ref(imageSizeOptions.value.indexOf(imageSize.value));
@@ -137,10 +167,10 @@ export default {
             isCreateImageSelected,
 
             removePersona,
+            personaOptions,
+            personaFilterFn,
 
-            showQuickSettings,
             nextModel: () => {
-                showQuickSettings.value = '';
                 let index = modelOptions.value.indexOf(model.value);
                 index = (index + 1) % modelOptions.value.length;
                 model.value = modelOptions.value[index];

@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.20.2 - 2023-09-19
+- Redesigned QuickSettings to improve UX.
+
 ## v0.20.1 - 2023-09-14
 - Added support for changing OpenAI model from QuickSettings.
 - Auto hide QuickSettings slider when not in use for 30 seconds.
