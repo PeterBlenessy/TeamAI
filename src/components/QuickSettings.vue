@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <q-toolbar>
-            <q-chip v-if="!isCreateImageSelected" icon="model_training" :label="model" size="sm" clickable
+            <q-chip icon="model_training" :label="isCreateImageSelected ? 'DALL·E' : model" size="sm" clickable
                 @click="nextModel()">
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.model.label') }}
@@ -171,6 +171,10 @@ export default {
             personaFilterFn,
 
             nextModel: () => {
+                if (isCreateImageSelected.value) {
+                    return;
+                }
+                
                 let index = modelOptions.value.indexOf(model.value);
                 index = (index + 1) % modelOptions.value.length;
                 model.value = modelOptions.value[index];
