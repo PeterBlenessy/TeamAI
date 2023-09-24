@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.20.4 - 2023-09-24
+- Fixed issue where English and Hungarian translations for checking for updates got mixed up.
+
 ## v0.20.3 - 2023-09-24
 - Fixed issue where manually checking for updates was not working as expected.
 - Added indicator for image generation model in QuickSettings.

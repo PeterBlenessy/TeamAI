@@ -288,39 +288,40 @@ export default {
             caption: 'Please try again later.'
         }
     },
-    
     updater: {
         checking: {
-            message: "Frissítések keresése...",
-            caption: "Kérjük, várjon."
+            message: 'Checking for updates...',
+            caption: 'Please wait.'
         },
         error: {
-            message: "Hiba történt a frissítések keresése közben.",
-            caption: "Kérjük, próbálja meg később."
+            message: 'Error while checking for updates.',
+            caption: 'Please try again later.'
         },
         upToDate: {
-            message: "Nincs elérhető frissítés.",
-            caption: "A legfrissebb verziót használja."
+            message: 'No updates available.',
+            caption: 'You are running the latest version.'
         },
         updateAvailable: {
-            message: "Frissítés elérhető.",
-            caption: "Szeretné letölteni és telepíteni a frissítést?",
+            message: 'Update available.',
+            caption: 'Would you like to download and install the update?',
             actions: {
-                install: "Letöltés és telepítés",
-                later: "Később"
+                install: 'Download and install',
+                later: 'Later'
             }
         },
         relaunch: {
-            message: "Az új verzió letöltődött.",
-            caption: "Szeretné újraindítani az alkalmazást most, hogy használja az új verziót?",
+            message: 'New version downloaded.',
+            caption: 'Would you like to relaunch the application now to use the new version?',
             actions: {
-                relaunch: "Újraindítás",
-                later: "Később"
+                relaunch: 'Relaunch',
+                later: 'Later'
             }
         },
+
         done: {
-            message: "A frissítés letöltődött.",
-            caption: "Kattintson az újraindításhoz."
-        }
-    }
+            message: 'Update downloaded.',
+            caption: 'Click to restart.'
+        },
+
+    },
 }
