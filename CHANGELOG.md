@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.20.6 - 2023-09-24
+- Repositioned update check notification to the top of the window.
+
 ## v0.20.5 - 2023-09-24
 - Fixed issue where update check notification got stuck in loading state when available update was not installed.
 

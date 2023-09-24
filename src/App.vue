@@ -205,6 +205,7 @@ export default {
                 };
 
                 $q.notify({
+                    position: 'top',
                     icon: updater[status].icon,
                     type: updater[status].type,
                     spinner: false,
@@ -216,42 +217,36 @@ export default {
 
 
             try {
-                const { shouldUpdate, manifest } = await checkUpdate();
-
                 // checkUpdate() displays Tauri update flow if an update is available.
                 // When no update is available, onUpdaterEvent() will be triggered and frontend notifications used.
+                const { shouldUpdate, manifest } = await checkUpdate();
 
-                // Uncomment below frontend install/relaunch flow for potential future reference
+                if (shouldUpdate) {
+                    console.log(`Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
+                    // Uncomment to enable frontend install/relaunch flow.
+                    // Also, disable the built-in Tauri dialog in Tauri config.
 
-                // if (shouldUpdate) {
-                //     // You could show a dialog asking the user if they want to install the update here.
-                //     let updateInfo = ` ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`;
-                    
-                //     console.log(`Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
+                    // Install the update. This will also restart the app on Windows!
+                    // notification({
+                    //     multiline: true,
+                    //     message: t('updater.updateAvailable.message'),
+                    //     caption: t('updater.updateAvailable.caption') + updateInfo,
+                    //     actions: [
+                    //         { label: t('updater.updateAvailable.actions.install'), color: 'white', handler: async () => { await installUpdate(); } },
+                    //         { label: t('updater.updateAvailable..actions.later'), color: 'white', handler: () => { } }
+                    //     ],
+                    // });
 
-                //     // Install the update. This will also restart the app on Windows!
-                //     await installUpdate();
-                //     // notification({
-                //     //     multiline: true,
-                //     //     message: t('updater.updateAvailable.message'),
-                //     //     caption: t('updater.updateAvailable.caption') + updateInfo,
-                //     //     actions: [
-                //     //         { label: t('updater.updateAvailable.actions.install'), color: 'white', handler: async () => { await installUpdate(); } },
-                //     //         { label: t('updater.updateAvailable..actions.later'), color: 'white', handler: () => { } }
-                //     //     ],
-                //     // });
-
-                //     // On macOS and Linux you will need to restart the app manually.
-                //     await relaunch();
-                //     // notification({
-                //     //     message: t('updater.relaunch.message'),
-                //     //     caption: t('updater.relaunch.caption'),
-                //     //     actions: [
-                //     //         { label: t('updater.relaunch.actions.relaunch'), color: 'white', handler: async () => { await relaunch(); } },
-                //     //         { label: t('updater.relaunch..actions.later'), color: 'white', handler: () => { } }
-                //     //     ],
-                //     // });
-                // }
+                    // On macOS and Linux you will need to restart the app manually.
+                    // notification({
+                    //     message: t('updater.relaunch.message'),
+                    //     caption: t('updater.relaunch.caption'),
+                    //     actions: [
+                    //         { label: t('updater.relaunch.actions.relaunch'), color: 'white', handler: async () => { await relaunch(); } },
+                    //         { label: t('updater.relaunch.actions.later'), color: 'white', handler: () => { } }
+                    //     ],
+                    // });
+                }
             } catch (error) {
                 console.error(error);
             }
