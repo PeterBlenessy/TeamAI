@@ -88,8 +88,7 @@ import { storeToRefs } from 'pinia';
 import { useSettingsStore } from './stores/settings-store.js';
 import { useTeamsStore } from './stores/teams-store.js';
 import { invoke } from '@tauri-apps/api';
-import { checkUpdate, installUpdate, onUpdaterEvent } from '@tauri-apps/api/updater'
-import { relaunch } from '@tauri-apps/api/process'
+import { checkUpdate, onUpdaterEvent } from '@tauri-apps/api/updater'
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
@@ -193,15 +192,7 @@ export default {
         // Check for updates
         async function checkForUpdates() {
 
-            const notification = $q.notify({
-                group: false, // required to be updatable
-                timeout: 0, // we want to be in control when it gets dismissed
-                position: 'top',
-                spinner: true,
-                message: t('updater.checking.message'),
-                caption: t('updater.checking.caption')
-            });
-
+            // Listen to updater events
             const unlisten = await onUpdaterEvent(({ error, status }) => {
                 // This will log all updater events, including status updates and errors.
                 console.log('Updater event', error, status)
@@ -213,7 +204,7 @@ export default {
                     'UPTODATE': { icon: 'done', type: 'positive', message: t('updater.upToDate.message'), caption: t('updater.upToDate.caption') }
                 };
 
-                notification({
+                $q.notify({
                     icon: updater[status].icon,
                     type: updater[status].type,
                     spinner: false,
@@ -227,34 +218,40 @@ export default {
             try {
                 const { shouldUpdate, manifest } = await checkUpdate();
 
-                if (shouldUpdate) {
-                    // You could show a dialog asking the user if they want to install the update here.
-                    let updateInfo = ` ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`;
+                // checkUpdate() displays Tauri update flow if an update is available.
+                // When no update is available, onUpdaterEvent() will be triggered and frontend notifications used.
+
+                // Uncomment below frontend install/relaunch flow for potential future reference
+
+                // if (shouldUpdate) {
+                //     // You could show a dialog asking the user if they want to install the update here.
+                //     let updateInfo = ` ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`;
                     
-                    console.log(`Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
+                //     console.log(`Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
 
-                    // Install the update. This will also restart the app on Windows!
-                    notification({
-                        multiline: true,
-                        message: t('updater.updateAvailable.message'),
-                        caption: t('updater.updateAvailable.caption') + updateInfo,
-                        actions: [
-                            { label: t('updater.updateAvailable.actions.install'), color: 'white', handler: async () => { await installUpdate(); } },
-                            { label: t('updater.updateAvailable..actions.later'), color: 'white', handler: () => { } }
-                        ],
-                    });
+                //     // Install the update. This will also restart the app on Windows!
+                //     await installUpdate();
+                //     // notification({
+                //     //     multiline: true,
+                //     //     message: t('updater.updateAvailable.message'),
+                //     //     caption: t('updater.updateAvailable.caption') + updateInfo,
+                //     //     actions: [
+                //     //         { label: t('updater.updateAvailable.actions.install'), color: 'white', handler: async () => { await installUpdate(); } },
+                //     //         { label: t('updater.updateAvailable..actions.later'), color: 'white', handler: () => { } }
+                //     //     ],
+                //     // });
 
-                    // On macOS and Linux you will need to restart the app manually.
-                    notification({
-                        message: t('updater.relaunch.message'),
-                        caption: t('updater.relaunch.caption'),
-                        actions: [
-                            { label: t('updater.relaunch.actions.relaunch'), color: 'white', handler: async () => { await relaunch(); } },
-                            { label: t('updater.relaunch..actions.later'), color: 'white', handler: () => { } }
-                        ],
-                    });
-
-                }
+                //     // On macOS and Linux you will need to restart the app manually.
+                //     await relaunch();
+                //     // notification({
+                //     //     message: t('updater.relaunch.message'),
+                //     //     caption: t('updater.relaunch.caption'),
+                //     //     actions: [
+                //     //         { label: t('updater.relaunch.actions.relaunch'), color: 'white', handler: async () => { await relaunch(); } },
+                //     //         { label: t('updater.relaunch..actions.later'), color: 'white', handler: () => { } }
+                //     //     ],
+                //     // });
+                // }
             } catch (error) {
                 console.error(error);
             }
