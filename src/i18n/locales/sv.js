@@ -281,5 +281,40 @@ export default {
             message: 'Ett okänt fel inträffade.',
             caption: 'Försök igen om en stund.'
         }
-    }
+    },
+    updater: {
+        checking: {
+            message: 'Kontrollerar efter uppdateringar...',
+            caption: 'Detta kan ta några sekunder.'
+        },
+        error: {
+            message: 'Ett fel inträffade när du kontrollerade efter uppdateringar.',
+            caption: 'Försök igen om en stund.'
+        },
+        upToDate: {
+            message: 'Ingen ny version tillgänglig.',
+            caption: 'Du kör den senaste versionen.',
+        },
+        updateAvailable: {
+            message: 'En ny version är tillgänglig.',
+            caption: 'Vill du ladda ner och installera den nya versionen?',
+            actions: {
+                install: 'LAdda ner och installera',
+                later: 'Senare'
+            }
+        },
+        relaunch: {
+            message: 'Ny version installerad.',
+            caption: 'Vill du starta om nu för att använda den nya versionen?',
+            actions: {
+                relaunch: 'Starta om',
+                later: 'Senare'
+            }
+        },
+
+        done: {
+            message: 'Uppdatering klar.',
+            caption: 'Du kör nu den senaste versionen.'
+        },
+    },
 }

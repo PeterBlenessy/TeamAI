@@ -287,5 +287,40 @@ export default {
             message: 'An unknown error occurred.',
             caption: 'Please try again later.'
         }
+    },
+    
+    updater: {
+        checking: {
+            message: "Frissítések keresése...",
+            caption: "Kérjük, várjon."
+        },
+        error: {
+            message: "Hiba történt a frissítések keresése közben.",
+            caption: "Kérjük, próbálja meg később."
+        },
+        upToDate: {
+            message: "Nincs elérhető frissítés.",
+            caption: "A legfrissebb verziót használja."
+        },
+        updateAvailable: {
+            message: "Frissítés elérhető.",
+            caption: "Szeretné letölteni és telepíteni a frissítést?",
+            actions: {
+                install: "Letöltés és telepítés",
+                later: "Később"
+            }
+        },
+        relaunch: {
+            message: "Az új verzió letöltődött.",
+            caption: "Szeretné újraindítani az alkalmazást most, hogy használja az új verziót?",
+            actions: {
+                relaunch: "Újraindítás",
+                later: "Később"
+            }
+        },
+        done: {
+            message: "A frissítés letöltődött.",
+            caption: "Kattintson az újraindításhoz."
+        }
     }
 }

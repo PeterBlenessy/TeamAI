@@ -282,5 +282,9 @@ export default {
             message: 'Ismeretlen hiba történt.',
             caption: 'Kérjük, próbálja újra rövid várakozás után.'
         }
+    },
+
+    updater: {
+        
     }
 }
