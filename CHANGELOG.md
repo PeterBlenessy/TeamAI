@@ -15,7 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Security in case of vulnerabilities.
 
 ## [BACKLOG]
-- Add language information to messages.
+- Add language information to messages and extract it automatically to know current language.
+- Should make iconColor() a utility function.
+- Should text and image generation models be merged in QuickSettings? And selection icons in input field removed?
+- Length of persona name should be restricted to e.g. 32 characters to fit dropdown selection box.
+- Avatars should be scaled down to save storage space. Unless stored as separate files, only once.
 
 ### [MAJOR]
 
@@ -24,14 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [PATCH]
 
 ### [KNOWN-BUGS]
-- Manual check for updates is not working as expected.
-- ResizeObserver loop completed with undelivered notifications. https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
-- Length of persona name should restricted to e.g. 32 characters.
-- Avatars should be scaled down to save storage space. Unless stored as separate files, only once.
-- Should make iconColor() a utility function.
-- Personas cannot be removed in QuickSettings when outside of col-6 boundary.
+- ResizeObserver loop completed with undelivered notifications. 
+  https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
 
 ## [UNRELEASED]
+
+## v0.20.3 - 2023-09-24
+- Fixed issue where manually checking for updates was not working as expected.
+- Added indicator for image generation model in QuickSettings.
 
 ## v0.20.2 - 2023-09-19
 - Redesigned QuickSettings to improve UX.
