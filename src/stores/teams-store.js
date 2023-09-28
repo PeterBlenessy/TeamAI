@@ -28,6 +28,9 @@ export const useTeamsStore = defineStore('teams', () => {
 
     // Generate chat or image
     const isCreateImageSelected = ref(false);
+    
+    // The user input is a team assignment
+    const isTeamWorkActivated = ref(false);
 
     // ---------------------------------------------------------------------------------------------
     // Actions
@@ -127,6 +130,9 @@ export const useTeamsStore = defineStore('teams', () => {
         loading,
         // Generate chat or image
         isCreateImageSelected,
+
+        // The user input is a team assignment        
+        isTeamWorkActivated,
 
         // Actions
         newConversation,

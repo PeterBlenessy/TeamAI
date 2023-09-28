@@ -13,6 +13,7 @@ export const useSettingsStore = defineStore('settings', () => {
         conversationMode: ref(true),
         chatDirection: ref('up'),       // up | down
         quickSettings: ref(true),
+        
         // OpenAI settings
         apiKey: ref(''),
 

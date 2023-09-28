@@ -81,6 +81,11 @@ export default {
             caption: 'Visa snabbinställningar i chatfönstret',
             tooltip: 'Visa snabbinställningar'
         },
+        teamWork: {
+            label: 'Teamarbete',
+            caption: 'Aktivera teamarbete',
+            tooltip: 'Aktivera teamarbete. När det är aktiverat skickas din fråga till den första personan, svaret skickas till nästa, och så vidare. När det är inaktivt kommer varje persona att svara med ett individuellt svar på din fråga.'
+        },
 
         openAI: {
             apiKey: {

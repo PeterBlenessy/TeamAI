@@ -14,7 +14,7 @@ export default {
     name: 'OpenAI',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, conversationId, messages, history, userInput, isCreateImageSelected } = storeToRefs(teamsStore);
+        const { loading, conversationId, messages, history, userInput, isCreateImageSelected, isTeamWorkActivated } = storeToRefs(teamsStore);
 
         const settingsStore = useSettingsStore();
         const { conversationMode, personas, speechLanguage } = storeToRefs(settingsStore);
@@ -82,93 +82,108 @@ export default {
 
         const askQuestion = async (question) => {
             loading.value = true;
-            let conversation = (!conversationMode.value) ? [{ "role": "user", "content": question }] : getMessages(conversationId.value);
 
-            try {
-                // Always add default persona prompt as system message
-                let systemMessages = [{ "role": "system", "content": teamsStore.personas[0].prompt }];
-                // Add user selected persona prompts as system messages
-                if (personas.value.length != 0) {
-                    personas.value.forEach(persona => {
-                        if (persona.id != 0) systemMessages.push({ "role": "system", "content": persona.prompt });
-                    });
-                }
+            let count = personas.value.length;
+            let response = '';
+            let systemMessages = '';
 
-                let response = isCreateImageSelected.value
-                    ? await openAI.createImageCompletion(question)
-                    : await openAI.createChatCompletion([
-                        ...systemMessages,
-                        ...conversation
-                    ]);
+            for (const persona of personas.value) {
 
-                const timestamp = Date.now().toString();
-                
-                // Add additional settings
-                if (!isCreateImageSelected.value) {
-                    response.settings.personas = personas.value;
-                    response.settings.conversationMode = conversationMode.value;
-                }
-                response.settings.speechLanguage = speechLanguage.value;
+                try {
 
-                // Store response in messages
-                messages.value.push({
-                    timestamp: timestamp,
-                    conversationId: conversationId.value,
-                    ...response,
-                    systemMessages: systemMessages
-                });
+                    const timestamp = Date.now().toString();
 
-                // Check if conversation title exists
-                if (getConversation(conversationId.value).length == 0) {
-                    generateConversationTitle(conversationId.value)
-                        .then((title) => {
-                            history.value.push({
-                                title: title,
-                                timestamp: timestamp,
-                                created: timestamp,
-                                updated: timestamp,
-                                conversationId: conversationId.value,
-                                personas: personas.value
-                            });
-                        })
-                        .catch(error => console.error(error))
-                }
-                // todo: if conversation title exists, update its 'updated' key to timestamp
-            } catch (error) {
-                let message = ''
-                let caption = ''
-
-                if (error.response) {
-                    message = error.response.status;
-                    caption = error.response.data;
-                } else {
-                    const path = 'apiErrors.' + error.message.split(' ')[0];
-
-                    // Check if error message is defined in i18n language files
-                    if ((path + '.message') == t(path + '.message')) {
-                        message = "Unknown error occured. ";
-                        caption = error.message;
+                    // Make the right API call
+                    if (isCreateImageSelected.value) {
+                        response = await openAI.createImageCompletion(question);
                     } else {
-                        message = t(path + '.message');
-                        caption = t(path + '.caption');
-                    }
-                }
+                        // Always add default persona prompt as system message
+                        systemMessages = [{ "role": "system", "content": teamsStore.personas[0].prompt }];
+                        if (persona.id != 0) systemMessages.push({ "role": "system", "content": persona.prompt });
 
-                $q.notify({
-                    type: 'negative',
-                    position: 'top',
-                    html: true,
-                    progress: true,
-                    caption: caption,
-                    message: message,
-                    actions: [{
-                        icon: 'close',
-                        color: 'white',
-                        handler: () => { /* ... */ }
-                    }]
-                });
-            } finally {
-                loading.value = false;
+                        let conversation = '';
+                        if (isTeamWorkActivated.value && response != '') {
+                            conversation = [{ "role": "user", "content": response.content }];
+                        } else if (conversationMode.value) {
+                            conversation =  getMessages(conversationId.value);
+                        } else {
+                            conversation = [{ "role": "user", "content": question }];
+                        }
+
+                        response = await openAI.createChatCompletion([...systemMessages, ...conversation]);
+                        response.settings.persona = persona; // Current persona
+                        response.settings.personas = personas.value; // All personas, to be able to re-load settings
+                        response.settings.conversationMode = conversationMode.value;
+
+                        count--; // Remaining personas to keep loading indicator accurate
+                    }
+
+                    response.settings.speechLanguage = speechLanguage.value;
+
+                    // Add response to messages
+                    messages.value.push({
+                        timestamp: timestamp,
+                        conversationId: conversationId.value,
+                        ...response,
+                        systemMessages: systemMessages
+                    });
+
+                    // Check if conversation title exists
+                    // todo: if conversation title exists, update its 'updated' key to timestamp
+                    if (getConversation(conversationId.value).length == 0) {
+                        generateConversationTitle(conversationId.value)
+                            .then((title) => {
+                                history.value.push({
+                                    title: title,
+                                    timestamp: timestamp,
+                                    created: timestamp,
+                                    updated: timestamp,
+                                    conversationId: conversationId.value,
+                                    personas: personas.value
+                                });
+                            })
+                            .catch(error => console.error(error))
+                    }
+
+                    // Break out of the personas for loop when generating images.
+                    if (isCreateImageSelected.value) break;
+
+                } catch (error) {
+                    let message = ''
+                    let caption = ''
+
+                    if (error.response) {
+                        message = error.response.status;
+                        caption = error.response.data;
+                    } else {
+                        const path = 'apiErrors.' + error.message.split(' ')[0];
+
+                        // Check if error message is defined in i18n language files
+                        if ((path + '.message') == t(path + '.message')) {
+                            message = "Unknown error occured. ";
+                            caption = error.message;
+                        } else {
+                            message = t(path + '.message');
+                            caption = t(path + '.caption');
+                        }
+                    }
+
+                    $q.notify({
+                        type: 'negative',
+                        position: 'top',
+                        html: true,
+                        progress: true,
+                        caption: caption,
+                        message: message,
+                        actions: [{
+                            icon: 'close',
+                            color: 'white',
+                            handler: () => { /* ... */ }
+                        }]
+                    });
+                } finally {
+                    loading.value = count == 0 ? false : true;
+                };
             }
         }
 

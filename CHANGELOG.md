@@ -33,6 +33,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.21.0 - 2023-09-28
+- Added support for toggling team work in QuickSettings.
+- Removed option for user input filtering in persona selection list in QuickSettings to simplify UX.
+- Changed availability of persona selection in QuickSettings to advanced mode.
+- Added support for displaying assistant name as tooltip when hovering over assistant avatar.
+- Updated README.md with additional application description and features.
+- Added separator between messages to clearly responses responses from different personas.
+
 ## v0.20.6 - 2023-09-24
 - Repositioned update check notification to the top of the window.
 

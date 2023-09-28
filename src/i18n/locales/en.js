@@ -82,6 +82,12 @@ export default {
             tooltip: 'Show quick settings'
         },
 
+        teamWork: {
+            label: 'Team work',
+            caption: 'Activate team work',
+            tooltip: 'Activate team work. When activated, your question will be sent to the first persona, the response will be sent to the next, and so on. When inactive, each persona will respond with an individual response to your question.',
+        },
+    
         openAI: {
             apiKey: {
                 label: 'OpenAI API key',

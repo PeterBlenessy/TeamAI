@@ -12,8 +12,17 @@ The application is based on [tauri-app-boilerplate](https://github.com/PeterBlen
 - [x] Generate images using DALL·E
 - [x] Personas with specific bahaviour and competence
 - [x] Import Awesome Chat GPT prompts to use as personas
-- [ ] Teams of personas to solve a specific objective
+- [x] Teams of personas to solve a specific objective
+- [x] Message actions (copy, share, delete, etc.)
+- [x] Speech synthesis using Web Speech API
+- [x] Avatars
 - [ ] Templates
+
+The application has a basic and an advanced mode, toggled in the application settings.
+
+In **basic mode**, the user receives responses from the default persona. The user cannot select another persona, in fact, the concept of personas is not available in the UI. The user can try to influence the GPT bot to behave in a desired way by describing it in the user input.
+
+In **advanced mode**, the user has the option to create personas and select one or several to be included in the conversation. When several personas are selected, each will provide a response to the question asked by the user. During the course of the conversation, the user can activate **team work**. This will lead to the user's question only being sent to the first persona, and the next getting the response from the first as question, and so on.
 
 ## Contributions
 Contributions, issues and feature requests are welcome!

@@ -10,7 +10,7 @@
             <q-chip v-if="!isCreateImageSelected" icon="short_text" :label="maxTokens" size="sm" clickable>
                 <q-menu anchor="top middle" self="bottom middle">
                     <div class="q-pa-sm">
-                        <q-slider v-model="maxTokens" :min="64" :max="4096" :step="16" :markers="1024" vertical reverse/>
+                        <q-slider v-model="maxTokens" :min="64" :max="4096" :step="16" :markers="1024" vertical reverse />
                     </div>
                 </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
@@ -21,7 +21,7 @@
             <q-chip v-if="!isCreateImageSelected" icon="thermostat" :label="temperature" size="sm" clickable>
                 <q-menu anchor="top middle" self="bottom middle">
                     <div class="q-pa-sm">
-                        <q-slider v-model="temperature" :min="0" :max="2" :step="0.1" :markers="0.5" vertical reverse/>
+                        <q-slider v-model="temperature" :min="0" :max="2" :step="0.1" :markers="0.5" vertical reverse />
                     </div>
                 </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
@@ -45,7 +45,7 @@
             <q-chip v-if="isCreateImageSelected" icon="mdi-image-size-select-large" :label="imageSize" size="sm" clickable>
                 <q-menu anchor="top middle" self="bottom middle">
                     <div class="q-pa-sm">
-                        <q-slider v-model="imageSizeValue" snap :min="0" :max="2" :step="1" :markers="1" vertical reverse/>
+                        <q-slider v-model="imageSizeValue" snap :min="0" :max="2" :step="1" :markers="1" vertical reverse />
                     </div>
                 </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
@@ -53,12 +53,12 @@
                 </q-tooltip>
             </q-chip>
 
-            <q-select v-if="!isCreateImageSelected" dense options-dense use-input input-debounce="0" use-chips multiple
+            <q-select v-if="appMode == 'advanced' && !isCreateImageSelected" dense options-dense use-chips multiple
                 borderless :option-label="(item) => item === null ? 'Null value' : item.name" v-model="personas"
                 :options="personaOptions" @filter="personaFilterFn">
 
                 <template v-slot:selected-item="scope">
-                    <q-chip dense size="sm" class="q-ma-none" removable @remove="scope.removeAtIndex(scope.index)">
+                    <q-chip dense size="sm" removable @remove="scope.removeAtIndex(scope.index)">
                         <q-avatar size="sm">
                             <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
                             <q-icon v-else name="mdi-account-circle" size="sm" />
@@ -91,6 +91,21 @@
                 </template>
 
             </q-select>
+
+            <q-separator v-if="appMode == 'advanced' && !isCreateImageSelected" vertical inset class="q-ma-sm" />
+
+            <q-chip v-if="appMode == 'advanced' && !isCreateImageSelected" size="sm" icon="mdi-account-group-outline"
+                clickable>
+
+                <q-toggle v-model="isTeamWorkActivated" flat dense left-label size="md"
+                    :label="t('settings.teamWork.label')" unchecked-icon="mdi-account" checked-icon="mdi-account-group">
+                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.teamWork.tooltip') }}
+                    </q-tooltip>
+                </q-toggle>
+
+            </q-chip>
+
         </q-toolbar>
     </div>
 </template>
@@ -111,6 +126,7 @@ export default {
         const { t } = useI18n();
         const settingsStore = useSettingsStore();
         const {
+            appMode,
             conversationMode,
             model,
             modelOptions,
@@ -124,7 +140,7 @@ export default {
         } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
-        const { isCreateImageSelected } = storeToRefs(teamsStore);
+        const { isCreateImageSelected, isTeamWorkActivated } = storeToRefs(teamsStore);
         const personaOptions = ref(teamsStore.personas);
 
         // Filters personas based on input characters in the select box
@@ -146,15 +162,11 @@ export default {
             imageSize.value = imageSizeOptions.value[imageSizeValue.value];
         });
 
-        // Remove persona from personas
-        const removePersona = (id) => {
-            personas.value = personas.value.filter(persona => persona.id !== id);
-        }
-
         return {
             t,
             speechLanguage,
             conversationMode,
+            appMode,
             model,
             modelOptions,
             maxTokens,
@@ -165,8 +177,8 @@ export default {
             personas,
             userAvatar,
             isCreateImageSelected,
+            isTeamWorkActivated,
 
-            removePersona,
             personaOptions,
             personaFilterFn,
 
@@ -174,7 +186,7 @@ export default {
                 if (isCreateImageSelected.value) {
                     return;
                 }
-                
+
                 let index = modelOptions.value.indexOf(model.value);
                 index = (index + 1) % modelOptions.value.length;
                 model.value = modelOptions.value[index];

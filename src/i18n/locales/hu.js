@@ -80,6 +80,12 @@ export default {
             tooltip: 'Gyors beállítások megjelenítése/elrejtése'
         },
 
+        teamWork: {
+            label: 'Csapatmunka',
+            caption: 'Aktiváld a csapatmunkát',
+            tooltip: 'Aktiváld a csapatmunkát. Amikor aktiválva van, a kérdésre az első persona válaszol, a választ a következő kapja mint kérdés, és így tovább. Amikor inaktív, minden persona egyéni választ ad a kérdésre.'
+        },
+
         openAI: {
             apiKey: {
                 label: 'OpenAI API kulcs',

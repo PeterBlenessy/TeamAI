@@ -145,12 +145,6 @@ export default {
                 appMode: 'advanced'
             },
             {
-                action: () => { },
-                icon: 'mdi-account-multiple-plus-outline',
-                tooltip: 'toolbar.tooltip.addTeam',
-                appMode: 'advanced'
-            },
-            {
                 action: () => { showSettings.value = true },
                 icon: 'mdi-tune',
                 tooltip: 'toolbar.tooltip.settings',

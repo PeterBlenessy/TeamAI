@@ -12,7 +12,10 @@
 
                     <q-avatar v-if="message.role == 'assistant'" size="xl">
                         <q-img v-if="getAssistantAvatar(message)" :src="getAssistantAvatar(message)" />
-                        <q-icon v-else rounded size="md" name="mdi-laptop" :color="iconColor" />
+                        <q-icon v-else rounded size="xl" name="mdi-account-circle" :color="iconColor" />
+                        <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                            {{ getAssistantName(message) }}
+                        </q-tooltip>
                     </q-avatar>
                 </q-item-section>
 
@@ -119,7 +122,7 @@
                 </q-item-section>
             </q-item>
         </q-card>
-
+        <q-separator/>
     </div>
 </template>
 
@@ -328,23 +331,28 @@ export default {
             let persona = null;
 
             if ('settings' in message) {
-                if ('personas' in message.settings) {
-                    // Specific persona is set
-                    // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
-                    persona = teamsStore.getPersona(message.settings.personas[0].id);
-                    if (persona && 'avatar' in persona) {
-                        return persona.avatar;
-                    }
+                // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
+                persona = 'persona' in message.settings ? teamsStore.getPersona(message.settings.persona.id)
+                        : 'personas' in message.settings ? teamsStore.getPersona(message.settings.personas[0].id)
+                        : null;
 
-                    // Use avatar potentially stored with message
-                    if ('avatar' in message.settings.personas[0]) {
-                        return message.settings.personas[0].avatar;
-                    }
+                if (persona && 'avatar' in persona) {
+                    return persona.avatar;
                 }
             }
-            // No valid avatar found -> return default persona avatar or null
-            persona = teamsStore.getPersona(0);
-            return ('avatar' in persona) ? persona.avatar : null;
+            return null;
+        }
+
+        const getAssistantName = (message) => {
+            let persona = null;
+
+            if ('settings' in message) {
+                // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
+                persona = 'persona' in message.settings ? teamsStore.getPersona(message.settings.persona.id) : null;
+
+                return (persona && 'name' in persona) ? persona.name : null;
+            }
+            return null;
         }
 
         return {
@@ -372,7 +380,8 @@ export default {
             stopSpeech,
             readingMessage,
             userAvatar,
-            getAssistantAvatar
+            getAssistantAvatar,
+            getAssistantName
         };
     },
 };
