@@ -7,7 +7,7 @@ import { useTeamsStore } from '../stores/teams-store.js';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import OpenAI from '../services/openai.js';
-import { useQuasar } from 'quasar';
+import { is, useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
 export default {
@@ -83,7 +83,7 @@ export default {
         const askQuestion = async (question) => {
             loading.value = true;
 
-            let count = personas.value.length;
+            let count = isCreateImageSelected.value ? 1 : personas.value.length;
             let response = '';
             let systemMessages = '';
 
@@ -105,7 +105,7 @@ export default {
                         if (isTeamWorkActivated.value && response != '') {
                             conversation = [{ "role": "user", "content": response.content }];
                         } else if (conversationMode.value) {
-                            conversation =  getMessages(conversationId.value);
+                            conversation = getMessages(conversationId.value);
                         } else {
                             conversation = [{ "role": "user", "content": question }];
                         }
@@ -143,12 +143,6 @@ export default {
                             .catch(error => console.error(error))
                     }
 
-                    // Decrease remaining personas to keep loading indicator accurate
-                    count--;
-                    
-                    // Break out of the personas for loop when generating images.
-                    if (isCreateImageSelected.value) break;
-
                 } catch (error) {
                     let message = ''
                     let caption = ''
@@ -182,9 +176,15 @@ export default {
                             handler: () => { /* ... */ }
                         }]
                     });
+
                 } finally {
+                    // Decrease remaining personas to keep loading indicator accurate
+                    count--;
                     loading.value = count == 0 ? false : true;
                 };
+
+                // Break out of the personas for loop when generating images.
+                if (isCreateImageSelected.value) break;
             }
         }
 

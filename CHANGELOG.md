@@ -33,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.21.3 - 2023-09-29
+- Added additional OpenAI API error code handling.
+- Fixed issue where text generation model was set to dall-e in QuickSettings after image generation.
+
 ## v0.21.2 - 2023-09-29
 - Fixed issue where all images were deleted when deleting a message with images.
 

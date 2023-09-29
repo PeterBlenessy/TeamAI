@@ -260,9 +260,17 @@ export default {
     },
 
     apiErrors: {
+        '400': {
+            message: 'A kérés érvénytelennek tűnik.',
+            caption: 'Ellenőrizze a kérését, majd próbálja újra.'
+        },
         '401': {
             message: 'Érvénytelen hitelesítés.',
             caption: 'Győződjön meg arról, hogy az OpenAI API kulcsa helyes.'
+        },
+        '404': {
+            message: 'A kérés érvénytelennek tűnik.',
+            caption: 'Ellenőrizze a kérését, majd próbálja újra.'
         },
         '429': {
             message: 'A kérési arány korlátja elérte, vagy a motor túlterhelt lehet.',
@@ -271,10 +279,6 @@ export default {
         '500': {
             message: 'A szerver hibát észlelt a kérés feldolgozása során.',
             caption: 'Kérjük, próbálja újra rövid várakozás után, és lépjen velünk kapcsolatba, ha a probléma továbbra is fennáll.'
-        },
-        '400': {
-            message: 'A kérés érvénytelennek tűnik.',
-            caption: 'Ellenőrizze a kérését, majd próbálja újra.'
         },
         '503' : {
             message: 'A szerver jelenleg nem elérhető.',

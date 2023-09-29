@@ -173,7 +173,11 @@ export default {
         // Restore settings from last message in conversation
         const restoreSettings = () => {
             const settings = teamsStore.getSettingsFromLastMessage(conversationId.value);
-            if (settings) settingsStore.$patch(settings);
+
+            if (settings) {
+                if (settings.model == "dall-e") delete settings.model;
+                settingsStore.$patch(settings);
+            }
         };
 
         // Load messages from conversationId

@@ -258,9 +258,17 @@ export default {
         }
     },
     apiErrors: {
+        '400': {
+            message: 'Anropet verkar ogiltig.',
+            caption: 'Kontrollera ditt anrop och försök igen.'
+        },
         '401': {
             message: 'Ogiltig autentisering.',
             caption: 'Se till att OpenAI API-nyckeln som används är korrekt.'
+        },
+        '404': {
+            message: 'Anropet verkar ogiltig.',
+            caption: 'Kontrollera ditt anrop och försök igen.'
         },
         '429': {
             message: 'Begränsningen för antalet förfrågningar har nåtts, eller servern kan vara överbelastad.',
@@ -269,10 +277,6 @@ export default {
         '500': {
             message: 'Servern hade ett fel när den behandlade ditt anrop.',
             caption: 'Försök igen om en stund och kontakta oss om problemet kvarstår.'
-        },
-        '400': {
-            message: 'Anropet verkar ogiltig.',
-            caption: 'Kontrollera ditt anrop och försök igen.'
         },
         '503' : {
             message: 'Servern är för närvarande otillgänglig.',

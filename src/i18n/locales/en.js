@@ -265,9 +265,17 @@ export default {
     },
 
     apiErrors: {
+        '400': {
+            message: 'The request seams invalid.',
+            caption: 'Please check your request and try again.'
+        },
         '401': {
             message: 'Invalid Authentication.',
             caption: 'Please ensure that the OpenAI API key used is correct.'
+        },
+        '404': {
+            message: 'The request seams invalid.',
+            caption: 'Please check your request and try again.'
         },
         '429': {
             message: 'Rate limit reached for requests, or the engine may be overloaded.',
@@ -276,10 +284,6 @@ export default {
         '500': {
             message: 'The server had an error while processing your request.',
             caption: 'Please retry your request after a brief wait and contact us if the issue persists.'
-        },
-        '400': {
-            message: 'The request seams invalid.',
-            caption: 'Please check your request and try again.'
         },
         '503' : {
             message: 'The server is currently unavailable.',
