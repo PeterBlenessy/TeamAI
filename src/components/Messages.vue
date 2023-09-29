@@ -46,7 +46,7 @@
                                                     </q-btn>
                                                     <q-btn size="sm" flat dense round icon="mdi-delete-outline"
                                                         :color="iconColor"
-                                                        @click="deleteChoice(message.timestamp, item.index)">
+                                                        @click="deleteChoice(message.timestamp, item.index, message.role)">
                                                         <q-tooltip :delay="750" transition-show="scale"
                                                             transition-hide="scale">
                                                             {{ $t("messages.tooltip.delete") }}
@@ -88,7 +88,7 @@
                                 </q-btn>
 
                                 <q-btn size="sm" flat dense icon="mdi-delete-outline" :color="iconColor"
-                                    @click="deleteMessage(message.timestamp)">
+                                    @click="deleteMessage(message.timestamp, message.role)">
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                         {{ $t("messages.tooltip.delete") }}
                                     </q-tooltip>
@@ -367,11 +367,11 @@ export default {
             copyMessage,
             canShare,
             shareMessage,
-            deleteMessage: (timestamp) => { teamsStore.deleteMessage(timestamp); shouldScroll = false; },
-            deleteChoice: (timestamp, index) => {
-                teamsStore.deleteChoice(timestamp, index);
-                if (teamsStore.getMessage(timestamp).choices.length == 0) {
-                    teamsStore.deleteMessage(timestamp);
+            deleteMessage: (timestamp, role) => { teamsStore.deleteMessage(timestamp, role); shouldScroll = false; },
+            deleteChoice: (timestamp, index, role) => {
+                teamsStore.deleteChoice(timestamp, index, role);
+                if (teamsStore.getMessage(timestamp, role).choices.length == 0) {
+                    teamsStore.deleteMessage(timestamp, role);
                 }
                 shouldScroll = false;
             },

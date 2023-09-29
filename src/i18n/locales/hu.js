@@ -291,7 +291,7 @@ export default {
     },
 
     updater: {
-        checking: {
+        pending: {
             message: "Frissítések keresése...",
             caption: "Kérjük, várjon."
         },
@@ -321,7 +321,7 @@ export default {
         },
         done: {
             message: "A frissítés letöltődött.",
-            caption: "Kattintson az újraindításhoz."
+            caption: ""
         }
     }
 }

@@ -56,7 +56,7 @@ export default {
             messages.value.push({
                 role: 'user',
                 content: userInput.value,
-                timestamp: Date.now(),
+                timestamp: Date.now().toString(),
                 conversationId: conversationId.value,
                 model: 0
             });
@@ -114,8 +114,6 @@ export default {
                         response.settings.persona = persona; // Current persona
                         response.settings.personas = personas.value; // All personas, to be able to re-load settings
                         response.settings.conversationMode = conversationMode.value;
-
-                        count--; // Remaining personas to keep loading indicator accurate
                     }
 
                     response.settings.speechLanguage = speechLanguage.value;
@@ -145,6 +143,9 @@ export default {
                             .catch(error => console.error(error))
                     }
 
+                    // Decrease remaining personas to keep loading indicator accurate
+                    count--;
+                    
                     // Break out of the personas for loop when generating images.
                     if (isCreateImageSelected.value) break;
 

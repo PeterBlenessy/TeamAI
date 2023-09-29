@@ -192,7 +192,7 @@ export default {
                 console.log('Updater event', error, status)
 
                 let updater = {
-                    'PENDING': { icon: 'info', type: 'info', message: t('updater.checking.message'), caption: t('updater.checking.caption') },
+                    'PENDING': { icon: 'info', type: 'info', message: t('updater.pending.message'), caption: t('updater.pending.caption') },
                     'ERROR': { icon: 'error', type: 'negative', message: t('updater.error.message'), caption: t('updater.error.caption') },
                     'DONE': { icon: 'done', type: 'positive', message: t('updater.done.message'), caption: t('updater.done.caption') },
                     'UPTODATE': { icon: 'done', type: 'positive', message: t('updater.upToDate.message'), caption: t('updater.upToDate.caption') }

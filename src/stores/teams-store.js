@@ -37,8 +37,8 @@ export const useTeamsStore = defineStore('teams', () => {
     // ---------------------------------------------------------------------------------------------
 
     // Delete message identified by 'timestamp'
-    function deleteMessage(timestamp) {
-        messages.value = messages.value.filter(message => message.timestamp != timestamp);
+    function deleteMessage(timestamp, role) {
+        messages.value = messages.value.filter(message => message.timestamp != timestamp && message.role != role);
     }
 
     // Remove all messages for the given 'conversationId'
@@ -69,9 +69,9 @@ export const useTeamsStore = defineStore('teams', () => {
     }
 
     // Delete a 'choice' from messages, given the 'timestamp' of the message and the 'index' of the choice
-    function deleteChoice(timestamp, index) {
+    function deleteChoice(timestamp, index, role) {
         messages.value = messages.value.map(message => {
-            if (message.timestamp == timestamp) {
+            if (message.timestamp == timestamp && message.role == role) {
                 message.choices = message.choices.filter(choice => choice.index != index);
             }
             return message;
@@ -81,17 +81,10 @@ export const useTeamsStore = defineStore('teams', () => {
     // ---------------------------------------------------------------------------------------------
     // Getters
     // ---------------------------------------------------------------------------------------------
-    function getMessages() {
-        return messages.value.map(message => {
-            if (message.conversationId == conversationId.value) {
-                return { "role": message.role, "content": message.content };
-            }
-        });
-    }
 
     // Get message from timestamp
-    function getMessage(timestamp) {
-        return messages.value.filter(message => message.timestamp == timestamp)[0];
+    function getMessage(timestamp, role) {
+        return messages.value.filter(message => message.timestamp == timestamp && message.role == role)[0];
     }
 
     // Get messages from a conversation

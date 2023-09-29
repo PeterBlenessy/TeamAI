@@ -295,7 +295,7 @@ export default {
         }
     },
     updater: {
-        checking: {
+        pending: {
             message: 'Checking for updates...',
             caption: 'Please wait.'
         },
@@ -326,7 +326,7 @@ export default {
 
         done: {
             message: 'Update downloaded.',
-            caption: 'Click to restart.'
+            caption: ''
         },
 
     },

@@ -33,6 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.21.1 - 2023-09-29
+- Fixed updater related translations.
+- Fixed loading status not being updated correctly after image generation.
+- Fixed issue with timestamps where image choices were not deleted as expected.
+
 ## v0.21.0 - 2023-09-28
 - Added support for toggling team work in QuickSettings.
 - Removed option for user input filtering in persona selection list in QuickSettings to simplify UX.

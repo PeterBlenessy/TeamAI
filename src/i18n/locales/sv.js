@@ -288,7 +288,7 @@ export default {
         }
     },
     updater: {
-        checking: {
+        pending: {
             message: 'Kontrollerar efter uppdateringar...',
             caption: 'Detta kan ta några sekunder.'
         },
@@ -318,8 +318,8 @@ export default {
         },
 
         done: {
-            message: 'Uppdatering klar.',
-            caption: 'Du kör nu den senaste versionen.'
+            message: 'Uppdatering är nerladdad.',
+            caption: ''
         },
     },
 }
