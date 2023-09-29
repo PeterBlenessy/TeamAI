@@ -38,7 +38,7 @@ export const useTeamsStore = defineStore('teams', () => {
 
     // Delete message identified by 'timestamp'
     function deleteMessage(timestamp, role) {
-        messages.value = messages.value.filter(message => message.timestamp != timestamp && message.role != role);
+        messages.value = messages.value.filter(message => !(message.timestamp == timestamp && message.role == role));
     }
 
     // Remove all messages for the given 'conversationId'
