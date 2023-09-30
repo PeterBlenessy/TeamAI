@@ -239,6 +239,10 @@ export default {
                 caption: 'Importera personas från Awesome ChatGPT prompts. Den här GitHub-repositoriet innehåller en samling exempel på meddelanden som kan användas med GPT-modeller. Dessa meddelanden är på engelska.',
                 tooltip: 'Importera personas från Awesome ChatGPT prompts'
             },
+            example: {
+                caption: 'Importera exempel personas från TeamAI GitHub repot.',
+                tooltip: 'Importera exempel personas från TeamAI GitHub repot.'
+            },
             edit: {
                 tooltip: 'Redigera'
             },

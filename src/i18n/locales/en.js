@@ -239,7 +239,11 @@ export default {
             import: {
                 label: 'Import personas',
                 caption: 'Import personas from Awesome ChatGPT prompts. This GitHub repository holds a collection of prompt examples that can be used with GPT models. These prompts are in English.',
-                tooltip: 'Import personas from Awesome ChatGPT prompts'
+                tooltip: 'Import personas from Awesome ChatGPT prompts',
+            },
+            example: {
+                caption: 'Import example personas from TeamAI GitHub repository.',
+                tooltip: 'Import example personas from TeamAI GitHub repository',
             },
             edit: {
                 tooltip: 'Edit'

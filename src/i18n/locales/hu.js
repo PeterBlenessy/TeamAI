@@ -240,6 +240,10 @@ export default {
                 caption: 'Importálj personákat az Awesome ChatGPT promptokból. Ez a GitHub tároló egy gyűjteményt tartalmaz olyan prompt példákból, amelyeket GPT modellekkel használhatsz. Ezek a promptok angol nyelven vannak.',
                 tooltip: 'Personák importálása az Awesome ChatGPT promptokból'
             },
+            example: {
+                caption: 'Importálj persona példákat a TeamAI GitHub tárolóóból.',
+                tooltip: 'Importálj persona példákat a TeamAI GitHub tárolóóból'
+            },
             edit: {
                 tooltip: 'Szerkesztés'
             },

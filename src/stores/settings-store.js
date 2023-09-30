@@ -28,6 +28,6 @@ export const useSettingsStore = defineStore('settings', () => {
         imageSize: ref('1024x1024'),
 
         // Persona settings
-        personas: ref([])
+        personas: ref([])   // { avatar: '', name: '', prompt: '' }
     }
 });

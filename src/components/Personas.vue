@@ -46,11 +46,27 @@
                     </q-item-section>
                     <q-item-section side>
                         <q-btn dense flat :color="awesomePrompts.length == 0 ? iconColor : 'primary'"
-                            @click="awesomePrompts.length == 0 ? fetchAwesomePrompts() : deleteAwesomePrompts()"
+                            @click="awesomePrompts.length == 0 ? fetchAwesomePrompts('AwesomeChatGPTPrompts') : deleteAwesomePrompts()"
                             :icon="awesomePrompts.length == 0 ? 'mdi-account-arrow-down-outline' : 'mdi-account-cancel-outline'">
 
                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                 {{ awesomePrompts.length == 0 ? t('personas.actions.import.tooltip') :
+                                    t('personas.actions.delete.tooltip') }}
+                            </q-tooltip>
+                        </q-btn>
+                    </q-item-section>
+                </q-item>
+                <q-item>
+                    <q-item-section>
+                        <q-item-label caption>{{ t('personas.actions.example.caption') }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                        <q-btn dense flat :color="awesomePrompts.length == 0 ? iconColor : 'primary'"
+                            @click="awesomePrompts.length == 0 ? fetchAwesomePrompts('ExamplePersonas') : deleteAwesomePrompts()"
+                            :icon="awesomePrompts.length == 0 ? 'mdi-account-arrow-down-outline' : 'mdi-account-cancel-outline'">
+
+                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                {{ awesomePrompts.length == 0 ? t('personas.actions.example.tooltip') :
                                     t('personas.actions.delete.tooltip') }}
                             </q-tooltip>
                         </q-btn>
@@ -230,23 +246,41 @@ export default {
             { name: 'prompt', align: 'left', label: t('personas.tableHeading.prompt'), field: 'prompt', sortable: true }
         ];
 
-        const fetchAwesomePrompts = () => {
-            fetch("https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv")
-                .then(response => response.text())
-                .then(data => {
-                    awesomePrompts.value = data.toString()
-                        .trim()
-                        .split("\n")
-                        .map((row, index) => {
+        const fetchAwesomePrompts = (source = "AwesomeChatGPTPrompts") => {
+            const awesomeSources = {
+                "AwesomeChatGPTPrompts": "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
+                "ExamplePersonas": "https://raw.githubusercontent.com//PeterBlenessy/TeamAI/main/examples/personas.json",
+            }
+            if (source == "AwesomeChatGPTPrompts") {
+                fetch(awesomeSources[source])
+                    .then(response => response.text())
+                    .then(data => {
+                        awesomePrompts.value = data.toString()
+                            .trim()
+                            .split("\n")
+                            .map((row, index) => {
+                                let id = Date.now().toString() + index.toString();
+                                let readonly = true;
+                                let [name, prompt] = row.split('","').map(item => item.trim().replace(/^"|"$/g, ''));
+                                return { id, name, prompt, readonly };
+                            });
+                        awesomePrompts.value.shift();
+                    })
+                    .catch(error => console.error(error))
+                    .finally(() => console.log("fetchPersonas() done"));
+            } else if (source == "ExamplePersonas") {
+                fetch(awesomeSources[source])
+                    .then(response => response.json())
+                    .then(data => {
+                        awesomePrompts.value = data.map((item, index) => {
                             let id = Date.now().toString() + index.toString();
                             let readonly = true;
-                            let [name, prompt] = row.split('","').map(item => item.trim().replace(/^"|"$/g, ''));
-                            return { id, name, prompt, readonly };
+                            return { id, ...item, readonly };
                         });
-                    awesomePrompts.value.shift();
-                })
-                .catch(error => console.error(error))
-                .finally(() => console.log("fetchPersonas() done"));
+                    })
+                    .catch(error => console.error(error))
+                    .finally(() => console.log("fetchPersonas() done"));
+            }
         }
 
         const addAwesomePrompt = (persona) => {
