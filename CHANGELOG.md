@@ -36,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.22.3 - 2023-10-01
+- Reverted upgraded dependencies to their latest versions as of v0.21.3 to check if this is the reason for notarization errors.
+
 ## v0.22.2 - 2023-10-01
 - Removed exempel persona prompts from TeamAI GitHub repository. Using team-ai-examples repo instead. To check if this is the reason for notarization errors.
 

@@ -117,7 +117,7 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.18.20.tgz#786c5f41f043b07afb1af37683d7c33668858f6d"
   integrity sha512-kTdfRcSiDfQca/y9QIkng02avJ+NCaQvrMejlsB3RRv5sE9rRoeBPISaZpKxHELzRxZyLvNts1P27W3wV+8geQ==
 
-"@intlify/bundle-utils@^7.4.0":
+"@intlify/bundle-utils@^7.0.2":
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/@intlify/bundle-utils/-/bundle-utils-7.4.0.tgz#b4dc41026d2d98d2e8a2bd83851c1883a48f1254"
   integrity sha512-AQfjBe2HUxzyN8ignIk3WhhSuVcSuirgzOzkd17nb337rCbI4Gv/t1R60UUyIqFoFdviLb/wLcDUzTD/xXjv9w==
@@ -149,18 +149,23 @@
     "@intlify/shared" "9.5.0"
     source-map-js "^1.0.2"
 
+"@intlify/shared@9.3.0-beta.24":
+  version "9.3.0-beta.24"
+  resolved "https://registry.yarnpkg.com/@intlify/shared/-/shared-9.3.0-beta.24.tgz#23e08af9fc904fe3ef896786f9e659da6bb567b5"
+  integrity sha512-AKxJ8s7eKIQWkNaf4wyyoLRwf4puCuQgjSChlDJm5JBEt6T8HGgnYTJLRXu6LD/JACn3Qwu6hM/XRX1c9yvjmQ==
+
 "@intlify/shared@9.5.0", "@intlify/shared@^9.4.0":
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/@intlify/shared/-/shared-9.5.0.tgz#185d9ab9f6b4bb4f4d133cfdd51432e9b94c2c44"
   integrity sha512-tAxV14LMXZDZbu32XzLMTsowNlgJNmLwWHYzvMUl6L8gvQeoYiZONjY7AUsqZW8TOZDX9lfvF6adPkk9FSRdDA==
 
-"@intlify/unplugin-vue-i18n@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@intlify/unplugin-vue-i18n/-/unplugin-vue-i18n-1.4.0.tgz#581ac40567240209ed0851e27bfc7c9487cf55ec"
-  integrity sha512-RGDchCRBlDTyVVFgPA1C1XC1uD4xYN81Ma+3EnU6GQ8pBEreraX/PWdPXXzOB6k9GWCQHuqii3atYXhcH3rpSg==
+"@intlify/unplugin-vue-i18n@^0.12.2":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@intlify/unplugin-vue-i18n/-/unplugin-vue-i18n-0.12.3.tgz#fae7d92d3e7bfe9e710fb332b28d22e0f8d999f2"
+  integrity sha512-0riPtSfTM58JmGNMmJho/aHD2z3K24BESYAmkLvKlo61/LbaPvnjYU1DbSbJEm6bSjE2oEjUj+di3QaYxXei/w==
   dependencies:
-    "@intlify/bundle-utils" "^7.4.0"
-    "@intlify/shared" "^9.4.0"
+    "@intlify/bundle-utils" "^7.0.2"
+    "@intlify/shared" "9.3.0-beta.24"
     "@rollup/pluginutils" "^5.0.2"
     "@vue/compiler-sfc" "^3.2.47"
     debug "^4.3.3"
@@ -198,7 +203,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@quasar/extras@^1.16.7":
+"@quasar/extras@^1.16.5":
   version "1.16.7"
   resolved "https://registry.yarnpkg.com/@quasar/extras/-/extras-1.16.7.tgz#9416689f2e55f594f1135383c35b9ab03875c522"
   integrity sha512-nYF3gVE/si1YJ/D4qmAiHGwxoJIDCvTT8NI6ZmbTMPrur4J8xBKhfhfhyLoQ4k2jJZP6Rx0rUcB71FBNC2C8vQ==
@@ -215,7 +220,7 @@
     markdown-it-toc-and-anchor "^4.2.0"
     prismjs "^1.28.0"
 
-"@quasar/vite-plugin@^1.5.0":
+"@quasar/vite-plugin@^1.4.1":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@quasar/vite-plugin/-/vite-plugin-1.5.0.tgz#ebc4876fd2a11fb3721cfc1bef80d49917d4265c"
   integrity sha512-Kd4nFeWd0eAr7e+HMY8Wtmo86RjPZhCi6/bybTAyliFmS8AhZ2/oRTOGnBD9R1C6Ub3JPzC4eWFA20IlHa5A3w==
@@ -229,7 +234,7 @@
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
 
-"@tauri-apps/api@^1.5.0":
+"@tauri-apps/api@^1.4.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-1.5.0.tgz#46a0f9b6edd4bfc39be32afc4ad242e0b8cca3ea"
   integrity sha512-yQY9wpVNuiYhLLuyDlu1nBpqJELT1fGp7OctN4rW9I2W1T2p7A3tqPxsEzQprEwneQRBAlPM9vC8NsnMbct+pg==
@@ -284,7 +289,7 @@
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli-win32-x64-msvc/-/cli-win32-x64-msvc-1.5.0.tgz#89f81d0a4ef948f4ea46a0b5b04426923d1d70c4"
   integrity sha512-jEwq9UuUldVyDJ/dsYoHFuZfNZIkxbeDYSMELfZXsRvWWEA8xRYeTkH38S++KU1eBl5dTK0LbxhztEB2HjRT1g==
 
-"@tauri-apps/cli@^1.5.0":
+"@tauri-apps/cli@^1.4.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli/-/cli-1.5.0.tgz#4771056cab2a3bfc419c1d9f3f74168f078e58e2"
   integrity sha512-usY7Ncfkxl2f/ufjWDtp+eJsodlj8ipMKExIt160KR+tx0GtQgLtxRnrKxe1o7wu18Pkqd5JIuWMaOmT3YZeYA==
@@ -323,7 +328,7 @@
   resolved "https://registry.yarnpkg.com/@types/mdurl/-/mdurl-1.0.3.tgz#d0aefccdd1a96f4bec76047d6b314601f0b0f3de"
   integrity sha512-T5k6kTXak79gwmIOaDF2UUQXFbnBE0zBUzF20pz7wDYu0RQMzWg+Ml/Pz50214NsFHBITkoi5VtdjFZnJ2ijjA==
 
-"@vitejs/plugin-vue@^4.3.4":
+"@vitejs/plugin-vue@^4.0.0":
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-4.3.4.tgz#a289dff38e01949fe7be581d5542cabaeb961dec"
   integrity sha512-ciXNIHKPriERBisHFBvnTbfKa6r9SAesOYXeGDzgegcvy9Q4xdScSHAmKbNT0M3O0S9LKhIf5/G+UYG4NnnzYw==
@@ -788,7 +793,7 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.3.1:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
-pinia@^2.1.6:
+pinia@^2.1.4:
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/pinia/-/pinia-2.1.6.tgz#e88959f14b61c4debd9c42d0c9944e2875cbe0fa"
   integrity sha512-bIU6QuE5qZviMmct5XwCesXelb5VavdOWKWaB17ggk++NUwQWWbP5YnsONTk3b752QkW9sACiR81rorpeOMSvQ==
@@ -819,7 +824,7 @@ prismjs@^1.28.0:
   resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.29.0.tgz#f113555a8fa9b57c35e637bba27509dcf802dd12"
   integrity sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==
 
-quasar@^2.12.7:
+quasar@^2.12.3:
   version "2.12.7"
   resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.12.7.tgz#1e5c1ff06335c8e053d93350cac2e3aeaad8201f"
   integrity sha512-JF2rb8u1RcXPpiaDh/RnO/5rFx7kABDMov0WnRI3acJ5s4TD2FyPrCmS7VgleLubDYRSsSAontJ6EijGz4BHig==
@@ -911,7 +916,7 @@ uslug@^1.0.4:
   dependencies:
     unorm ">= 1.0.0"
 
-vite@^4.4.9:
+vite@^4.4.6:
   version "4.4.9"
   resolved "https://registry.yarnpkg.com/vite/-/vite-4.4.9.tgz#1402423f1a2f8d66fd8d15e351127c7236d29d3d"
   integrity sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==
@@ -927,7 +932,7 @@ vue-demi@>=0.14.5:
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.6.tgz#dc706582851dc1cdc17a0054f4fec2eb6df74c92"
   integrity sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==
 
-vue-i18n@9.5.0:
+vue-i18n@9:
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-9.5.0.tgz#361a820f591f6d9689435a42763fd1dae224833b"
   integrity sha512-NiI3Ph1qMstNf7uhYh8trQBOBFLxeJgcOxBq51pCcZ28Vs18Y7BDS58r8HGDKCYgXdLUYqPDXdKatIF4bvBVZg==
