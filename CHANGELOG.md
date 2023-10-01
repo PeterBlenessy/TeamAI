@@ -34,6 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.22.1 - 2023-10-01
+- Added 16x16.png icon for macOS system tray.
+
 ## v0.22.0 - 2023-09-30
 - Upgraded outdated dependencies to their latest versions.
 - Added application icons generated with DALL·E.
