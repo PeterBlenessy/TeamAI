@@ -31,15 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ResizeObserver loop completed with undelivered notifications. 
   https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
 - Images are stretched when smaller than preset view size. This adds a blur to the image.
+- Add application icons generated with DALL·E.
 
 ## [UNRELEASED]
 
-## v0.22.1 - 2023-10-01
-- Added 16x16.png icon for macOS system tray.
-
-## v0.22.0 - 2023-09-30
+## v0.22.0 - 2023-10-01
 - Upgraded outdated dependencies to their latest versions.
-- Added application icons generated with DALL·E.
 - Added option to import exempel persona prompts from TeamAI GitHub repository.
 
 ## v0.21.3 - 2023-09-29
