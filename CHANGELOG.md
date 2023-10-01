@@ -32,8 +32,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
 - Images are stretched when smaller than preset view size. This adds a blur to the image.
 - Add application icons generated with DALL·E.
+- Notarization errors.
 
 ## [UNRELEASED]
+
+## v0.22.2 - 2023-10-01
+- Removed exempel persona prompts from TeamAI GitHub repository. Using team-ai-examples repo instead. To check if this is the reason for notarization errors.
+
+## v0.22.1 - 2023-10-01
+- Reverted to Tauri app icons, to check if this is the reason for notarization errors.
 
 ## v0.22.0 - 2023-10-01
 - Upgraded outdated dependencies to their latest versions.

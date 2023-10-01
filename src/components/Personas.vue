@@ -249,7 +249,7 @@ export default {
         const fetchAwesomePrompts = (source = "AwesomeChatGPTPrompts") => {
             const awesomeSources = {
                 "AwesomeChatGPTPrompts": "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
-                "ExamplePersonas": "https://raw.githubusercontent.com//PeterBlenessy/TeamAI/main/examples/personas.json",
+                "ExamplePersonas": "https://raw.githubusercontent.com//PeterBlenessy/team-ai-examples/main/personas.json",
             }
             if (source == "AwesomeChatGPTPrompts") {
                 fetch(awesomeSources[source])
