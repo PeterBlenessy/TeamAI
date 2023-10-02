@@ -171,7 +171,7 @@ export default {
                         caption: caption,
                         message: message,
                         actions: [{
-                            icon: 'close',
+                            icon: 'mdi-close',
                             color: 'white',
                             handler: () => { /* ... */ }
                         }]

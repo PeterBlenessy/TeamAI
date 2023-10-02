@@ -192,10 +192,10 @@ export default {
                 console.log('Updater event', error, status)
 
                 let updater = {
-                    'PENDING': { icon: 'info', type: 'info', message: t('updater.pending.message'), caption: t('updater.pending.caption') },
-                    'ERROR': { icon: 'error', type: 'negative', message: t('updater.error.message'), caption: t('updater.error.caption') },
-                    'DONE': { icon: 'done', type: 'positive', message: t('updater.done.message'), caption: t('updater.done.caption') },
-                    'UPTODATE': { icon: 'done', type: 'positive', message: t('updater.upToDate.message'), caption: t('updater.upToDate.caption') }
+                    'PENDING': { icon: 'mdi-information', type: 'info', message: t('updater.pending.message'), caption: t('updater.pending.caption') },
+                    'ERROR': { icon: 'mdi-alert', type: 'negative', message: t('updater.error.message'), caption: t('updater.error.caption') },
+                    'DONE': { icon: 'mdi-check', type: 'positive', message: t('updater.done.message'), caption: t('updater.done.caption') },
+                    'UPTODATE': { icon: 'mdi-check', type: 'positive', message: t('updater.upToDate.message'), caption: t('updater.upToDate.caption') }
                 };
 
                 $q.notify({

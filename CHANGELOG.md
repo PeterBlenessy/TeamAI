@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.23.1 - 2023-10-02
+- Changed icon set to svg-icons and removed unused imports to reduce bundle size.
+
 ## v0.23.0 - 2023-10-01
 - (Re-)added application icons generated with TeamAI and DALL·E.
 

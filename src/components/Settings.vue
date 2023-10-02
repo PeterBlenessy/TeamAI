@@ -106,7 +106,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon name="chat" :color="iconColor" />
+                        <q-icon :name="conversationMode ? 'mdi-forum-outline' : 'mdi-message-outline'" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ $t('settings.conversationMode.label') }}</q-item-label>
@@ -209,7 +209,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon name="key" :color="iconColor" />
+                        <q-icon name="mdi-key" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-input :model-value="apiKey" @change="val => { apiKey = val }"
@@ -223,7 +223,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon name="model_training" :color="iconColor" />
+                        <q-icon name="mdi-brain" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label caption>{{ t('settings.openAI.model.label') }}</q-item-label>
@@ -236,7 +236,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon name="short_text" :color="iconColor" />
+                        <q-icon :name="maxTokens < 1024 ? 'mdi-text-short' : maxTokens < 2048 ? 'mdi-text' : 'mdi-text-long'" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label caption>{{ t('settings.openAI.maxTokens.label') }} ({{ maxTokens }})</q-item-label>
@@ -250,7 +250,7 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon name="thermostat" :color="iconColor" />
+                        <q-icon name="mdi-thermometer" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label caption>{{ t('settings.openAI.temperature.label') }} ({{ temperature

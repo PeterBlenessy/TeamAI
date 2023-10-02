@@ -90,7 +90,7 @@
                         <q-input filled dense debounce="300" v-model="awesomePromptsfilter"
                             :placeholder="t('personas.actions.search.placeholder')">
                             <template v-slot:append>
-                                <q-icon name="search" />
+                                <q-icon name="mdi-magnify" />
                             </template>
                         </q-input>
                     </template>
@@ -133,7 +133,7 @@
                     <q-input filled dense debounce="300" v-model="personasFilter"
                         :label="t('personas.actions.search.placeholder')">
                         <template v-slot:append>
-                            <q-icon name="search" />
+                            <q-icon name="mdi-magnify" />
                         </template>
                     </q-input>
                 </template>

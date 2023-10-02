@@ -1,13 +1,15 @@
 <template>
     <div class="row">
         <q-toolbar>
-            <q-chip icon="model_training" :label="isCreateImageSelected ? 'DALL·E' : model" size="sm" clickable
+            <q-chip icon="mdi-brain" :label="isCreateImageSelected ? 'DALL·E' : model" size="sm" clickable
                 @click="nextModel()">
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.model.label') }}
                 </q-tooltip>
             </q-chip>
-            <q-chip v-if="!isCreateImageSelected" icon="short_text" :label="maxTokens" size="sm" clickable>
+            <q-chip v-if="!isCreateImageSelected" :label="maxTokens" size="sm" clickable
+                :icon="maxTokens < 1024 ? 'mdi-text-short' : maxTokens < 2048 ? 'mdi-text' : 'mdi-text-long'" >
+                
                 <q-menu anchor="top middle" self="bottom middle">
                     <div class="q-pa-sm">
                         <q-slider v-model="maxTokens" :min="64" :max="4096" :step="16" :markers="1024" vertical reverse />
@@ -18,7 +20,7 @@
                 </q-tooltip>
             </q-chip>
 
-            <q-chip v-if="!isCreateImageSelected" icon="thermostat" :label="temperature" size="sm" clickable>
+            <q-chip v-if="!isCreateImageSelected" icon="mdi-thermometer" :label="temperature" size="sm" clickable>
                 <q-menu anchor="top middle" self="bottom middle">
                     <div class="q-pa-sm">
                         <q-slider v-model="temperature" :min="0" :max="2" :step="0.1" :markers="0.5" vertical reverse />
