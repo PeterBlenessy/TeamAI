@@ -26,19 +26,19 @@
                         <div class="q-pa-md">
                             <div class="q-col-gutter-md row justify-center items-start">
                                 <!-- Iterate through the image choices -->
-                                <div v-for="(item) in message.choices">
+                                <div v-for="(item) in message.choices" :key="item.content">
                                     <div class="col-6 ">
                                         <q-card flat square :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
                                             <q-card-section horizontal>
                                                 <!-- Display image -->
-                                                <q-img :src="item.content" width="400px" loading="lazy" draggable :ratio="1"
-                                                    placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAAG1BMVEXMzMyWlpaqqqq3t7fFxcW+vr6xsbGjo6OcnJyLKnDGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAElEQVRoge3SMW+DMBiE4YsxJqMJtHOTITPeOsLQnaodGImEUMZEkZhRUqn92f0MaTubtfeMh/QGHANEREREREREREREtIJJ0xbH299kp8l8FaGtLdTQ19HjofxZlJ0m1+eBKZcikd9PWtXC5DoDotRO04B9YOvFIXmXLy2jEbiqE6Df7DTleA5socLqvEFVxtJyrpZFWz/pHM2CVte0lS8g2eDe6prOyqPglhzROL+Xye4tmT4WvRcQ2/m81p+/rdguOi8Hc5L/8Qk4vhZzy08DduGt9eVQyP2qoTM1zi0/uf4hvBWf5c77e69Gf798y08L7j0RERERERERERH9P99ZpSVRivB/rgAAAABJRU5ErkJggg==" />
+                                                <q-img loading="lazy" :ratio="1" width="400px" draggable :id="item.content"
+                                                    placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAAG1BMVEXMzMyWlpaqqqq3t7fFxcW+vr6xsbGjo6OcnJyLKnDGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAElEQVRoge3SMW+DMBiE4YsxJqMJtHOTITPeOsLQnaodGImEUMZEkZhRUqn92f0MaTubtfeMh/QGHANEREREREREREREtIJJ0xbH299kp8l8FaGtLdTQ19HjofxZlJ0m1+eBKZcikd9PWtXC5DoDotRO04B9YOvFIXmXLy2jEbiqE6Df7DTleA5socLqvEFVxtJyrpZFWz/pHM2CVte0lS8g2eDe6prOyqPglhzROL+Xye4tmT4WvRcQ2/m81p+/rdguOi8Hc5L/8Qk4vhZzy08DduGt9eVQyP2qoTM1zi0/uf4hvBWf5c77e69Gf798y08L7j0RERERERERERH9P99ZpSVRivB/rgAAAABJRU5ErkJggg=="
+                                                    :src="getImage(item.content)" @error="(event) => onImageError(event)" />
 
                                                 <!-- Image actions -->
                                                 <q-card-actions vertical class="justify-around">
-                                                    <q-btn v-if="canShare(item, message.object)" size="sm" flat dense round
-                                                        icon="mdi-export-variant" :color="iconColor"
-                                                        @click="shareMessage(item, message.object)">
+                                                    <q-btn size="sm" flat dense round icon="mdi-export-variant"
+                                                        :color="iconColor" @click="shareMessage(item, message.object)">
                                                         <q-tooltip :delay="750" transition-show="scale"
                                                             transition-hide="scale">
                                                             {{ $t("messages.tooltip.share") }}
@@ -46,7 +46,7 @@
                                                     </q-btn>
                                                     <q-btn size="sm" flat dense round icon="mdi-delete-outline"
                                                         :color="iconColor"
-                                                        @click="deleteChoice(message.timestamp, item.index, message.role)">
+                                                        @click="deleteChoice(message.timestamp, message.role, item.index)">
                                                         <q-tooltip :delay="750" transition-show="scale"
                                                             transition-hide="scale">
                                                             {{ $t("messages.tooltip.delete") }}
@@ -80,8 +80,8 @@
                                     </q-tooltip>
                                 </q-btn>
 
-                                <q-btn v-if="canShare(message)" size="sm" flat dense icon="mdi-export-variant"
-                                    :color="iconColor" @click="shareMessage(message)">
+                                <q-btn v-if="message.object != 'image'" size="sm" flat dense icon="mdi-export-variant" :color="iconColor"
+                                    @click="shareMessage(message)">
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                         {{ $t("messages.tooltip.share") }}
                                     </q-tooltip>
@@ -122,7 +122,7 @@
                 </q-item-section>
             </q-item>
         </q-card>
-        <q-separator/>
+        <q-separator />
     </div>
 </template>
 
@@ -136,6 +136,7 @@ import { useQuasar } from "quasar";
 import { computed, ref, watch } from "vue";
 import { scroll } from "quasar";
 import { useI18n } from 'vue-i18n';
+import { imageDB } from "../services/localforage";
 
 export default {
     name: "Messages",
@@ -146,7 +147,7 @@ export default {
         const $q = useQuasar();
         const { t } = useI18n();
         const teamsStore = useTeamsStore();
-        const { loading, conversationId, messages } = storeToRefs(teamsStore);
+        const { loading, conversationId, messages, images } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
         const { chatDirection, speechLanguage, userAvatar } = storeToRefs(settingsStore);
 
@@ -210,12 +211,13 @@ export default {
         // Return message content or first item in 'choices' array, if present
         // todo: include all image choices when sharing?
         const getContent = async (message, type = 'text') => {
-            let content = hasChoices(message) ? message.choices[0].content : message.content;
+            let content = hasChoices(message)
+                ? message.choices[0].content
+                : message.content;
 
             if (type == 'image' || message.object == 'image') {
-                const res = await fetch(content);
-                const blob = await res.blob();
-                const imageFile = new File([blob], 'Image.png', { type: blob.type });
+                const blob = await imageDB.getItem(content);
+                const imageFile = new File([blob], content+'.png', { type: "image/png" });
 
                 return imageFile;
             } else {
@@ -233,18 +235,9 @@ export default {
 
             try {
                 await navigator.clipboard.write(data);
-            } catch (err) {
-                console.log(err);
+            } catch (error) {
+                console.log(error);
             }
-        };
-
-        // Check if message content can be shared via 'navigator.share'
-        const canShare = async (message, type = 'text') => {
-            return navigator.canShare(
-                message.object == 'image' || type == 'image'
-                    ? { files: [await getContent(message, 'image')] }
-                    : { text: await getContent(message) }
-            );
         };
 
         // Share message content via 'navigator.share', the native sharing mechanism
@@ -255,8 +248,8 @@ export default {
                         ? { files: [await getContent(message, 'image')] }
                         : { text: await getContent(message) }
                 );
-            } catch (err) {
-                console.log(err);
+            } catch (error) {
+                console.log(error);
             }
         };
 
@@ -337,7 +330,7 @@ export default {
             if ('settings' in message) {
                 // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
                 persona = 'persona' in message.settings ? teamsStore.getPersona(message.settings.persona.id)
-                        : 'personas' in message.settings ? teamsStore.getPersona(message.settings.personas[0].id)
+                    : 'personas' in message.settings ? teamsStore.getPersona(message.settings.personas[0].id)
                         : null;
 
                 if (persona && 'avatar' in persona) {
@@ -359,6 +352,37 @@ export default {
             return null;
         }
 
+        const getImage = (imageName) => {
+
+            // Check if image is b64 data
+            if (imageName.startsWith('data:image')) {
+                return imageName;
+            }
+
+            let [image] = images.value.filter(item => item.imageName == imageName);
+            if ('imageURI' in image) {
+                return image.imageURI;
+            } else {
+                return '';
+            }
+        }
+
+        // Handle <img @onError(event) triggered for invalid object URLs.
+        // Regenerate object URLs stored in images array and revoked when application restarts.
+        const onImageError = async (event) => {
+            // console.log(event);
+            // console.log(event.target.src);
+            let imageName = images.value.filter(item => item.imageURI == event.target.src)[0].imageName;
+            let blob = await imageDB.getItem(imageName);
+            let imageURI = URL.createObjectURL(blob);
+            for (let i = 0; i < images.value.length; i++) {
+                if (images.value[i].imageURI == event.target.src) {
+                    images.value[i].imageURI = imageURI;
+                    break;
+                }
+            }
+        }
+
         return {
             slide: ref(0),
             chatDirection,
@@ -369,11 +393,10 @@ export default {
             mdPlugins: [],
             hasChoices,
             copyMessage,
-            canShare,
             shareMessage,
             deleteMessage: (timestamp, role) => { teamsStore.deleteMessage(timestamp, role); shouldScroll = false; },
-            deleteChoice: (timestamp, index, role) => {
-                teamsStore.deleteChoice(timestamp, index, role);
+            deleteChoice: (timestamp, role, index) => {
+                teamsStore.deleteChoice(timestamp, role, index);
                 if (teamsStore.getMessage(timestamp, role).choices.length == 0) {
                     teamsStore.deleteMessage(timestamp, role);
                 }
@@ -385,7 +408,10 @@ export default {
             readingMessage,
             userAvatar,
             getAssistantAvatar,
-            getAssistantName
+            getAssistantName,
+            images,
+            getImage,
+            onImageError
         };
     },
 };

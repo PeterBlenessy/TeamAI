@@ -15,10 +15,15 @@ const settingsDB = localforage.createInstance({
 
 // Create localForage instance for storing teams, their members, and their messages
 const teamsDB = localforage.createInstance({
-    driver: localforage.INDEXEDDB,
-    name: dbName,
+    ...defaultLocalForageConfiguration,
     storeName: 'teams',
     description: 'Teams, their members, and their messages'
+});
+
+const imageDB = localforage.createInstance({
+    ...defaultLocalForageConfiguration,
+    storeName: 'images',
+    description: 'Images generated using OpenAI or uploaded as avatars'
 });
 
 // LocalForage plugin for pinia stores
@@ -59,6 +64,7 @@ const localForagePlugin = (({ store }) => {
 })
 
 export {
+    imageDB,
     settingsDB,
     teamsDB,
     localForagePlugin

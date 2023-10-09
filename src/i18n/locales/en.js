@@ -336,6 +336,23 @@ export default {
             message: 'Update downloaded.',
             caption: ''
         },
-
     },
+    databaseUpgrade: {
+        needed: {
+            message: 'Database upgrade needed',
+            caption: 'Please wait.'
+        },
+        inProgress: {
+            caption: 'Upgrading database to version {version}...'
+        },
+        completed: {
+            message: 'Database upgrade completed',
+            caption: 'All done.',
+            action: 'Dismiss'
+        },
+        error: {
+            message: 'Database upgrade error',
+            action: 'Dismiss'
+        }
+    }
 }

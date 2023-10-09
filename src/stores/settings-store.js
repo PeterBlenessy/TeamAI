@@ -28,6 +28,9 @@ export const useSettingsStore = defineStore('settings', () => {
         imageSize: ref('1024x1024'),
 
         // Persona settings
-        personas: ref([])   // { avatar: '', name: '', prompt: '' }
+        personas: ref([]),   // { avatar: '', name: '', prompt: '' }
+
+        dBVersion: ref(0),
+        isDBUpgraded: ref(false),
     }
 });

@@ -1,9 +1,13 @@
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
+import { useTeamsStore } from "../stores/teams-store.js";
+import { imageDB } from './localforage.js';
 
 const openAI = () => {
     const settingsStore = useSettingsStore()
     const { apiKey, model, maxTokens, temperature, choices, imageSize } = storeToRefs(settingsStore);
+    const teamsStore = useTeamsStore();
+    const { images } = storeToRefs(teamsStore);
 
     // Private function. Sets the fetch init options.
     const setOptions = (messages) => {
@@ -84,8 +88,31 @@ const openAI = () => {
             if (json.errorCode) throw new Error(`${data.errorCode}`);
 
             let choices = [];
+
+            // todo: UX performance improvement: don't wait for all images to be done
+            //       1. Measure time spent in for loop.
             for (let i = 0; i < json.data.length; i++) {
-                choices.push({ index: i, content: "data:image/png;base64,"+json.data[i].b64_json });
+
+                let imageB64 = "data:image/png;base64,"+json.data[i].b64_json;
+                let imageName = 'image' + '-' + json.created +'-'+ i;
+                choices.push({ index: i, content: imageName });
+
+                try {
+                    // Create blob from base64 image and store it in imageDB
+                    let response = await fetch(imageB64);
+                    let blob = await response.blob();
+                    await imageDB.setItem(imageName, blob);
+                    
+                    let imageURI = URL.createObjectURL(blob);
+
+                    // todo: Generate image thumbnail
+                    let thumbnailURI = ''; //URL.createObjectURL(thumbnailBlob)
+
+                    // Store image URIs
+                    images.value.push({ imageName, imageURI, thumbnailURI });
+                } catch (error) { 
+                    console.error(error);
+                }
             }
 
             return {

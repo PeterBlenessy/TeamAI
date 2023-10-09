@@ -7,7 +7,7 @@ import { useTeamsStore } from '../stores/teams-store.js';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import OpenAI from '../services/openai.js';
-import { is, useQuasar } from 'quasar';
+import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
 export default {
@@ -90,9 +90,6 @@ export default {
             for (const persona of personas.value) {
 
                 try {
-
-                    const timestamp = Date.now().toString();
-
                     // Make the right API call
                     if (isCreateImageSelected.value) {
                         response = await openAI.createImageCompletion(question);
@@ -120,7 +117,7 @@ export default {
 
                     // Add response to messages
                     messages.value.push({
-                        timestamp: timestamp,
+                        timestamp: Date.now().toString(), // Keep here to make timestamp unique
                         conversationId: conversationId.value,
                         ...response,
                         systemMessages: systemMessages
@@ -131,6 +128,7 @@ export default {
                     if (getConversation(conversationId.value).length == 0) {
                         generateConversationTitle(conversationId.value)
                             .then((title) => {
+                                const timestamp = Date.now().toString();
                                 history.value.push({
                                     title: title,
                                     timestamp: timestamp,

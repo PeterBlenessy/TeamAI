@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
+import { imageDB } from '../services/localforage';
 
 // The teams-store holds the teams creeated by the user in a list. A team is a list of AI assistants, bots
 // Each team object has an array of team member objects and an array of messages.
@@ -32,21 +33,51 @@ export const useTeamsStore = defineStore('teams', () => {
     // The user input is a team assignment
     const isTeamWorkActivated = ref(false);
 
+    // Image and avatar object URLs
+    const images = ref([]); // imageName : { imageURI, thumbnailURI }
+    const avatars = ref([]); // avatarName : { avatarURI, thumbnailURI }
+
     // ---------------------------------------------------------------------------------------------
     // Actions
     // ---------------------------------------------------------------------------------------------
 
     // Delete message identified by 'timestamp'
     function deleteMessage(timestamp, role) {
-        messages.value = messages.value.filter(message => !(message.timestamp == timestamp && message.role == role));
+        messages.value = messages.value.filter(message => {
+            if (!(message.timestamp == timestamp && message.role == role)) {
+                return message;
+            } else {
+                // Delete image from image storage
+                if (message.hasOwnProperty("choices")) {
+                    message.choices.forEach(choice => {
+                        imageDB.removeItem(choice.content)
+                        .then(() => console.log("Deleted image: ", choice.content))
+                        .catch(error => console.log("Error when deleting image: ", choice.content, error));
+                    });
+                }
+                return;
+            }
+        });
     }
 
     // Remove all messages for the given 'conversationId'
     function deleteMessages(id) {
         if (id == '' || id == undefined) {
-            messages.value = messages.value.filter(message => message.conversationId != conversationId.value);
+            messages.value = messages.value.filter(message => {
+                if (message.conversationId != conversationId.value) {
+                    return message;
+                } else {
+                    deleteMessage(message.timestamp, message.role);
+                }
+            });
         } else {
-            messages.value = messages.value.filter(message => message.conversationId != id);
+            messages.value = messages.value.filter(message => {
+                if (message.conversationId != id) {
+                    return message;
+                } else {
+                    deleteMessage(message.timestamp, message.role);
+                }
+            });
         }
 
         loading.value = false; // Just in case UI hangs due to some unhandled error
@@ -69,10 +100,21 @@ export const useTeamsStore = defineStore('teams', () => {
     }
 
     // Delete a 'choice' from messages, given the 'timestamp' of the message and the 'index' of the choice
-    function deleteChoice(timestamp, index, role) {
+    function deleteChoice(timestamp, role, index) {
         messages.value = messages.value.map(message => {
             if (message.timestamp == timestamp && message.role == role) {
-                message.choices = message.choices.filter(choice => choice.index != index);
+                message.choices = message.choices.filter(choice => {
+                    if (choice.index != index) {
+                        return choice;
+                    } else {
+                        // Delete image from image storage
+                        imageDB.removeItem(choice.content)
+                        .then(() => console.log("Deleted image: ", choice.content))
+                        .catch(error => console.log("Error when deleting image: ", choice.content, error));
+                        
+                        return;
+                    }
+                });
             }
             return message;
         });
@@ -126,6 +168,12 @@ export const useTeamsStore = defineStore('teams', () => {
 
         // The user input is a team assignment        
         isTeamWorkActivated,
+
+        // Image and avatar objectURL arrays
+        images,
+        avatars,
+        refreshObjectURLs: ref(false),
+
 
         // Actions
         newConversation,

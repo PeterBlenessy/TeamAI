@@ -31,8 +31,9 @@
 
         <q-page-container>
             <q-page class="" id="page">
+
                 <!-- Messages -->
-                <Messages />
+                <Messages v-if="isDBUpgraded == true"/>
 
                 <!-- Settings, Information, Personas, and History dialogs -->
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
@@ -73,7 +74,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
 import Settings from "./components/Settings.vue";
 import QuickSettings from "./components/QuickSettings.vue";
 import UserInput from "./components/UserInput.vue";
@@ -89,6 +90,7 @@ import { useSettingsStore } from './stores/settings-store.js';
 import { useTeamsStore } from './stores/teams-store.js';
 import { invoke } from '@tauri-apps/api';
 import { checkUpdate, onUpdaterEvent } from '@tauri-apps/api/updater'
+import DatabaseUpgrader from './services/databaseUpgrader.js';
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
@@ -109,7 +111,7 @@ export default {
         const { t, locale } = useI18n();
         const $q = useQuasar();
         const settingsStore = useSettingsStore()
-        const { appMode, darkMode, quickSettings, userLocale, chatDirection } = storeToRefs(settingsStore);
+        const { appMode, darkMode, quickSettings, userLocale, chatDirection, isDBUpgraded } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
         const { newConversation, conversationId } = teamsStore;
@@ -118,6 +120,8 @@ export default {
         const showInformation = ref(false);
         const showHistory = ref(false);
         const showPersonas = ref(false);
+
+        const dbUpgrader = DatabaseUpgrader();
 
         const toolbar = [
             {
@@ -163,6 +167,20 @@ export default {
                 appMode: 'basic'
             }
         ];
+
+
+        // Check if database upgrade is needed
+        // const isDBUpgraded = ref(false);
+        onBeforeMount(() => {
+            isDBUpgraded.value = false;
+        });
+
+        onMounted(() => {
+            if (dbUpgrader.isUpgradeNeed()) {
+                dbUpgrader.upgrade();
+            }
+            isDBUpgraded.value = true;
+        });
 
         // Set application locale to the one selected by the user and stored in the settings store.
         onMounted(() => locale.value = userLocale.value);
@@ -262,7 +280,8 @@ export default {
             newConversation,
             checkForUpdates,
             deleteMessages,
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
+            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
+            isDBUpgraded
         }
     },
 }
