@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Notarization errors when updating outdated dependencies. Debug by initiating notarization locally.
 
 ## [UNRELEASED]
+
+## v0.24.0 - 2023-10-09
 - Removed unused assets.
 - Fixed bug where message timestamps were not unique.
 - Moved image binaries from messages to separate imageDB as blobs with image name as key.
