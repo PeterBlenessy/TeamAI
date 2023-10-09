@@ -331,5 +331,23 @@ export default {
             message: "A frissítés letöltődött.",
             caption: ""
         }
+    },
+    databaseUpgrade: {
+        needed: {
+            message: "A helyi adatbázis frissítésre szorul.",
+            caption: "Kérjük, várjon."
+        },
+        inProgress: {
+            caption: "Adatbázis frissítése a {version} verzióra..."
+        },
+        completed: {
+            message: "Az adatbázis frissítése befejeződött.",
+            caption: "Minden rendben.",
+            action: "Elfogad"
+        },
+        error: {
+            message: "Hiba történt az adatbázis frissítése közben.",
+            caption: "Elfogad"
+        }
     }
 }

@@ -330,4 +330,22 @@ export default {
             caption: ''
         },
     },
+    databaseUpgrade: {
+        needed: {
+            message: 'Databasen måste uppgraderas.',
+            caption: 'Detta kan ta några sekunder.'
+        },
+        inProgress: {
+            caption: 'Uppgraderar databas till version {version}...'
+        },
+        completed: {
+            message: 'Databasen är uppgraderad.',
+            caption: 'Allt klart.',
+            action: 'Avfärda'
+        },
+        error: {
+            message: 'Fel vid databasuppgradering.',
+            action: 'Avfärda'
+        }
+    },
 }

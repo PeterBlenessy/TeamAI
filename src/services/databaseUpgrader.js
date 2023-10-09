@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n';
 import { useTeamsStore } from '../stores/teams-store.js';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
-import { imageDB } from '../services/localforage.js';
+import { imageDB, settingsDB } from '../services/localforage.js';
 
 const databaseUpgrader = () => {
 
@@ -18,7 +18,7 @@ const databaseUpgrader = () => {
 
     const dBVersions = [
         {
-            version: '1',
+            version: 1,
             description: 'Optimized database structure by moving images from messages to separate table.',
             caption: t('databaseUpgrade.inProgress.caption', { version: '1' }),
             upgrade: () => upgradeToVersion1()
@@ -28,10 +28,13 @@ const databaseUpgrader = () => {
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = '1';
+    const LATEST_DB_VERSION = 1;
     // =================================================================================================
 
-    const isUpgradeNeed = () => dBVersion.value == LATEST_DB_VERSION ? false : true;
+    const isUpgradeNeed = async () => {
+        const currentVersion = parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
+        return currentVersion == LATEST_DB_VERSION ? false : true;
+    }
 
     // Upgrade to version 1
     const upgradeToVersion1 = async () => {
@@ -57,7 +60,7 @@ const databaseUpgrader = () => {
                             console.log('Found base64 image. Moving to imageDB with imageName: ', imageName);
 
                             // Create blob from base64 image and store it in imageDB
-                            let response = await fetch(imageB64);
+                            let response = await fetch(image.content);
                             let blob = await response.blob();
                             await imageDB.setItem(imageName, blob);
 

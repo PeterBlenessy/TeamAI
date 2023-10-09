@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.24.1 - 2023-10-09
+- Added Swedish and Hungarian translation to database upgrade texts.
+- Fixed issue where database upgrade dialog was still shown after upgrade and app restart.
+
 ## v0.24.0 - 2023-10-09
 - Removed unused assets.
 - Fixed bug where message timestamps were not unique.

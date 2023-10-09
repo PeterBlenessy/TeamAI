@@ -170,13 +170,12 @@ export default {
 
 
         // Check if database upgrade is needed
-        // const isDBUpgraded = ref(false);
         onBeforeMount(() => {
             isDBUpgraded.value = false;
         });
 
-        onMounted(() => {
-            if (dbUpgrader.isUpgradeNeed()) {
+        onMounted(async () => {
+            if (await dbUpgrader.isUpgradeNeed()) {
                 dbUpgrader.upgrade();
             }
             isDBUpgraded.value = true;
