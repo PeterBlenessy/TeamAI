@@ -217,7 +217,9 @@ export default {
             'September': 'Szeptember',
             'October': 'Október',
             'November': 'November',
-            'December': 'December'
+            'December': 'December',
+
+            'Orphaned': 'Árva üzenetek'
         }
     },
     prompts: {

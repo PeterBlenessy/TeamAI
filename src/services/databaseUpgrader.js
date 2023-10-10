@@ -19,25 +19,32 @@ const databaseUpgrader = () => {
     const dBVersions = [
         {
             version: 1,
-            description: 'Optimized database structure by moving images from messages to separate table.',
+            description: 'First database version',
             caption: t('databaseUpgrade.inProgress.caption', { version: '1' }),
-            upgrade: () => upgradeToVersion1()
+            upgrade: () => {}
+        },
+        {
+            version: 2,
+            description: 'Optimized database structure by moving images from messages to separate table.',
+            caption: t('databaseUpgrade.inProgress.caption', { version: '2' }),
+            upgrade: () => upgradeToVersion2()
         }
+
     ];
 
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 1;
+    const LATEST_DB_VERSION = 2;
     // =================================================================================================
 
     const isUpgradeNeed = async () => {
         const currentVersion = parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
-        return currentVersion == LATEST_DB_VERSION ? false : true;
+        return currentVersion < LATEST_DB_VERSION ? true : false;
     }
 
-    // Upgrade to version 1
-    const upgradeToVersion1 = async () => {
+    // Upgrade to version 2
+    const upgradeToVersion2 = async () => {
         messages.value.forEach((message, index) => {
             if (message.object == 'image' &&
                 message.hasOwnProperty('choices') &&
@@ -49,7 +56,6 @@ const databaseUpgrader = () => {
                 message.choices.forEach(async (image, index) => {
                     if (image.content.startsWith('image')) {
                         // All good, do nothing
-                        // todo: Check if message should exist, i.e. that conversation still  exists
                         return;
                     }
 

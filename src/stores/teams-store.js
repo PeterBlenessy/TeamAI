@@ -50,9 +50,13 @@ export const useTeamsStore = defineStore('teams', () => {
                 // Delete image from image storage
                 if (message.hasOwnProperty("choices")) {
                     message.choices.forEach(choice => {
+                        // Delete image from image storage
                         imageDB.removeItem(choice.content)
                         .then(() => console.log("Deleted image: ", choice.content))
                         .catch(error => console.log("Error when deleting image: ", choice.content, error));
+
+                        // Delete image from images array
+                        images.value = images.value.filter(image => image.imageName != choice.content);
                     });
                 }
                 return;
@@ -62,7 +66,17 @@ export const useTeamsStore = defineStore('teams', () => {
 
     // Remove all messages for the given 'conversationId'
     function deleteMessages(id) {
-        if (id == '' || id == undefined) {
+        if (id == '') {
+            // Delete orphaned messages
+            let orphanedMessages = getOrphanedMessages();
+            orphanedMessages.forEach(message => deleteMessage(message.timestamp, message.role));
+
+            // Delete orphaned images
+            deleteOrphanedImages();
+
+        } if (id == undefined) {
+            // Delete messages in current conversation, if conversationId not set
+            // This should not happen, but just in case
             messages.value = messages.value.filter(message => {
                 if (message.conversationId != conversationId.value) {
                     return message;
@@ -71,6 +85,7 @@ export const useTeamsStore = defineStore('teams', () => {
                 }
             });
         } else {
+            // Delete messages for a given conversation
             messages.value = messages.value.filter(message => {
                 if (message.conversationId != id) {
                     return message;
@@ -90,12 +105,13 @@ export const useTeamsStore = defineStore('teams', () => {
 
     // Delete a conversation given a 'conversationId'
     function deleteConversation(id) {
+        // Remove conversation from history
         history.value = history.value.filter(conversation => conversation.conversationId != id);
-
+        // Delete messages
         deleteMessages(id);
 
         if (conversationId.value == id) {
-            conversationId.value = '';
+            newConversation();
         }
     }
 
@@ -111,6 +127,9 @@ export const useTeamsStore = defineStore('teams', () => {
                         imageDB.removeItem(choice.content)
                         .then(() => console.log("Deleted image: ", choice.content))
                         .catch(error => console.log("Error when deleting image: ", choice.content, error));
+
+                        // Delete image from images array
+                        images.value = images.value.filter(image => image.imageName != choice.content);
                         
                         return;
                     }
@@ -132,6 +151,42 @@ export const useTeamsStore = defineStore('teams', () => {
     // Get messages from a conversation
     function getConversation(id) {
         return messages.value.filter(message => message.conversationId == id);
+    }
+
+    function getConversationIds() {
+        return messages.value.map(message => message.conversationId);
+    }
+    function getOrphanedMessages() {
+        let conversationIds = getConversationIds();
+        return messages.value.filter(message => conversationIds.includes(message.conversationId) == false);
+    }
+
+    function deleteOrphanedImages() {
+        let allImages = [];
+        messages.value.forEach(message => {
+            if (message.hasOwnProperty("choices")) {
+                message.choices.forEach(choice => {
+                    allImages.push(choice.content);
+                });
+            }
+        });
+        // Remove images references from images array, that are not referenced from messages
+        images.value = images.value.filter(image => allImages.includes(image.imageName));
+
+        // Remove images from imageDB that are not referenced from the messages
+        imageDB.iterate((value, key, iterationNumber) => {
+            if (!allImages.includes(key)) {
+                imageDB.removeItem(key)
+                .then(() => console.log("Deleted image: ", key))
+                .catch(error => console.log("Error when deleting image: ", key, error));
+            }
+        }).then(() => {
+            // Restore the persisted state
+        }).catch((error) => {
+            console.log(error);
+        }).finally(() => {
+            // console.log("Done iterating imageDB");
+        });
     }
 
     // Get settings from last assistant message in a conversation
@@ -185,6 +240,7 @@ export const useTeamsStore = defineStore('teams', () => {
         // Getters
         getConversation,
         getMessage,
+        getOrphanedMessages,
         getSettingsFromLastMessage,
         getPersona
     }

@@ -13,6 +13,7 @@
                 <div v-for="(group, groupName) in groupedHistory" :key="groupName">
 
                     <q-item-label label>{{ $t('history.groups.' + groupName) }}</q-item-label>
+
                     <q-item v-for="item in group" :key="item.conversationId" top dense clickable
                         @click="showConversation(item.conversationId)">
 
@@ -33,7 +34,7 @@
                                 </q-tooltip>
 
                                 <template v-slot:append>
-                                    <q-btn size="sm" flat dense
+                                    <q-btn v-if="item.conversationId != ''" size="sm" flat dense
                                         :color="item.readonly ? iconColor : 'primary'"
                                         :icon="item.readonly ? 'mdi-pencil-outline' : 'mdi-content-save-outline'"
                                         @click="item.readonly = !item.readonly">
@@ -43,14 +44,14 @@
                                         </q-tooltip>
                                     </q-btn>
 
-                                    <q-btn size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
+                                    <q-btn v-if="item.conversationId != ''" size="sm" flat dense icon="mdi-content-copy" :color="iconColor"
                                         @click="copyConversation(item.conversationId)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('history.tooltip.copy') }}
                                         </q-tooltip>
                                     </q-btn>
 
-                                    <q-btn v-if="canShare(item.conversationId)" size="sm" flat dense
+                                    <q-btn v-if="item.conversationId != '' && canShare(item.conversationId)" size="sm" flat dense
                                         icon="mdi-export-variant" :color="iconColor"
                                         @click="shareConversation(item.conversationId)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
@@ -71,7 +72,6 @@
                         </q-item-section>
 
                     </q-item>
-
 
                 </div>
             </q-list>
@@ -146,6 +146,14 @@ export default {
                 }
                 grouped[date].push(item);
             });
+
+            // Add potential orphaned messages
+            if (teamsStore.getOrphanedMessages().length > 0) {
+                if (!grouped['Orphaned']) grouped['Orphaned'] = [];
+                // { conversationId, timestamp, created, updated, title }
+                grouped['Orphaned'].push({ conversationId: '', title: 'Orphaned messages', readonly: true });
+            }
+
             return grouped;
         });
 
@@ -155,7 +163,7 @@ export default {
             copyConversation: (id) => navigator.clipboard.writeText(JSON.stringify(teamsStore.getConversation(id))),
             deleteConversation: (id) => teamsStore.deleteConversation(id),
             canShare: (id) => navigator.canShare({ text: JSON.stringify(teamsStore.getConversation(id)) }),
-            shareConversation: (id) => navigator.share({ text: JSON.stringify(teamsStore.getConversation(id)) }),
+            shareConversation: (id) => { try { navigator.share({ text: JSON.stringify(teamsStore.getConversation(id)) }) } catch (e) {} },
             conversationId,
             history,
             groupedHistory,

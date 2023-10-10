@@ -216,7 +216,9 @@ export default {
             'September': 'September',
             'October': 'October',
             'November': 'November',
-            'December': 'December'
+            'December': 'December',
+
+            'Orphaned': 'Orphaned messages'
         }
     },
     prompts: {

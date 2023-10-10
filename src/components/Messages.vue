@@ -166,7 +166,9 @@ export default {
         };
         // Filter messages for specified conversationId
         const filteredMessages = computed(() => {
-            let temp = messages.value.filter((message) => message.conversationId == conversationId.value);
+            let temp = conversationId == '' 
+                     ? teamsStore.getOrphanedMessages()
+                     : messages.value.filter((message) => message.conversationId == conversationId.value);
 
             return chatDirection.value == "up" ? temp : temp.reverse();
         });

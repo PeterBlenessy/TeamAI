@@ -216,7 +216,9 @@ export default {
             'September': 'September',
             'October': 'Oktober',
             'November': 'November',
-            'December': 'December'
+            'December': 'December',
+
+            'Orphaned': 'Föräldralösa meddelanden'
         }
     },
     prompts: {

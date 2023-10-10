@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Avatars should be scaled down to save storage space. Unless stored as separate files, only once.
 
 ### [MAJOR]
-
+´`
 ### [MINOR]
 
 ### [PATCH]
@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Notarization errors when updating outdated dependencies. Debug by initiating notarization locally.
 
 ## [UNRELEASED]
+
+## v0.24.2 - 2023-10-10
+- Added option to show orphaned messages in conversation history, if there are any.
+- Dependabot: Bump postcss from 8.4.27 to 8.4.31.
 
 ## v0.24.1 - 2023-10-09
 - Added Swedish and Hungarian translation to database upgrade texts.
