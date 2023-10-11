@@ -20,6 +20,7 @@ export default {
         },
         tooltip: {
             send: 'Send',
+            waiting: 'Waiting for response...',
             generateText: 'Generate text',
             generateImage: 'Generate images',
             speechStart: 'Start dictation',
@@ -349,7 +350,7 @@ export default {
         },
         completed: {
             message: 'Database upgrade completed',
-            caption: 'All done.',
+            caption: 'All done. Database version is now version {version}.',
             action: 'Dismiss'
         },
         error: {

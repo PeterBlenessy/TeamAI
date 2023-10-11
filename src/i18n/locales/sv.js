@@ -20,6 +20,7 @@ export default {
         },
         tooltip: {
             send: 'Skicka din fråga',
+            waiting: 'Väntar på svar...',
             generateText: 'Generera text',
             generateImage: 'Generera bilder',
             speechStart: 'Starta diktering',
@@ -342,7 +343,7 @@ export default {
         },
         completed: {
             message: 'Databasen är uppgraderad.',
-            caption: 'Allt klart.',
+            caption: 'Allt klart. Databasens version är nu version {version}.',
             action: 'Avfärda'
         },
         error: {

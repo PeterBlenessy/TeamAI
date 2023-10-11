@@ -44,7 +44,7 @@
             <template v-slot:append>
                 <q-btn :loading="loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ t('userInput.tooltip.send') }}
+                        {{ loading ? t('userInput.tooltip.waiting') : t('userInput.tooltip.send') }}
                     </q-tooltip>
                     <template v-slot:loading>
                         <q-spinner color="primary" />

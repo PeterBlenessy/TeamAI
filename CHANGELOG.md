@@ -35,6 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.24.3 - 2023-10-11
+- Fixed issue where avatar tooltip was displaying unnecessary information.
+- Added loading icon tooltip in input box.
+- Added new database version in database upgrade notification.
+- Added tooltip for avatars with no personas to show model name, e.g. DALL-E for image generation.
+- Fixed issue where images stored in messages could not be shared.
+
 ## v0.24.2 - 2023-10-10
 - Added option to show orphaned messages in conversation history, if there are any.
 - Dependabot: Bump postcss from 8.4.27 to 8.4.31.

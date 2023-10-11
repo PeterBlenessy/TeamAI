@@ -218,7 +218,14 @@ export default {
                 : message.content;
 
             if (type == 'image' || message.object == 'image') {
-                const blob = await imageDB.getItem(content);
+                let blob;
+                if (content.startsWith('data:image')) {
+                    // base64 image
+                    blob = await fetch(content).then(r => r.blob());
+                } else {
+                    // Image name
+                    blob = await imageDB.getItem(content);
+                }
                 const imageFile = new File([blob], content+'.png', { type: "image/png" });
 
                 return imageFile;
@@ -349,7 +356,11 @@ export default {
                 // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
                 persona = 'persona' in message.settings ? teamsStore.getPersona(message.settings.persona.id) : null;
 
-                return (persona && 'name' in persona) ? persona.name : null;
+                return (persona && 'name' in persona) 
+                    ? persona.name 
+                    : 'model' in message.settings 
+                    ? message.settings.model.toUpperCase() 
+                    : null;
             }
             return null;
         }

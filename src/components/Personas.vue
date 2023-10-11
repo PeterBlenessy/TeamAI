@@ -145,7 +145,7 @@
                                 <img v-if="'avatar' in props.row" :src="props.row.avatar" />
                                 <q-icon v-else name="mdi-account" />
                                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                                    {{ t('personas.actions.avatar.tooltip') + props.row.id }}
+                                    {{ t('personas.actions.avatar.tooltip') }}
                                 </q-tooltip>
                             </q-avatar>
                         </q-item-section>

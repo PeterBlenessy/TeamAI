@@ -17,6 +17,7 @@ export default {
         },
         tooltip: {
             send: 'Küld',
+            waiting: 'Válaszra vár...',
             generateText: 'Szöveg generálás',
             generateImage: 'Kép generálás',
             speechStart: 'Diktálás indítása',
@@ -344,7 +345,7 @@ export default {
         },
         completed: {
             message: "Az adatbázis frissítése befejeződött.",
-            caption: "Minden rendben.",
+            caption: "Minden rendben. Az adatbázis verziója most {version}.",
             action: "Elfogad"
         },
         error: {

@@ -44,7 +44,7 @@ const databaseUpgrader = () => {
     }
 
     // Upgrade to version 2
-    const upgradeToVersion2 = async () => {
+    const upgradeToVersion2 = () => {
         messages.value.forEach((message, index) => {
             if (message.object == 'image' &&
                 message.hasOwnProperty('choices') &&
@@ -53,20 +53,20 @@ const databaseUpgrader = () => {
                 console.log(index, message.conversationId, message.role, message.object, message.choices.length);
                 console.log(message.choices);
 
-                message.choices.forEach(async (image, index) => {
-                    if (image.content.startsWith('image')) {
+                message.choices.forEach(async (item, index) => {
+                    if (item.content.startsWith('image')) {
                         // All good, do nothing
                         return;
                     }
 
-                    if (image.content.startsWith('data:image')) {
+                    if (item.content.startsWith('data:image')) {
                         // Found base64 image, move to imageDB
                         try {
-                            let imageName = 'image' + '-' + message.timestamp + '-' + image.index;
+                            let imageName = 'image' + '-' + message.timestamp + '-' + item.index;
                             console.log('Found base64 image. Moving to imageDB with imageName: ', imageName);
 
                             // Create blob from base64 image and store it in imageDB
-                            let response = await fetch(image.content);
+                            let response = await fetch(item.content);
                             let blob = await response.blob();
                             await imageDB.setItem(imageName, blob);
 
@@ -79,7 +79,7 @@ const databaseUpgrader = () => {
                             images.value.push({ imageName, imageURI, thumbnailURI });
 
                             // Update message
-                            image.content = imageName;
+                            item.content = imageName;
                         } catch (error) {
                             console.error(error);
                             throw error;
@@ -109,7 +109,7 @@ const databaseUpgrader = () => {
                 console.log('Upgrading database to version: ', version.version);
                 upgradeDialog({ caption: `${progress++} of ${nbrUpgrades}` });
                 try {
-                    await version.upgrade();
+                    version.upgrade();
                     dBVersion.value = version.version;
                 } catch (error) {
                     console.error(error);
@@ -122,7 +122,7 @@ const databaseUpgrader = () => {
                 icon: 'mdi-check',
                 spinner: false,
                 message: t('databaseUpgrade.completed.message'),
-                caption: t('databaseUpgrade.completed.caption'),
+                caption: t('databaseUpgrade.completed.caption', { version: dBVersion.value }),
                 timeout: 5000,
                 actions: [{ label: t('databaseUpgrade.completed.action'), handler: () => { } }]
             });
