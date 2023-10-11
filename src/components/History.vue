@@ -51,7 +51,7 @@
                                         </q-tooltip>
                                     </q-btn>
 
-                                    <q-btn v-if="item.conversationId != '' && canShare(item.conversationId)" size="sm" flat dense
+                                    <q-btn v-if="item.conversationId != '' " size="sm" flat dense
                                         icon="mdi-export-variant" :color="iconColor"
                                         @click="shareConversation(item.conversationId)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
@@ -162,7 +162,6 @@ export default {
             showConversation: (id) => conversationId.value = id,
             copyConversation: (id) => navigator.clipboard.writeText(JSON.stringify(teamsStore.getConversation(id))),
             deleteConversation: (id) => teamsStore.deleteConversation(id),
-            canShare: (id) => navigator.canShare({ text: JSON.stringify(teamsStore.getConversation(id)) }),
             shareConversation: (id) => { try { navigator.share({ text: JSON.stringify(teamsStore.getConversation(id)) }) } catch (e) {} },
             conversationId,
             history,

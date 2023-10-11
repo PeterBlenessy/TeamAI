@@ -27,13 +27,14 @@
                             <div class="q-col-gutter-md row justify-center items-start">
                                 <!-- Iterate through the image choices -->
                                 <div v-for="(item) in message.choices" :key="item.content">
-                                    <div class="col-6 ">
+                                    <div class="col-auto ">
                                         <q-card flat square :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
                                             <q-card-section horizontal>
                                                 <!-- Display image -->
-                                                <q-img loading="lazy" :ratio="1" width="400px" draggable :id="item.content"
+                                                <q-img loading="lazy" :ratio="1" width="256px" draggable :id="item.content"
                                                     placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAAG1BMVEXMzMyWlpaqqqq3t7fFxcW+vr6xsbGjo6OcnJyLKnDGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAElEQVRoge3SMW+DMBiE4YsxJqMJtHOTITPeOsLQnaodGImEUMZEkZhRUqn92f0MaTubtfeMh/QGHANEREREREREREREtIJJ0xbH299kp8l8FaGtLdTQ19HjofxZlJ0m1+eBKZcikd9PWtXC5DoDotRO04B9YOvFIXmXLy2jEbiqE6Df7DTleA5socLqvEFVxtJyrpZFWz/pHM2CVte0lS8g2eDe6prOyqPglhzROL+Xye4tmT4WvRcQ2/m81p+/rdguOi8Hc5L/8Qk4vhZzy08DduGt9eVQyP2qoTM1zi0/uf4hvBWf5c77e69Gf798y08L7j0RERERERERERH9P99ZpSVRivB/rgAAAABJRU5ErkJggg=="
-                                                    :src="getImage(item.content)" @error="(event) => onImageError(event)" />
+                                                    :src="getImage(item.content)" @error="(event) => onImageError(event)"
+                                                    @click="showImage(item.content)"/>
 
                                                 <!-- Image actions -->
                                                 <q-card-actions vertical class="justify-around">
@@ -80,8 +81,8 @@
                                     </q-tooltip>
                                 </q-btn>
 
-                                <q-btn v-if="message.object != 'image'" size="sm" flat dense icon="mdi-export-variant" :color="iconColor"
-                                    @click="shareMessage(message)">
+                                <q-btn v-if="message.object != 'image'" size="sm" flat dense icon="mdi-export-variant"
+                                    :color="iconColor" @click="shareMessage(message)">
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                         {{ $t("messages.tooltip.share") }}
                                     </q-tooltip>
@@ -124,6 +125,11 @@
         </q-card>
         <q-separator />
     </div>
+    <q-dialog v-model="showImageDialog">
+        <q-card style="min-width: 1024px; max-width: 90vw; width: auto;">
+            <q-img :src="imageSrc" @click="showImageDialog=false"/>
+        </q-card>
+    </q-dialog>
 </template>
 
 <script>
@@ -166,9 +172,9 @@ export default {
         };
         // Filter messages for specified conversationId
         const filteredMessages = computed(() => {
-            let temp = conversationId == '' 
-                     ? teamsStore.getOrphanedMessages()
-                     : messages.value.filter((message) => message.conversationId == conversationId.value);
+            let temp = conversationId == ''
+                ? teamsStore.getOrphanedMessages()
+                : messages.value.filter((message) => message.conversationId == conversationId.value);
 
             return chatDirection.value == "up" ? temp : temp.reverse();
         });
@@ -226,7 +232,7 @@ export default {
                     // Image name
                     blob = await imageDB.getItem(content);
                 }
-                const imageFile = new File([blob], content+'.png', { type: "image/png" });
+                const imageFile = new File([blob], content + '.png', { type: "image/png" });
 
                 return imageFile;
             } else {
@@ -356,11 +362,11 @@ export default {
                 // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
                 persona = 'persona' in message.settings ? teamsStore.getPersona(message.settings.persona.id) : null;
 
-                return (persona && 'name' in persona) 
-                    ? persona.name 
-                    : 'model' in message.settings 
-                    ? message.settings.model.toUpperCase() 
-                    : null;
+                return (persona && 'name' in persona)
+                    ? persona.name
+                    : 'model' in message.settings
+                        ? message.settings.model.toUpperCase()
+                        : null;
             }
             return null;
         }
@@ -395,6 +401,8 @@ export default {
                 }
             }
         }
+        const showImageDialog = ref(false);
+        const imageSrc = ref('');
 
         return {
             slide: ref(0),
@@ -424,9 +432,15 @@ export default {
             getAssistantName,
             images,
             getImage,
-            onImageError
+            onImageError,
+            showImageDialog,
+            imageSrc,
+            showImage: (imageName) => {
+                showImageDialog.value = true;
+                imageSrc.value = getImage(imageName);
+            }
         };
-    },
+    }
 };
 </script>
 

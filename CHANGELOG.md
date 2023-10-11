@@ -35,6 +35,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.25.0 - 2023-10-11
+- Fixed issue where showing conversation history was slow.
+- Changed size of displayed images to 256x256.
+- Changed number of images displayed per row to be responsive to application window width.
+- Added popup dialog for showing images in full size.
+
 ## v0.24.4 - 2023-10-11
 - Fixed some database migration issues.
 
