@@ -13,9 +13,6 @@ const databaseUpgrader = () => {
     const teamsStore = useTeamsStore();
     const { images, messages } = storeToRefs(teamsStore);
 
-    const settingsStore = useSettingsStore();
-    const { dBVersion } = storeToRefs(settingsStore);
-
     const dBVersions = [
         {
             version: 1,
@@ -31,15 +28,18 @@ const databaseUpgrader = () => {
         }
 
     ];
-
+    
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
     const LATEST_DB_VERSION = 2;
     // =================================================================================================
 
+    const getDBVersion = async () => parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
+    const setDBVersion = async (version) => await settingsDB.setItem('dBVersion', JSON.stringify(version));
+
     const isUpgradeNeed = async () => {
-        const currentVersion = parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
+        const currentVersion = await getDBVersion();
         return currentVersion < LATEST_DB_VERSION ? true : false;
     }
 
@@ -49,9 +49,6 @@ const databaseUpgrader = () => {
             if (message.object == 'image' &&
                 message.hasOwnProperty('choices') &&
                 message.choices.length > 0) {
-
-                console.log(index, message.conversationId, message.role, message.object, message.choices.length);
-                console.log(message.choices);
 
                 message.choices.forEach(async (item, index) => {
                     if (item.content.startsWith('image')) {
@@ -99,7 +96,7 @@ const databaseUpgrader = () => {
             message: t('databaseUpgrade.needed.message')
         });
 
-        let dBUpgrades = dBVersions.filter(version => version.version > dBVersion.value);
+        let dBUpgrades = dBVersions.filter(version => version.version > getDBVersion());
         let progress = 0;
         let nbrUpgrades = dBUpgrades.length;
 
@@ -110,7 +107,7 @@ const databaseUpgrader = () => {
                 upgradeDialog({ caption: `${progress++} of ${nbrUpgrades}` });
                 try {
                     version.upgrade();
-                    dBVersion.value = version.version;
+                    await setDBVersion(version.version);
                 } catch (error) {
                     console.error(error);
                     throw error;
@@ -122,7 +119,7 @@ const databaseUpgrader = () => {
                 icon: 'mdi-check',
                 spinner: false,
                 message: t('databaseUpgrade.completed.message'),
-                caption: t('databaseUpgrade.completed.caption', { version: dBVersion.value }),
+                caption: t('databaseUpgrade.completed.caption', { version: getDBVersion() }),
                 timeout: 5000,
                 actions: [{ label: t('databaseUpgrade.completed.action'), handler: () => { } }]
             });

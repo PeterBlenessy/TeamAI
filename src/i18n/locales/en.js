@@ -350,7 +350,7 @@ export default {
         },
         completed: {
             message: 'Database upgrade completed',
-            caption: 'All done. Database version is now version {version}.',
+            caption: 'All done. Database version is now  {version}.',
             action: 'Dismiss'
         },
         error: {

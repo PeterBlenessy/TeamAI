@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.24.4 - 2023-10-11
+- Fixed some database migration issues.
+
 ## v0.24.3 - 2023-10-11
 - Fixed issue where avatar tooltip was displaying unnecessary information.
 - Added loading icon tooltip in input box.
