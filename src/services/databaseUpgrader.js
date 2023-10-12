@@ -20,10 +20,10 @@ const databaseUpgrader = () => {
             upgrade: () => {}
         },
         {
-            version: 3,
+            version: 4,
             description: 'Optimized database structure by moving images from messages to separate table.',
-            caption: t('databaseUpgrade.inProgress.caption', { version: '3' }),
-            upgrade: () => upgradeToVersion3()
+            caption: t('databaseUpgrade.inProgress.caption', { version: '4' }),
+            upgrade: () => upgradeToVersion4()
         }
 
     ];
@@ -31,7 +31,7 @@ const databaseUpgrader = () => {
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 3;
+    const LATEST_DB_VERSION = 4;
     // =================================================================================================
 
     const getDBVersion = async () => parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
@@ -48,7 +48,7 @@ const databaseUpgrader = () => {
 
     // Upgrade to mitigate performance issues due to images being stored in message objects.
     // This upgrade moves images to a separate table, imageDB.
-    const upgradeToVersion3 = () => {
+    const upgradeToVersion4 = () => {
         if (messages.value.length == 0) {
             console.log("No messages to upgrade.");
             return;
@@ -82,10 +82,16 @@ const databaseUpgrader = () => {
                             let blob = await response.blob();
                             await imageDB.setItem(imageName, blob);
 
+                            const testImage = await imageDB.getItem(imageName);
+                            if (testImage != null) {
+                                // Update message with image name
+                                const newItem = {index: item.index, content: imageName};
+                                message.choices.splice(index, 1, newItem);
+                            } else {
+                                throw new Error("Error when moving image: " + imageName);
+                            }
                             // todo: Generate image thumbnail
 
-                            // Update message
-                            item.content = imageName;
                         } catch (error) {
                             console.error(error);
                             throw error;
@@ -146,6 +152,17 @@ const databaseUpgrader = () => {
             });
         } catch (error) {
             console.error(error);
+
+            // Notify user of error
+            $q.notify({
+                position: 'top',
+                icon: 'mdi-alert',
+                color: 'negative',
+                message: t('databaseUpgrade.error.message'),
+                caption: error.message,
+                timeout: 5000
+            });
+
             throw error;
         }
     }

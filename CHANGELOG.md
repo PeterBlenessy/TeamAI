@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.25.2 - 2023-10-12
+- Added extra tests for database migration and also error notifications.
+
 ## v0.25.1 - 2023-10-12
 - Fixed issue where images displayed in popup dialog did not scale responsively with the window. 
 - Fixed issue where model settings info was removed from a message unintentionally.
