@@ -2,7 +2,7 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from 'pinia';
-import { imageDB, settingsDB } from '../services/localforage.js';
+import { imageDB, settingsDB, teamsDB } from '../services/localforage.js';
 
 const databaseUpgrader = () => {
 
@@ -20,10 +20,10 @@ const databaseUpgrader = () => {
             upgrade: () => {}
         },
         {
-            version: 4,
+            version: 5,
             description: 'Optimized database structure by moving images from messages to separate table.',
-            caption: t('databaseUpgrade.inProgress.caption', { version: '4' }),
-            upgrade: () => upgradeToVersion4()
+            caption: t('databaseUpgrade.inProgress.caption', { version: '5' }),
+            upgrade: () => upgradeToVersion5()
         }
 
     ];
@@ -31,7 +31,7 @@ const databaseUpgrader = () => {
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 4;
+    const LATEST_DB_VERSION = 5;
     // =================================================================================================
 
     const getDBVersion = async () => parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
@@ -48,7 +48,7 @@ const databaseUpgrader = () => {
 
     // Upgrade to mitigate performance issues due to images being stored in message objects.
     // This upgrade moves images to a separate table, imageDB.
-    const upgradeToVersion4 = () => {
+    const upgradeToVersion5 = async () => {
         if (messages.value.length == 0) {
             console.log("No messages to upgrade.");
             return;
@@ -105,6 +105,14 @@ const databaseUpgrader = () => {
             }
             return message;
         });
+
+        await teamsDB.setItem('messages', JSON.stringify(messages.value));
+        const testMessages = await teamsDB.getItem('messages');
+        if (testMessages != null && testMessages == JSON.stringify(messages.value)) {
+            console.log("Messages upgrade completed successfully.");
+        } else {
+            throw new Error("Error when upgrading messages.");
+        }
     }
 
     // Upgrade database

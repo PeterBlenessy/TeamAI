@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v0.25.3 - 2023-10-12
+- Added extra tests to check if database migration was successful.
+
 ## v0.25.2 - 2023-10-12
 - Added extra tests for database migration and also error notifications.
 
