@@ -30,10 +30,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [KNOWN-BUGS]
 - ResizeObserver loop completed with undelivered notifications. 
   https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
-- Images are stretched when smaller than preset view size. This adds a blur to the image.
 - Notarization errors when updating outdated dependencies. Debug by initiating notarization locally.
+- Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
 
 ## [UNRELEASED]
+
+## v0.25.1 - 2023-10-12
+- Fixed issue where images displayed in popup dialog did not scale responsively with the window. 
+- Fixed issue where model settings info was removed from a message unintentionally.
+- Fixed issue where invalid image references caused warnings in the console and longer image loading times.
+- Fixed issue where images were stretched when smaller than preset view size, making the images blury.
+- Fixed issue with database upgrades failing.
 
 ## v0.25.0 - 2023-10-11
 - Fixed issue where showing conversation history was slow.

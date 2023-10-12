@@ -1,7 +1,6 @@
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useTeamsStore } from '../stores/teams-store.js';
-import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import { imageDB, settingsDB } from '../services/localforage.js';
 
@@ -11,7 +10,7 @@ const databaseUpgrader = () => {
     const $q = useQuasar();
 
     const teamsStore = useTeamsStore();
-    const { images, messages } = storeToRefs(teamsStore);
+    const { messages } = storeToRefs(teamsStore);
 
     const dBVersions = [
         {
@@ -21,10 +20,10 @@ const databaseUpgrader = () => {
             upgrade: () => {}
         },
         {
-            version: 2,
+            version: 3,
             description: 'Optimized database structure by moving images from messages to separate table.',
-            caption: t('databaseUpgrade.inProgress.caption', { version: '2' }),
-            upgrade: () => upgradeToVersion2()
+            caption: t('databaseUpgrade.inProgress.caption', { version: '3' }),
+            upgrade: () => upgradeToVersion3()
         }
 
     ];
@@ -32,31 +31,47 @@ const databaseUpgrader = () => {
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 2;
+    const LATEST_DB_VERSION = 3;
     // =================================================================================================
 
     const getDBVersion = async () => parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
     const setDBVersion = async (version) => await settingsDB.setItem('dBVersion', JSON.stringify(version));
 
     const isUpgradeNeed = async () => {
+        console.log("Checking if database upgrade is needed.");
         const currentVersion = await getDBVersion();
+        console.log("Current database version: ", currentVersion);
+        console.log("Latest database version: ", LATEST_DB_VERSION);
+        console.log("Upgrade needed: ", currentVersion < LATEST_DB_VERSION ? true : false);
         return currentVersion < LATEST_DB_VERSION ? true : false;
     }
 
-    // Upgrade to version 2
-    const upgradeToVersion2 = () => {
-        messages.value.forEach((message, index) => {
+    // Upgrade to mitigate performance issues due to images being stored in message objects.
+    // This upgrade moves images to a separate table, imageDB.
+    const upgradeToVersion3 = () => {
+        if (messages.value.length == 0) {
+            console.log("No messages to upgrade.");
+            return;
+        }
+        messages.value = messages.value.map(message => {
             if (message.object == 'image' &&
                 message.hasOwnProperty('choices') &&
                 message.choices.length > 0) {
 
+                console.log("Processing message: ", message.timestamp);
+
                 message.choices.forEach(async (item, index) => {
                     if (item.content.startsWith('image')) {
-                        // All good, do nothing
-                        return;
-                    }
-
-                    if (item.content.startsWith('data:image')) {
+                        // Check that image exists in imageDB
+                        const image = await imageDB.getItem(item.content)
+                        if (image != null) {
+                            console.log("Image exists in imageDB.", item.content)
+                        } else {
+                            console.log("Image does not exist in imageDB. Removing reference from message.", item.content)
+                            // Remove image reference from message
+                            message.choices.splice(index, 1);
+                        }
+                    } else if (item.content.startsWith('data:image')) {
                         // Found base64 image, move to imageDB
                         try {
                             let imageName = 'image' + '-' + message.timestamp + '-' + item.index;
@@ -67,13 +82,7 @@ const databaseUpgrader = () => {
                             let blob = await response.blob();
                             await imageDB.setItem(imageName, blob);
 
-                            let imageURI = URL.createObjectURL(blob);
-
                             // todo: Generate image thumbnail
-                            let thumbnailURI = ''; //URL.createObjectURL(thumbnailBlob)
-
-                            // Store image URIs
-                            images.value.push({ imageName, imageURI, thumbnailURI });
 
                             // Update message
                             item.content = imageName;
@@ -83,11 +92,17 @@ const databaseUpgrader = () => {
                         }
                     }
                 });
+
+            } else {
+                // No image in message, do nothing
+                console.log("No image in message, do nothing.", message.timestamp);
             }
+            return message;
         });
     }
+
     // Upgrade database
-    const upgrade = () => {
+    const upgrade = async () => {
         const upgradeDialog = $q.notify({
             group: false, // required to be updatable
             timeout: 0,   // we want to be in control when it gets dismissed
@@ -96,9 +111,14 @@ const databaseUpgrader = () => {
             message: t('databaseUpgrade.needed.message')
         });
 
-        let dBUpgrades = dBVersions.filter(version => version.version > getDBVersion());
+        const dbVersionBeforeUpgrade = await getDBVersion();
+
+        let dBUpgrades = dBVersions.filter(version => version.version > dbVersionBeforeUpgrade);
         let progress = 0;
         let nbrUpgrades = dBUpgrades.length;
+
+
+        console.log(dBUpgrades);
 
         try {
             // Execute the needed upgrades
@@ -115,11 +135,12 @@ const databaseUpgrader = () => {
             });
  
             // All upgrades are done
+            const dbVersionAfterUpgrade = await getDBVersion();
             upgradeDialog({
                 icon: 'mdi-check',
                 spinner: false,
                 message: t('databaseUpgrade.completed.message'),
-                caption: t('databaseUpgrade.completed.caption', { version: getDBVersion() }),
+                caption: t('databaseUpgrade.completed.caption', { version: dbVersionAfterUpgrade }),
                 timeout: 5000,
                 actions: [{ label: t('databaseUpgrade.completed.action'), handler: () => { } }]
             });

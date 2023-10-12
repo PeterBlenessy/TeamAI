@@ -33,10 +33,6 @@ export const useTeamsStore = defineStore('teams', () => {
     // The user input is a team assignment
     const isTeamWorkActivated = ref(false);
 
-    // Image and avatar object URLs
-    const images = ref([]); // imageName : { imageURI, thumbnailURI }
-    const avatars = ref([]); // avatarName : { avatarURI, thumbnailURI }
-
     // ---------------------------------------------------------------------------------------------
     // Actions
     // ---------------------------------------------------------------------------------------------
@@ -54,9 +50,6 @@ export const useTeamsStore = defineStore('teams', () => {
                         imageDB.removeItem(choice.content)
                         .then(() => console.log("Deleted image: ", choice.content))
                         .catch(error => console.log("Error when deleting image: ", choice.content, error));
-
-                        // Delete image from images array
-                        images.value = images.value.filter(image => image.imageName != choice.content);
                     });
                 }
                 return;
@@ -128,9 +121,6 @@ export const useTeamsStore = defineStore('teams', () => {
                         .then(() => console.log("Deleted image: ", choice.content))
                         .catch(error => console.log("Error when deleting image: ", choice.content, error));
 
-                        // Delete image from images array
-                        images.value = images.value.filter(image => image.imageName != choice.content);
-                        
                         return;
                     }
                 });
@@ -170,8 +160,6 @@ export const useTeamsStore = defineStore('teams', () => {
                 });
             }
         });
-        // Remove images references from images array, that are not referenced from messages
-        images.value = images.value.filter(image => allImages.includes(image.imageName));
 
         // Remove images from imageDB that are not referenced from the messages
         imageDB.iterate((value, key, iterationNumber) => {
@@ -199,7 +187,8 @@ export const useTeamsStore = defineStore('teams', () => {
                 conversation[i].hasOwnProperty("settings") && 
                 Object.keys(conversation[i].settings).length !== 0) {
                 
-                    return conversation[i].settings;
+                    // Return a copy of the settings object, to avoid reactive state changes
+                    return { ...conversation[i].settings };
             }
         }
     }
@@ -225,8 +214,6 @@ export const useTeamsStore = defineStore('teams', () => {
         isTeamWorkActivated,
 
         // Image and avatar objectURL arrays
-        images,
-        avatars,
         refreshObjectURLs: ref(false),
 
 

@@ -103,13 +103,8 @@ const openAI = () => {
                     let blob = await response.blob();
                     await imageDB.setItem(imageName, blob);
                     
-                    let imageURI = URL.createObjectURL(blob);
-
                     // todo: Generate image thumbnail
-                    let thumbnailURI = ''; //URL.createObjectURL(thumbnailBlob)
 
-                    // Store image URIs
-                    images.value.push({ imageName, imageURI, thumbnailURI });
                 } catch (error) { 
                     console.error(error);
                 }

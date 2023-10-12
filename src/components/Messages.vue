@@ -25,16 +25,35 @@
                     <div v-if="hasChoices(message) && message.object == 'image'">
                         <div class="q-pa-md">
                             <div class="q-col-gutter-md row justify-center items-start">
-                                <!-- Iterate through the image choices -->
+
+
                                 <div v-for="(item) in message.choices" :key="item.content">
                                     <div class="col-auto ">
                                         <q-card flat square :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
                                             <q-card-section horizontal>
+                                                <img id="item.content" />
+                                            </q-card-section>
+                                        </q-card>
+                                    </div>
+                                </div>
+
+
+                                <!-- Iterate through the image choices -->
+                                <div v-for="(item) in message.choices" :key="item.content">
+                                    <div class="col-auto ">
+                                        <q-card flat square :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
+
+
+                                            <q-card-section horizontal>
                                                 <!-- Display image -->
-                                                <q-img loading="lazy" :ratio="1" width="256px" draggable :id="item.content"
-                                                    placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAAG1BMVEXMzMyWlpaqqqq3t7fFxcW+vr6xsbGjo6OcnJyLKnDGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAElEQVRoge3SMW+DMBiE4YsxJqMJtHOTITPeOsLQnaodGImEUMZEkZhRUqn92f0MaTubtfeMh/QGHANEREREREREREREtIJJ0xbH299kp8l8FaGtLdTQ19HjofxZlJ0m1+eBKZcikd9PWtXC5DoDotRO04B9YOvFIXmXLy2jEbiqE6Df7DTleA5socLqvEFVxtJyrpZFWz/pHM2CVte0lS8g2eDe6prOyqPglhzROL+Xye4tmT4WvRcQ2/m81p+/rdguOi8Hc5L/8Qk4vhZzy08DduGt9eVQyP2qoTM1zi0/uf4hvBWf5c77e69Gf798y08L7j0RERERERERERH9P99ZpSVRivB/rgAAAABJRU5ErkJggg=="
-                                                    :src="getImage(item.content)" @error="(event) => onImageError(event)"
-                                                    @click="showImage(item.content)"/>
+
+                                                <!-- Base64 image -->
+                                                <img v-if="item.content.startsWith('data:image')" style="width: 256px"
+                                                    loading="lazy" :src="item.content" />
+
+                                                    <!-- Image name; image stored in imageDB -->
+                                                <img v-else style="width: 256px" loading="lazy"
+                                                    :id="loadImage(item.content)" @click="showImage(item.content)" />
 
                                                 <!-- Image actions -->
                                                 <q-card-actions vertical class="justify-around">
@@ -125,9 +144,11 @@
         </q-card>
         <q-separator />
     </div>
+
+    <!-- Popup dialog to show full sized image -->
     <q-dialog v-model="showImageDialog">
-        <q-card style="min-width: 1024px; max-width: 90vw; width: auto;">
-            <q-img :src="imageSrc" @click="showImageDialog=false"/>
+        <q-card style="width: 1024px; height: auto; max-width: 90vh; max-height: 90vw;">
+            <q-img :src="imageSrc" @click="showImageDialog = false" style="" />
         </q-card>
     </q-dialog>
 </template>
@@ -153,7 +174,7 @@ export default {
         const $q = useQuasar();
         const { t } = useI18n();
         const teamsStore = useTeamsStore();
-        const { loading, conversationId, messages, images } = storeToRefs(teamsStore);
+        const { loading, conversationId, messages } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
         const { chatDirection, speechLanguage, userAvatar } = storeToRefs(settingsStore);
 
@@ -181,10 +202,12 @@ export default {
 
         // Restore settings from last message in conversation
         const restoreSettings = () => {
-            const settings = teamsStore.getSettingsFromLastMessage(conversationId.value);
+            let settings = teamsStore.getSettingsFromLastMessage(conversationId.value);
 
             if (settings) {
+                // Avoid setting dall-e as model for text generation
                 if (settings.model == "dall-e") delete settings.model;
+
                 settingsStore.$patch(settings);
             }
         };
@@ -371,36 +394,7 @@ export default {
             return null;
         }
 
-        const getImage = (imageName) => {
-
-            // Check if image is b64 data
-            if (imageName.startsWith('data:image')) {
-                return imageName;
-            }
-
-            let [image] = images.value.filter(item => item.imageName == imageName);
-            if ('imageURI' in image) {
-                return image.imageURI;
-            } else {
-                return '';
-            }
-        }
-
-        // Handle <img @onError(event) triggered for invalid object URLs.
-        // Regenerate object URLs stored in images array and revoked when application restarts.
-        const onImageError = async (event) => {
-            // console.log(event);
-            // console.log(event.target.src);
-            let imageName = images.value.filter(item => item.imageURI == event.target.src)[0].imageName;
-            let blob = await imageDB.getItem(imageName);
-            let imageURI = URL.createObjectURL(blob);
-            for (let i = 0; i < images.value.length; i++) {
-                if (images.value[i].imageURI == event.target.src) {
-                    images.value[i].imageURI = imageURI;
-                    break;
-                }
-            }
-        }
+        // Pupup dialog to show full sized image
         const showImageDialog = ref(false);
         const imageSrc = ref('');
 
@@ -430,14 +424,20 @@ export default {
             userAvatar,
             getAssistantAvatar,
             getAssistantName,
-            images,
-            getImage,
-            onImageError,
             showImageDialog,
             imageSrc,
             showImage: (imageName) => {
                 showImageDialog.value = true;
-                imageSrc.value = getImage(imageName);
+                const imageId = document.getElementById(imageName);
+                imageSrc.value = imageId.src;
+            },
+            loadImage: (imageName) => {
+                imageDB.getItem(imageName).then(blob => {
+                    const imageURI = URL.createObjectURL(blob);
+                    let imageId = document.getElementById(imageName);
+                    imageId.src = imageURI;
+                });
+                return imageName;
             }
         };
     }
