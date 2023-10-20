@@ -51,7 +51,7 @@
             "endpoints": [
                 "https://github.com/PeterBlenessy/TeamAI/releases/latest/download/latest.json"
             ],
-            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlEM0Y4OTE3M0I1Q0U4RjcKUldUMzZGdzdGNGsvbmJtaXJURC9vNm1ySVhqTFFNQS9MZ3J2MUdqUGxGdUdpcE1ON0p1bDBYSVQK",
+            "pubkey":"dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEExRTg5OEMwMTJFMEM4M0YKUldRL3lPQVN3Smpvb2NING1mTURITHlmMTZIZ1JXd0cyRkIwckJkQUNmMElvc0REZm9hd2FIb2UK",
             "windows": {
                 "installMode": "passive"
             }
