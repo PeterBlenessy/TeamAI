@@ -17,7 +17,7 @@ import { localForagePlugin } from './services/localforage';
 
 // i18n stuff
 import { createI18n } from 'vue-i18n';
-import messages from '@intlify/unplugin-vue-i18n/messages';
+import messages from './i18n';
 
 // ---------------------------------------------------------------------------------------------
 // Create the app
