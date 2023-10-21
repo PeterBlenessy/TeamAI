@@ -94,7 +94,8 @@ const openAI = () => {
             for (let i = 0; i < json.data.length; i++) {
 
                 let imageB64 = "data:image/png;base64,"+json.data[i].b64_json;
-                let imageName = 'image' + '-' + json.created +'-'+ i;
+                let imageName = `image-${json.created}-${i}`;
+
                 choices.push({ index: i, content: imageName });
 
                 try {

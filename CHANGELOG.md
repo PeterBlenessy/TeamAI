@@ -35,9 +35,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
-## v1.0.0 - 2023-10-20
+## v1.0.0 - 2023-10-21
 - Upgraded all packages their latest versions.
 - Fixed CVE-2023-46115.
+- Fixed LICENCE file reference.
+- Updated database upgrade to operate directly and only on the database, not state values.
+- Updated database upgrade to be synchronous.
 
 ## v0.25.3 - 2023-10-12
 - Added extra tests to check if database migration was successful.

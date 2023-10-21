@@ -1,7 +1,5 @@
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import { useTeamsStore } from '../stores/teams-store.js';
-import { storeToRefs } from 'pinia';
 import { imageDB, settingsDB, teamsDB } from '../services/localforage.js';
 
 const databaseUpgrader = () => {
@@ -9,109 +7,119 @@ const databaseUpgrader = () => {
     const { t } = useI18n();
     const $q = useQuasar();
 
-    const teamsStore = useTeamsStore();
-    const { messages } = storeToRefs(teamsStore);
 
     const dBVersions = [
         {
             version: 1,
             description: 'First database version',
             caption: t('databaseUpgrade.inProgress.caption', { version: '1' }),
-            upgrade: () => {}
+            upgrade: () => { }
         },
         {
-            version: 5,
+            version: 6,
             description: 'Optimized database structure by moving images from messages to separate table.',
             caption: t('databaseUpgrade.inProgress.caption', { version: '5' }),
-            upgrade: () => upgradeToVersion5()
+            upgrade: () => upgradeToVersion6()
         }
-
     ];
-    
+
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 5;
+    const LATEST_DB_VERSION = 6;
     // =================================================================================================
-
     const getDBVersion = async () => parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
     const setDBVersion = async (version) => await settingsDB.setItem('dBVersion', JSON.stringify(version));
 
     const isUpgradeNeed = async () => {
-        console.log("Checking if database upgrade is needed.");
-        const currentVersion = await getDBVersion();
-        console.log("Current database version: ", currentVersion);
-        console.log("Latest database version: ", LATEST_DB_VERSION);
-        console.log("Upgrade needed: ", currentVersion < LATEST_DB_VERSION ? true : false);
-        return currentVersion < LATEST_DB_VERSION ? true : false;
+        console.log("Checking if database upgrade is needed...");
+        let currentVersion = await getDBVersion();
+        let isNeeded = currentVersion < LATEST_DB_VERSION ? true : false;
+        console.log(`\tCurrent version is ${currentVersion}. Latest version is ${LATEST_DB_VERSION}.`)
+        console.log(isNeeded ? "\tUpgrade needed" : "\tUpgrade not needed");
+        return isNeeded;
     }
 
     // Upgrade to mitigate performance issues due to images being stored in message objects.
     // This upgrade moves images to a separate table, imageDB.
-    const upgradeToVersion5 = async () => {
-        if (messages.value.length == 0) {
-            console.log("No messages to upgrade.");
-            return;
-        }
-        messages.value = messages.value.map(message => {
-            if (message.object == 'image' &&
-                message.hasOwnProperty('choices') &&
-                message.choices.length > 0) {
+    const upgradeToVersion6 = async () => {
 
-                console.log("Processing message: ", message.timestamp);
+        try {
+            // Get messages from persistent storage
+            let messages = JSON.parse(await teamsDB.getItem('messages'));
+            if (messages == null) {
+                console.log("Nothing to upgrade.");
+                return;
+            }
 
-                message.choices.forEach(async (item, index) => {
-                    if (item.content.startsWith('image')) {
-                        // Check that image exists in imageDB
-                        const image = await imageDB.getItem(item.content)
-                        if (image != null) {
-                            console.log("Image exists in imageDB.", item.content)
-                        } else {
-                            console.log("Image does not exist in imageDB. Removing reference from message.", item.content)
-                            // Remove image reference from message
-                            message.choices.splice(index, 1);
-                        }
-                    } else if (item.content.startsWith('data:image')) {
-                        // Found base64 image, move to imageDB
-                        try {
-                            let imageName = 'image' + '-' + message.timestamp + '-' + item.index;
-                            console.log('Found base64 image. Moving to imageDB with imageName: ', imageName);
+            for (let m = 0; m < messages.length; m++) {
+                console.log("Processing message: ", messages[m].timestamp);
 
-                            // Create blob from base64 image and store it in imageDB
-                            let response = await fetch(item.content);
-                            let blob = await response.blob();
-                            await imageDB.setItem(imageName, blob);
-
-                            const testImage = await imageDB.getItem(imageName);
-                            if (testImage != null) {
-                                // Update message with image name
-                                const newItem = {index: item.index, content: imageName};
-                                message.choices.splice(index, 1, newItem);
+                if (messages[m].object == 'image' &&
+                    messages[m].hasOwnProperty('choices') &&
+                    messages[m].choices.length > 0) {
+                
+                    for (let i=0; i < messages[m].choices.length; i++) {
+                        console.log("\tProcessing image: ", messages[m].choices[i].index);
+                        if (messages[m].choices[i].content.startsWith('image')) {
+                            console.log("\t\tImage name: ", messages[m].choices[i].content);
+                            // Check that image exists in imageDB
+                            const image = await imageDB.getItem(messages[m].choices[i].content);
+                            if (image != null) {
+                                console.log("\t\tImage exists in imageDB.")
                             } else {
-                                throw new Error("Error when moving image: " + imageName);
+                                console.log("\t\tImage does not exist in imageDB. Removing reference from message.")
+                                // Remove image reference from message
+                                messages[m].choices.splice(i, 1);
                             }
-                            // todo: Generate image thumbnail
+                        } else if (messages[m].choices[i].content.startsWith('data:image')) {
+                            // Found base64 image, move to imageDB
+                            let imageName = `image-${messages[m].timestamp}-${messages[m].choices[i].index}`;
+                            console.log('\t\tFound base64 image. Moving to imageDB with imageName: ', imageName);
 
-                        } catch (error) {
-                            console.error(error);
-                            throw error;
+                            try {
+                                // Create blob from base64 image and store it in imageDB
+                                let response = await fetch(messages[m].choices[i].content);
+                                let blob = await response.blob();
+                                await imageDB.setItem(imageName, blob);
+
+                                const testImage = await imageDB.getItem(imageName);
+                                if (testImage != null) {
+                                    // Update message with image name
+                                    const newItem = { index: messages[m].choices[i].index, content: imageName };
+                                    messages[m].choices.splice(i, 1, newItem);
+                                } else {
+                                    throw new Error("Error when moving image: " + imageName);
+                                }
+
+                            } catch (error) {
+                                console.error(error);
+                                throw error;
+                            }
+                        } else {
+                            console.log("\t\tUnexpected image reference. Removing from message.", messages[m].choices[i].content)
                         }
                     }
-                });
 
-            } else {
-                // No image in message, do nothing
-                console.log("No image in message, do nothing.", message.timestamp);
+                } else {
+                    // No images in message, do nothing
+                    console.log("\tNo images in message.", messages[m].timestamp);
+                }
             }
-            return message;
-        });
-
-        await teamsDB.setItem('messages', JSON.stringify(messages.value));
-        const testMessages = await teamsDB.getItem('messages');
-        if (testMessages != null && testMessages == JSON.stringify(messages.value)) {
-            console.log("Messages upgrade completed successfully.");
-        } else {
-            throw new Error("Error when upgrading messages.");
+            // Store the potentially updated messages array in persistent storage
+            await teamsDB.setItem('messages', JSON.stringify(messages));
+            
+            // Verify that messages upgrade was successful
+            let testMessages = await teamsDB.getItem('messages');
+            if (testMessages != null && testMessages == JSON.stringify(messages)) {
+                console.log("Messages upgrade completed successfully.");
+            } else {
+                console.error("Error when upgrading messages.");
+                throw new Error("Error when upgrading messages.");
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
         }
     }
 
@@ -126,13 +134,11 @@ const databaseUpgrader = () => {
         });
 
         const dbVersionBeforeUpgrade = await getDBVersion();
+        let dbVersionAfterUpgrade = 0;
 
         let dBUpgrades = dBVersions.filter(version => version.version > dbVersionBeforeUpgrade);
-        let progress = 0;
+        let progress = 1;
         let nbrUpgrades = dBUpgrades.length;
-
-
-        console.log(dBUpgrades);
 
         try {
             // Execute the needed upgrades
@@ -142,22 +148,23 @@ const databaseUpgrader = () => {
                 try {
                     version.upgrade();
                     await setDBVersion(version.version);
+                    dbVersionAfterUpgrade = await getDBVersion();
+
+                    // All upgrades are done
+                    upgradeDialog({
+                        icon: 'mdi-check',
+                        spinner: false,
+                        message: t('databaseUpgrade.completed.message'),
+                        caption: t('databaseUpgrade.completed.caption', { version: dbVersionAfterUpgrade }),
+                        timeout: 5000,
+                        actions: [{ label: t('databaseUpgrade.completed.action'), handler: () => { } }]
+                    });
                 } catch (error) {
                     console.error(error);
                     throw error;
                 }
             });
- 
-            // All upgrades are done
-            const dbVersionAfterUpgrade = await getDBVersion();
-            upgradeDialog({
-                icon: 'mdi-check',
-                spinner: false,
-                message: t('databaseUpgrade.completed.message'),
-                caption: t('databaseUpgrade.completed.caption', { version: dbVersionAfterUpgrade }),
-                timeout: 5000,
-                actions: [{ label: t('databaseUpgrade.completed.action'), handler: () => { } }]
-            });
+
         } catch (error) {
             console.error(error);
 

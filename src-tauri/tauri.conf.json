@@ -34,7 +34,7 @@
             "targets": "all",
             "macOS": {
                 "entitlements": "./entitlements.plist",
-                "license": "./LICENSE"
+                "license": "../LICENSE"
             }
         },
         "security": {
