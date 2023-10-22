@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.0.1 - 2023-10-22
+- Updated Tauri packages to latest versions.
+
 ## v1.0.0 - 2023-10-21
 - Upgraded all packages their latest versions.
 - Fixed CVE-2023-46115.

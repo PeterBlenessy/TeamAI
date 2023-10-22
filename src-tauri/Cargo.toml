@@ -1,6 +1,6 @@
 [package]
 name = "team-ai"
-version = "0.4.0"
+version = "0.4.1"
 description = "An OpenAI powered Tauri application"
 authors = ["Péter Blénessy"]
 license = "MIT"
@@ -10,10 +10,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.4", features = [] }
+tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
-tauri = { version = "1.4", features = [ "shell-open", "system-tray", "updater"] }
+tauri = { version = "1.5", features = [ "shell-open", "system-tray", "updater"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
