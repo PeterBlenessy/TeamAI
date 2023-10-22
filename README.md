@@ -2,6 +2,9 @@
 
 The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.
 
+<img width="640" alt="TeamAI Screenshot" src="https://github.com/PeterBlenessy/TeamAI/assets/22810267/e0670494-064f-41de-8e01-c356f13ba978">
+<img width="320" alt="Version Screenshot" src="https://github.com/PeterBlenessy/TeamAI/assets/22810267/22116de9-e6eb-4e86-af91-b9b5a19112b0">
+
 The application is based on [tauri-app-boilerplate](https://github.com/PeterBlenessy/tauri-app-boilerplate) and uses [Tauri](https://tauri.app), [Vue 3](https://vuejs.org), [Quasar](https://quasar.dev), and [Vite](https://vitejs.dev).
 
 
