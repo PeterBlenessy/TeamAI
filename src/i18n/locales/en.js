@@ -114,6 +114,16 @@ export default {
             size: {
                 label: 'Image size',
                 tooltip: 'The size of the image to generate.'
+            },
+            quality: {
+                label: 'Image quality',
+                tooltip: 'The quality of the image to generate.'
+            },
+            style: {
+                label: 'Image style',
+                tooltip: 'The style of the image to generate.',
+                vivid: 'Vivid',
+                natural: 'Natural'
             }
         },
         persona: {

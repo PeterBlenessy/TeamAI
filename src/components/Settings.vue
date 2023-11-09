@@ -265,7 +265,7 @@
 
                 <q-separator />
 
-                <q-item>
+                <q-item v-if="false">
                     <q-item-section avatar>
                         <q-icon name="mdi-image-multiple-outline" :color="iconColor" />
                     </q-item-section>
@@ -289,6 +289,20 @@
                             :min="0" :max="2" :step="1" :markers="1" label :label-value="imageSize" />
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ t('settings.openAI.size.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon :name="imageQuality=='hd' ? 'mdi-high-definition' : 'mdi-standard-definition'" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label caption>{{ t('settings.openAI.quality.label') }} ({{ imageQuality }})</q-item-label>
+                        <q-slider :model-value="imageQualityValue" @update:model-value="val => { imageQualityValue = val }" snap
+                            :min="0" :max="1" :step="1" :markers="1" label :label-value="imageQuality" />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.openAI.quality.tooltip') }}
                         </q-tooltip>
                     </q-item-section>
                 </q-item>
@@ -325,6 +339,7 @@ export default {
             temperature,
             choices,
             imageSize,
+            imageQuality,
             personas,
             quickSettings,
             speechLanguage,
@@ -346,11 +361,18 @@ export default {
             });
         }
 
-        const imageSizeOptions = ref(['256x256', '512x512', '1024x1024']);
-        const imageSizeValue = ref(imageSizeOptions.value.indexOf(imageSize.value));
+        // Image related
+        const imageSizeOptions = ['1024x1024', '1024x1792', '1792x1024'];
+        const imageQualityOptions = ['standard', 'hd'];
+        const imageSizeValue = ref(imageSizeOptions.indexOf(imageSize.value));
+        const imageQualityValue = ref(imageQualityOptions.indexOf(imageQuality.value));
 
         watch(imageSizeValue, () => {
-            imageSize.value = imageSizeOptions.value[imageSizeValue.value];
+            imageSize.value = imageSizeOptions[imageSizeValue.value];
+        });
+
+        watch(imageQualityValue, () => {
+            imageQuality.value = imageQualityOptions[imageQualityValue.value];
         });
 
         // Avatar related
@@ -387,7 +409,8 @@ export default {
             choices,
             imageSize,
             imageSizeValue,
-            imageSizeOptions,
+            imageQuality,
+            imageQualityValue,
             personaOptions,
             personaFilterFn,
             personas,

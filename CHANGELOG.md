@@ -35,6 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.1.0 - 2023-11-09
+- Added new text generation model GPT-4 Turbo (gpt-4-1106-preview).
+- Added new image generation model DALL-E 3, along with image quality and image style settings.
+- Disabled image choices for now, as DALL-E 3 does not support it.
+
 ## v1.0.1 - 2023-10-22
 - Updated Tauri packages to latest versions.
 

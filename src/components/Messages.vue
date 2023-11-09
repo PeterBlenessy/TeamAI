@@ -206,7 +206,7 @@ export default {
 
             if (settings) {
                 // Avoid setting dall-e as model for text generation
-                if (settings.model == "dall-e") delete settings.model;
+                if (settings.model == "dall-e-3") delete settings.model;
 
                 settingsStore.$patch(settings);
             }

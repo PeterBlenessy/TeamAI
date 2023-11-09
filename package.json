@@ -1,7 +1,7 @@
 {
   "name": "team-ai",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,7 +13,8 @@
     "git:push:all": "CHANGELOG=$(sed -n \"/^## v$npm_package_version/,/^## /p\" CHANGELOG.md | sed '1d;$d') && git add . && git commit -m \"$CHANGELOG\" && git push -u origin main",
     "git:push:all:reversed": "CHANGELOG=$(sed -n \"/^## v$npm_package_version/,/^## /p\" CHANGELOG.md | sed '1d;$d' | tac) && git add . && git commit -m \"$CHANGELOG\" && git push -u origin main",
     "git:push": "CHANGELOG=$(sed -n \"/^## \\[UNRELEASED\\]/ {n;p;q;}\" CHANGELOG.md | sed '$!d') && git commit -m \"$CHANGELOG\" && git push -u origin main",
-    "cicd": "yarn git:push:all:reversed && yarn release:draft && yarn release:publish"
+    "cicd:reversed": "yarn git:push:all:reversed && yarn release:draft && yarn release:publish",
+    "cicd": "yarn git:push:all && yarn release:draft && yarn release:publish"
   },
   "dependencies": {
     "@intlify/unplugin-vue-i18n": "^1.4.0",

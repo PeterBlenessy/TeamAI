@@ -113,6 +113,16 @@ export default {
             size: {
                 label: 'Bildstorlek',
                 tooltip: 'Bildstorlek i pixlar.'
+            },
+            quality: {
+                label: 'Bildkvalitet',
+                tooltip: 'Bildkvalitet, standard eller HD'
+            },
+            style: {
+                label: 'Bild stil',
+                tooltip: 'Bildens stil.',
+                vivid: 'Levande',
+                natural: 'Naturlig'
             }
         },
         persona: {

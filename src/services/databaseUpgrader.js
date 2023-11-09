@@ -1,6 +1,7 @@
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { imageDB, settingsDB, teamsDB } from '../services/localforage.js';
+import { useSettingsStore } from '../stores/settings-store.js';
 
 const databaseUpgrader = () => {
 
@@ -18,15 +19,21 @@ const databaseUpgrader = () => {
         {
             version: 6,
             description: 'Optimized database structure by moving images from messages to separate table.',
-            caption: t('databaseUpgrade.inProgress.caption', { version: '5' }),
+            caption: t('databaseUpgrade.inProgress.caption', { version: '6' }),
             upgrade: () => upgradeToVersion6()
+        },
+        {
+            version: 7,
+            description: 'Added new OpenAI models.',
+            caption: t('databaseUpgrade.inProgress.caption', { version: '7' }),
+            upgrade: () => upgradeToVersion7()
         }
     ];
 
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 6;
+    const LATEST_DB_VERSION = 7;
     // =================================================================================================
     const getDBVersion = async () => parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
     const setDBVersion = async (version) => await settingsDB.setItem('dBVersion', JSON.stringify(version));
@@ -38,6 +45,20 @@ const databaseUpgrader = () => {
         console.log(`\tCurrent version is ${currentVersion}. Latest version is ${LATEST_DB_VERSION}.`)
         console.log(isNeeded ? "\tUpgrade needed" : "\tUpgrade not needed");
         return isNeeded;
+    }
+
+    // Add new OpenAI models
+    const upgradeToVersion7 = async () => {
+        try {
+            const modelOptions = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-1106-preview'];
+            await settingsDB.setItem('modelOptions', JSON.stringify(modelOptions));
+            const settingsStore = useSettingsStore();
+            settingsStore.modelOptions.value = modelOptions;
+
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 
     // Upgrade to mitigate performance issues due to images being stored in message objects.
@@ -58,8 +79,8 @@ const databaseUpgrader = () => {
                 if (messages[m].object == 'image' &&
                     messages[m].hasOwnProperty('choices') &&
                     messages[m].choices.length > 0) {
-                
-                    for (let i=0; i < messages[m].choices.length; i++) {
+
+                    for (let i = 0; i < messages[m].choices.length; i++) {
                         console.log("\tProcessing image: ", messages[m].choices[i].index);
                         if (messages[m].choices[i].content.startsWith('image')) {
                             console.log("\t\tImage name: ", messages[m].choices[i].content);
@@ -108,7 +129,7 @@ const databaseUpgrader = () => {
             }
             // Store the potentially updated messages array in persistent storage
             await teamsDB.setItem('messages', JSON.stringify(messages));
-            
+
             // Verify that messages upgrade was successful
             let testMessages = await teamsDB.getItem('messages');
             if (testMessages != null && testMessages == JSON.stringify(messages)) {

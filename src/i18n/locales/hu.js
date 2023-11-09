@@ -112,6 +112,16 @@ export default {
             size: {
                 label: 'Kép mérete',
                 tooltip: 'A kép mérete.'
+            },
+            quality: {
+                label: 'Képminőség',
+                tooltip: 'A képminőség, standard vagy HD.'
+            },
+            style: {
+                label: 'Kép stilus',
+                tooltip: 'A kép stilusa.',
+                vivid: 'Élénk',
+                natural: 'Természetes',
             }
         },
         persona: {
