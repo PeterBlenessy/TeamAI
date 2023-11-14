@@ -1,0 +1,6 @@
+{
+    "gptModels": ["gpt-3.5-turbo", "gpt-4", "gpt-4-1106-preview"],
+    "imageSizeOptions": ["1024x1024", "1024x1792", "1792x1024"],
+    "imageQualityOptions": ["standard", "hd"],
+    "imageStyleOptions": ["natural", "vivid"]
+}

@@ -143,6 +143,7 @@ import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import openaiConfig from '../services/openai.config.json';
 
 export default {
     name: "QuickSettings",
@@ -155,7 +156,6 @@ export default {
             appMode,
             conversationMode,
             model,
-            modelOptions,
             maxTokens,
             temperature,
             choices,
@@ -184,10 +184,12 @@ export default {
             });
         }
 
-        // Image related
-        const imageSizeOptions = ['1024x1024', '1024x1792', '1792x1024'];
-        const imageQualityOptions = ['standard', 'hd'];
-        const imageStyleOptions = ['vivid', 'natural'];
+        // Load OpenAI model options
+        const modelOptions = openaiConfig.gptModels;
+        const imageSizeOptions = openaiConfig.imageSizeOptions;
+        const imageQualityOptions = openaiConfig.imageQualityOptions;
+        const imageStyleOptions = openaiConfig.imageStyleOptions;
+
         const imageSizeValue = ref(imageSizeOptions.indexOf(imageSize.value));
         const imageQualityValue = ref(imageQualityOptions.indexOf(imageQuality.value));
         const imageStyleValue = ref(imageStyleOptions.indexOf(imageStyle.value));
@@ -210,7 +212,6 @@ export default {
             conversationMode,
             appMode,
             model,
-            modelOptions,
             maxTokens,
             temperature,
             choices,
@@ -232,9 +233,9 @@ export default {
                     return;
                 }
 
-                let index = modelOptions.value.indexOf(model.value);
-                index = (index + 1) % modelOptions.value.length;
-                model.value = modelOptions.value[index];
+                let index = modelOptions.indexOf(model.value);
+                index = (index + 1) % modelOptions.length;
+                model.value = modelOptions[index];
             },
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')

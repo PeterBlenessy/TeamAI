@@ -307,6 +307,20 @@
                     </q-item-section>
                 </q-item>
 
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="mdi-palette" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label caption>{{ t('settings.openAI.style.label') }} ({{ imageStyle }})</q-item-label>
+                        <q-slider :model-value="imageStyleValue" @update:model-value="val => { imageStyleValue = val }" snap
+                            :min="0" :max="1" :step="1" :markers="1" label :label-value="imageStyle" />
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.openAI.style.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
             </q-list>
         </q-card-section>
     </q-card>
@@ -319,6 +333,7 @@ import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import openaiConfig from '../services/openai.config.json';
 
 export default {
     name: "AppSettings",
@@ -334,12 +349,12 @@ export default {
             chatDirection,
             apiKey,
             model,
-            modelOptions,
             maxTokens,
             temperature,
             choices,
             imageSize,
             imageQuality,
+            imageStyle,
             personas,
             quickSettings,
             speechLanguage,
@@ -361,11 +376,15 @@ export default {
             });
         }
 
-        // Image related
-        const imageSizeOptions = ['1024x1024', '1024x1792', '1792x1024'];
-        const imageQualityOptions = ['standard', 'hd'];
+        // Load OpenAI model options
+        const modelOptions = openaiConfig.gptModels;
+        const imageSizeOptions = openaiConfig.imageSizeOptions;
+        const imageQualityOptions = openaiConfig.imageQualityOptions;
+        const imageStyleOptions = openaiConfig.imageStyleOptions;
+
         const imageSizeValue = ref(imageSizeOptions.indexOf(imageSize.value));
         const imageQualityValue = ref(imageQualityOptions.indexOf(imageQuality.value));
+        const imageStyleValue = ref(imageStyleOptions.indexOf(imageStyle.value));
 
         watch(imageSizeValue, () => {
             imageSize.value = imageSizeOptions[imageSizeValue.value];
@@ -373,6 +392,10 @@ export default {
 
         watch(imageQualityValue, () => {
             imageQuality.value = imageQualityOptions[imageQualityValue.value];
+        });
+
+        watch(imageStyleValue, () => {
+            imageStyle.value = imageStyleOptions[imageStyleValue.value];
         });
 
         // Avatar related
@@ -411,6 +434,8 @@ export default {
             imageSizeValue,
             imageQuality,
             imageQualityValue,
+            imageStyle,
+            imageStyleValue,
             personaOptions,
             personaFilterFn,
             personas,

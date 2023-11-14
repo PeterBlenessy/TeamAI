@@ -27,13 +27,20 @@ const databaseUpgrader = () => {
             description: 'Added new OpenAI models.',
             caption: t('databaseUpgrade.inProgress.caption', { version: '7' }),
             upgrade: () => upgradeToVersion7()
+        },
+        {
+            version: 8,
+            description: 'Removed OpenAI API parameter options from persistent storage.',
+            caption: t('databaseUpgrade.inProgress.caption', { version: '8' }),
+            upgrade: () => upgradeToVersion8()
         }
     ];
 
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 7;
+    const LATEST_DB_VERSION = 8;
+
     // =================================================================================================
     const getDBVersion = async () => parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
     const setDBVersion = async (version) => await settingsDB.setItem('dBVersion', JSON.stringify(version));
@@ -61,6 +68,15 @@ const databaseUpgrader = () => {
         }
     }
 
+    // Clean up stuff that should not be persisted as states
+    const upgradeToVersion8 = async () => {
+        try {
+            await settingsDB.removeItem('modelOptions');
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
     // Upgrade to mitigate performance issues due to images being stored in message objects.
     // This upgrade moves images to a separate table, imageDB.
     const upgradeToVersion6 = async () => {

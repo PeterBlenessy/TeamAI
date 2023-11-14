@@ -17,15 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [BACKLOG]
 - Add language information to messages and extract it automatically to know current language.
 - Should make iconColor() a utility function.
-- Should text and image generation models be merged in QuickSettings? And selection icons in input field removed?
 - Length of persona name should be restricted to e.g. 32 characters to fit dropdown selection box.
 - Avatars should be scaled down to save storage space. Unless stored as separate files, only once.
-
-### [MAJOR]
-´`
-### [MINOR]
-
-### [PATCH]
 
 ### [KNOWN-BUGS]
 - ResizeObserver loop completed with undelivered notifications. 
@@ -34,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
 
 ## [UNRELEASED]
+
+## v1.2.0 - 2023-11-14
+- Removed OpenAI API parameter options from persistent storage.
+- Added image style settings to Settings component.
 
 ## v1.1.0 - 2023-11-09
 - Added new text generation model GPT-4 Turbo (gpt-4-1106-preview).
