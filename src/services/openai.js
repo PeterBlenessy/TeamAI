@@ -4,10 +4,10 @@ import { imageDB } from './localforage.js';
 
 const openAI = () => {
     const settingsStore = useSettingsStore()
-    const { apiKey, model, maxTokens, temperature, choices, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
+    const { apiKey, model, maxTokens, temperature, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
 
     // Private function. Sets the fetch init options.
-    const setOptions = (messages) => {
+    const setOptions = (messages, stream) => {
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + apiKey.value,
@@ -18,7 +18,7 @@ const openAI = () => {
             "messages": messages,
             "max_tokens": maxTokens.value,
             "temperature": temperature.value,
-            "stream": false,
+            "stream": stream,
             "n": 1
         };
 
@@ -32,30 +32,18 @@ const openAI = () => {
     }
 
     // Public function. Creates a chat completion.
-    const createChatCompletion = async (messages) => {
+    const createChatCompletion = async (messages, stream) => {
         // Clean up any undefined elements in the messages array, to avoid failed OpenAI API call.
         messages = messages.filter(message => message !== undefined);
 
-        const requestOptions = setOptions(messages);
+        const requestOptions = setOptions(messages, stream);
 
         try {
             const response = await fetch("https://api.openai.com/v1/chat/completions", requestOptions);
             if (!response.ok) throw new Error(`${response.status} - ${response.statusText}`);
 
-            const json = await response.json();
-            if (json.errorCode) throw new Error(`${data.errorCode}`);
+            return response;
 
-            return {
-                role: json.choices[0].message.role,
-                content: json.choices[0].message.content,
-                object: json.object,
-                usage: json.usage,
-                settings: {
-                    model: model.value,
-                    maxTokens: maxTokens.value,
-                    temperature: temperature.value
-                }
-            };
         } catch (error) {
             throw new Error(error.message);
         }
@@ -81,8 +69,6 @@ const openAI = () => {
 
         try {
             let choices = [];
-
-            console.log(JSON.parse(requestOptions.body));
 
             const response = await fetch("https://api.openai.com/v1/images/generations", requestOptions);
             if (!response.ok) {

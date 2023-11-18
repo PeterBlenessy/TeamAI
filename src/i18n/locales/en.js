@@ -82,6 +82,11 @@ export default {
             caption: 'Show quick settings in chat window',
             tooltip: 'Show quick settings'
         },
+        streamResponse: {
+            label: 'Stream response',
+            caption: 'Stream the response from the AI assistant',
+            tooltip: 'Stream the response from the AI assistant as small chunks of text, as opposed to waiting for the entire response to be generated.'
+        },
 
         teamWork: {
             label: 'Team work',

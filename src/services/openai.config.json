@@ -1,6 +1,100 @@
 {
-    "gptModels": ["gpt-3.5-turbo", "gpt-4", "gpt-4-1106-preview"],
-    "imageSizeOptions": ["1024x1024", "1024x1792", "1792x1024"],
-    "imageQualityOptions": ["standard", "hd"],
-    "imageStyleOptions": ["natural", "vivid"]
+    "gptModels": [
+        "gpt-3.5-turbo",
+        "gpt-4",
+        "gpt-4-1106-preview"
+    ],
+    "imageSizeOptions": [
+        "1024x1024",
+        "1024x1792",
+        "1792x1024"
+    ],
+    "imageQualityOptions": [
+        "standard",
+        "hd"
+    ],
+    "imageStyleOptions": [
+        "natural",
+        "vivid"
+    ],
+
+    "availableModels": [
+        "gpt-3.5-turbo",
+        "gpt-4",
+        "gpt-4-1106-preview",
+        "dall-e-2",
+        "dall-e-3"
+    ],
+    "models": {
+        "gpt-3.5-turbo": {
+            "type": "text",
+            "name": "GPT-3.5 Turbo",
+            "maxTokens": 4096,
+            "contextWindow": 4096,
+            "description": ""
+        },
+        "gpt-3.5-turbo-16k": {
+            "type": "text",
+            "name": "GPT-3.5 Turbo 16k",
+            "maxTokens": 4096,
+            "contextWindow": 16385,
+            "description": ""
+        },
+        "gpt-4": {
+            "type": "text",
+            "name": "GPT-4",
+            "maxTokens": 4096,
+            "contextWindow": 8192,
+            "description": ""
+        },
+        "gpt-4-1106-preview": {
+            "type": "text",
+            "name": "GPT-4 Turbo (preview)",
+            "maxTokens": 4096,
+            "contextWindow": 128000,
+            "description": ""
+        },
+        "gpt-4-vision-preview": {
+            "type": "text",
+            "name": "GPT-4 Turbo with Vision (preview)",
+            "maxTokens": 4096,
+            "contextWindow": 128000,
+            "description": ""
+        },
+        "dall-e-2": {
+            "type": "image",
+            "name": "DALL·E 2",
+            "imageSize": [
+                "256x256",
+                "512x512",
+                "1024x1024"
+            ],
+            "description": ""
+        },
+        "dall-e-3": {
+            "type": "image",
+            "name": "DALL·E 3",
+            "imageSize": [
+                "1024x1024",
+                "1024x1792",
+                "1792x1024"
+            ],
+            "imageQuality": [
+                "standard",
+                "hd"
+            ],
+            "description": ""
+        },
+        "tts-1": {
+            "type": "tts",
+            "name": "",
+            "voice": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+            "description": "Text-to-speech"
+        },
+        "whisper-1": {
+            "type": "stt",
+            "name": "",
+            "description": "Speech-to-text"
+        }
+    }
 }

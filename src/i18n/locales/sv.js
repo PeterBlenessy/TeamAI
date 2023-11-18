@@ -82,6 +82,12 @@ export default {
             caption: 'Visa snabbinställningar i chatfönstret',
             tooltip: 'Visa snabbinställningar'
         },
+        streamResponse: {
+            label: "Strömma svar",
+            caption: "Strömma svaret från AI-assistenten",
+            tooltip: "Strömma svaret från AI-assistenten istället för att vänta på att hela svaret ska genereras."
+        },
+    
         teamWork: {
             label: 'Teamarbete',
             caption: 'Aktivera teamarbete',

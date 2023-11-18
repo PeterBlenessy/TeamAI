@@ -81,6 +81,12 @@ export default {
             tooltip: 'Gyors beállítások megjelenítése/elrejtése'
         },
 
+        streamResponse: {
+            label: "Streamelt válasz",
+            caption: "Streamelt válasz az AI asszisztenstől",
+            tooltip: "Streamelt válasz az AI asszisztenstől, az egész válasz generálása helyett."
+        },
+
         teamWork: {
             label: 'Csapatmunka',
             caption: 'Aktiváld a csapatmunkát',

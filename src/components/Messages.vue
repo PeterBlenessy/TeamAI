@@ -51,7 +51,7 @@
                                                 <img v-if="item.content.startsWith('data:image')" style="width: 256px"
                                                     loading="lazy" :src="item.content" />
 
-                                                    <!-- Image name; image stored in imageDB -->
+                                                <!-- Image name; image stored in imageDB -->
                                                 <img v-else style="width: 256px" loading="lazy"
                                                     :id="loadImage(item.content)" @click="showImage(item.content)" />
 
@@ -164,6 +164,7 @@ import { computed, ref, watch } from "vue";
 import { scroll } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { imageDB } from "../services/localforage";
+import openaiConfig from '../services/openai.config.json';
 
 export default {
     name: "Messages",
@@ -206,7 +207,9 @@ export default {
 
             if (settings) {
                 // Avoid setting dall-e as model for text generation
-                if (settings.model == "dall-e-3") delete settings.model;
+                if (settings.model.startsWith("dall-e")) delete settings.model;
+                // Do not set image sizes other than the ones allowed by the API
+                if (!openaiConfig.imageSizeOptions.includes(settings.imageSize)) delete settings.imageSize;
 
                 settingsStore.$patch(settings);
             }

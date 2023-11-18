@@ -29,7 +29,7 @@
         </q-card-section>
 
         <q-separator />
-
+        <!-- General application settings -->
         <q-card-section>
             <q-list>
 
@@ -87,6 +87,7 @@
 
                 <q-separator />
 
+                <!-- User experience related settings -->
                 <q-item>
                     <q-item-section avatar>
                         <q-icon :name="chatDirection == 'up' ? 'mdi-transfer-up' : 'mdi-transfer-down'"
@@ -138,20 +139,37 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon :name="quickSettings == 'true' ? 'mdi-cog' : 'mdi-cog-off'" :color="iconColor" />
+                        <q-icon :name="quickSettings == true ? 'mdi-cog' : 'mdi-cog-off'" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{ $t('settings.quickSettings.label') }}</q-item-label>
                         <q-item-label caption>{{ $t('settings.quickSettings.caption') }}</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-toggle v-model="quickSettings" dense false-value="false" true-value="true" />
+                        <q-toggle v-model="quickSettings" dense :toggle-indeterminate="false"/>
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ t('settings.quickSettings.tooltip') }}
                         </q-tooltip>
                     </q-item-section>
                 </q-item>
 
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="mdi-set-split" :color="iconColor" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>{{ $t('settings.streamResponse.label') }}</q-item-label>
+                        <q-item-label caption>{{ $t('settings.streamResponse.caption') }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                        <q-toggle v-model="streamResponse" dense :toggle-indeterminate="false"/>
+                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.streamResponse.tooltip') }}
+                        </q-tooltip>
+                    </q-item-section>
+                </q-item>
+
+                <!-- Persona selection -->
                 <q-separator v-if="appMode == 'advanced'" />
 
                 <q-item v-if="appMode == 'advanced'">
@@ -166,8 +184,8 @@
                             :options="personaOptions" @filter="personaFilterFn">
 
                             <template v-slot:selected-item="scope">
-                                <q-chip dense size="sm" class="q-ma-none" removable @remove="scope.removeAtIndex(scope.index)"
-                                    color="primary">
+                                <q-chip dense size="sm" class="q-ma-none" removable
+                                    @remove="scope.removeAtIndex(scope.index)" color="primary">
                                     <q-avatar size="sm">
                                         <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
                                         <q-icon v-else name="mdi-account-circle" size="sm" />
@@ -207,6 +225,7 @@
 
                 <q-separator />
 
+                <!-- OpenAI settings -->
                 <q-item>
                     <q-item-section avatar>
                         <q-icon name="mdi-key" :color="iconColor" />
@@ -221,6 +240,7 @@
                     </q-item-section>
                 </q-item>
 
+                <!-- Text generation settings -->
                 <q-item>
                     <q-item-section avatar>
                         <q-icon name="mdi-brain" :color="iconColor" />
@@ -236,7 +256,9 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon :name="maxTokens < 1024 ? 'mdi-text-short' : maxTokens < 2048 ? 'mdi-text' : 'mdi-text-long'" :color="iconColor" />
+                        <q-icon
+                            :name="maxTokens < 1024 ? 'mdi-text-short' : maxTokens < 2048 ? 'mdi-text' : 'mdi-text-long'"
+                            :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label caption>{{ t('settings.openAI.maxTokens.label') }} ({{ maxTokens }})</q-item-label>
@@ -264,6 +286,7 @@
                 </q-item>
 
                 <q-separator />
+                <!-- Image generation settings -->
 
                 <q-item v-if="false">
                     <q-item-section avatar>
@@ -295,12 +318,13 @@
 
                 <q-item>
                     <q-item-section avatar>
-                        <q-icon :name="imageQuality=='hd' ? 'mdi-high-definition' : 'mdi-standard-definition'" :color="iconColor" />
+                        <q-icon :name="imageQuality == 'hd' ? 'mdi-high-definition' : 'mdi-standard-definition'"
+                            :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label caption>{{ t('settings.openAI.quality.label') }} ({{ imageQuality }})</q-item-label>
-                        <q-slider :model-value="imageQualityValue" @update:model-value="val => { imageQualityValue = val }" snap
-                            :min="0" :max="1" :step="1" :markers="1" label :label-value="imageQuality" />
+                        <q-slider :model-value="imageQualityValue" @update:model-value="val => { imageQualityValue = val }"
+                            snap :min="0" :max="1" :step="1" :markers="1" label :label-value="imageQuality" />
                         <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ t('settings.openAI.quality.tooltip') }}
                         </q-tooltip>
@@ -357,6 +381,7 @@ export default {
             imageStyle,
             personas,
             quickSettings,
+            streamResponse,
             speechLanguage,
             userAvatar
         } = storeToRefs(settingsStore);
@@ -446,6 +471,7 @@ export default {
             avatarImage,
             showActionButton: ref(false),
             quickSettings,
+            streamResponse,
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }
