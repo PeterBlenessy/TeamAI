@@ -55,8 +55,7 @@ app.use(Quasar, {
     iconSet: quasarIconSet,
     extras: [
         'material-icons',
-        'mdi-v7',
-        'bootstrap-icons'
+        'mdi-v7'
     ],
     /*
     config: {

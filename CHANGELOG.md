@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.3.1 - 2023-11-18
+- Changed loading indicator to be disabled when streaming response.
+
 ## v1.3.0 - 2023-11-18
 - Added support for streamed responses to increase user experience.
 - Fixed issue where switching to a conversation with images while having text generation activated changed the text generation model to dall-e.

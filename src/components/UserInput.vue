@@ -42,11 +42,11 @@
             </template>
 
             <template v-slot:append>
-                <q-btn :loading="loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
+                <q-btn :loading="loading && !streamResponse" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ loading ? t('userInput.tooltip.waiting') : t('userInput.tooltip.send') }}
                     </q-tooltip>
-                    <template v-slot:loading>
+                    <template v-slot:loading v-if="!streamResponse">
                         <q-spinner color="primary" />
                     </template>
 
@@ -71,7 +71,7 @@ export default {
         const teamsStore = useTeamsStore();
         const { loading, userInput, isCreateImageSelected } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
-        const { speechLanguage } = storeToRefs(settingsStore);
+        const { speechLanguage, streamResponse } = storeToRefs(settingsStore);
         const question = ref('');
         const { t } = useI18n();
         const $q = useQuasar();
@@ -143,6 +143,7 @@ export default {
             t,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
             loading,
+            streamResponse,
 
             isMicrophoneActive,
             speechDetected,

@@ -84,7 +84,7 @@
 
                     <!-- User messages and text completions do not support multiple choices and are stored as 'content'.  -->
                     <div v-else>
-                        <q-markdown :src="message.content" :plugins="mdPlugins" />
+                        <q-markdown no-heading-anchor-links :src="message.content" :plugins="mdPlugins" />
                     </div>
                 </q-item-section>
 
