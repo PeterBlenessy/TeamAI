@@ -42,11 +42,11 @@
             </template>
 
             <template v-slot:append>
-                <q-btn :loading="loading && !streamResponse" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
+                <q-btn :loading="loading && (isCreateImageSelected || !streamResponse)" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ loading ? t('userInput.tooltip.waiting') : t('userInput.tooltip.send') }}
                     </q-tooltip>
-                    <template v-slot:loading v-if="!streamResponse">
+                    <template v-slot:loading v-if="isCreateImageSelected || !streamResponse">
                         <q-spinner color="primary" />
                     </template>
 

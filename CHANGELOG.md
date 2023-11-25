@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.3.2 - 2023-11-25
+- Fixed issue where loading indicator was not shown when generating images.
+- Added Beta badge for Stream response setting as it sometimes gets unexpectedly interrupted.
+
 ## v1.3.1 - 2023-11-18
 - Changed loading indicator to be disabled when streaming response.
 

@@ -158,7 +158,9 @@
                         <q-icon name="mdi-set-split" :color="iconColor" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label>{{ $t('settings.streamResponse.label') }}</q-item-label>
+                        <q-item-label>{{ $t('settings.streamResponse.label') }} 
+                            <q-badge outline color="primary" label="Beta" />
+                        </q-item-label>
                         <q-item-label caption>{{ $t('settings.streamResponse.caption') }}</q-item-label>
                     </q-item-section>
                     <q-item-section side>
