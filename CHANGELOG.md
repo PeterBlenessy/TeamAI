@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.3.4 - 2023-11-26
+- Fixed error handling for interrupted response streams.
+- Fixed bug where conversation title was not generated.
+- Fixed bug where text color in light mode was changed correctly.
+
 ## v1.3.3 - 2023-11-26
 - Fixed performance degradation and occasional UI crash when using streamed responses (beta).
 

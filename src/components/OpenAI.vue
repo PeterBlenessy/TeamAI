@@ -12,12 +12,9 @@ import { useI18n } from 'vue-i18n';
 import MarkdownIt from "markdown-it";
 import hljs from 'highlight.js/lib/common';
 
-//import 'highlight.js/styles/stackoverflow-dark.css';
-//import 'highlight.js/styles/srcery.css';
-//import 'highlight.js/styles/nord.css';
-//import 'highlight.js/styles/monokai-sublime.css';
-import 'highlight.js/styles/devibeans.css';
-//import "@quasar/quasar-ui-qmarkdown/dist/index.css";
+//import 'highlight.js/styles/devibeans.css';
+import 'highlight.js/styles/github-dark.css';
+//import 'highlight.js/styles/base16/google-dark.css';
 
 export default {
     name: 'OpenAI',
@@ -52,6 +49,13 @@ export default {
         // -----------------------------------------------------------------------------------------
         const getConversation = (id) => {
             return history.value.filter(item => item.conversationId == id);
+        }
+
+        // -----------------------------------------------------------------------------------------
+        // Returns the index of a specific conversation
+        // -----------------------------------------------------------------------------------------
+        const getConversationIndex = (id) => {
+            return history.value.findIndex(item => item.conversationId == id);
         }
 
         // -----------------------------------------------------------------------------------------
@@ -206,60 +210,75 @@ export default {
                         const contentElement = document.getElementById('content-' + timestamp);
                         let messageContent = '';
 
-                        while (true) {
-                            const { done, value } = await reader.read();
-                            if (done) break;
+                        try {
+                            while (true) {
+                                const { done, value } = await reader.read();
+                                if (done) break;
 
-                            let dataDone = false;
-                            const linesRead = value.split("\n");
+                                let dataDone = false;
+                                const linesRead = value.split("\n");
 
-                            linesRead.forEach(line => {
-                                if (line.length === 0) return; // ignore empty message
-                                if (line.startsWith(':')) return; // ignore SSE (Server Sent Event) comment message
-                                if (line === 'data: [DONE]') {
-                                    dataDone = true;
-                                    return;
-                                }
-                                const chunk = JSON.parse(line.substring(6)); // Skip 'data: '
-                                const { choices } = chunk;
-                                const { delta } = choices[0]; // we have only one choice, 'n' is always 1
-                                const { role, content } = delta;
+                                linesRead.forEach(line => {
+                                    if (line.length === 0) return; // ignore empty message
+                                    if (line.startsWith(':')) return; // ignore SSE (Server Sent Event) comment message
+                                    if (line === 'data: [DONE]') {
+                                        dataDone = true;
+                                        return;
+                                    }
+                                    const chunk = JSON.parse(line.substring(6)); // Skip 'data: '
+                                    const { choices } = chunk;
+                                    const { delta } = choices[0]; // we have only one choice, 'n' is always 1
+                                    const { role, content } = delta;
 
-                                if (role) lastMessage.role = role;
-                                // Save recieved content; will add it to last message's content when all chunks are recieved
-                                if (content) messageContent += content;
-                                // Render recieved content as markdown
-                                if (contentElement && content) contentElement.innerHTML = md.render(messageContent);
-                            });
-                            //if (contentElement && messageContent) contentElement.innerHTML = md.render(messageContent);
-
-                            assistantMessage.object = 'chat.completion';
-
-                            // TODO: Calculate token usage manually since it's not available when streaming the response
-                            // Check out: https://github.com/dqbd/tiktoken
-
-                            if (dataDone) break;
-                        }
-                        // Make sure to store the resulting content in the lastMessage object
-                        // This will trigger an update of the DOM in Messages component and replace the content rendered while recieving the chunks.
-                        lastMessage.content = messageContent;
-                    }
-                    // Check if conversation title exists
-                    // todo: if conversation title exists, update its 'updated' key to timestamp
-                    if (getConversation(conversationId.value).length == 0) {
-                        generateConversationTitle(conversationId.value)
-                            .then((title) => {
-                                const timestamp = Date.now().toString();
-                                history.value.push({
-                                    title: title,
-                                    timestamp: timestamp,
-                                    created: timestamp,
-                                    updated: timestamp,
-                                    conversationId: conversationId.value,
-                                    personas: personas.value
+                                    if (role) lastMessage.role = role;
+                                    // Save recieved content; will add it to last message's content when all chunks are recieved
+                                    if (content) messageContent += content;
+                                    // Render recieved content as markdown
+                                    if (contentElement && content) contentElement.innerHTML = md.render(messageContent);
                                 });
-                            })
+                                //if (contentElement && messageContent) contentElement.innerHTML = md.render(messageContent);
+
+                                assistantMessage.object = 'chat.completion';
+
+                                // TODO: Calculate token usage manually since it's not available when streaming the response
+                                // Check out: https://github.com/dqbd/tiktoken
+
+                                if (dataDone) break;
+                            }
+                        } catch (error) {
+                            // Make sure to store the resulting content in the lastMessage object
+                            // This will trigger an update of the DOM in Messages component and replace the content rendered while recieving the chunks.
+                            if (messageContent) lastMessage.content = messageContent;
+
+                            throw new Error(error);
+                        }
+                    }
+                    // Check if conversation and conversation title exists, create or update it if needed
+                    let conversationTitle = '';
+                    const conversationIndex = getConversationIndex(conversationId.value);
+                    if (conversationIndex != -1) conversationTitle = history.value[conversationIndex].title;
+                    if (!conversationTitle) {
+                        generateConversationTitle(conversationId.value)
+                            .then((title) => conversationTitle = title)
                             .catch(error => console.error(error))
+                            .finally(() => {
+                                const timestamp = Date.now().toString();
+                                if (conversationIndex != -1) {
+                                    // Conversation exists, update its title and timestamp
+                                    history.value[conversationIndex].title = conversationTitle;
+                                    history.value[conversationIndex].updated = timestamp;
+                                } else {
+                                    // Conversation doesn't exist, create it
+                                    history.value.push({
+                                        title: conversationTitle,
+                                        timestamp: timestamp,
+                                        created: timestamp,
+                                        updated: timestamp,
+                                        conversationId: conversationId.value,
+                                        personas: personas.value
+                                    });
+                                }
+                            });
                     }
 
                 } catch (error) {
