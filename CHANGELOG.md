@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.3.3 - 2023-11-26
+- Fixed performance degradation and occasional UI crash when using streamed responses (beta).
+
 ## v1.3.2 - 2023-11-25
 - Fixed issue where loading indicator was not shown when generating images.
 - Added Beta badge for Stream response setting as it sometimes gets unexpectedly interrupted.

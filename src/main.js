@@ -9,7 +9,7 @@ import '@quasar/extras/mdi-v7/mdi-v7.css'
 import 'quasar/dist/quasar.css';
 
 // Custom styles
-//import "./styles.css";
+import "./styles.css";
 
 // Pinia stuff
 import { createPinia } from 'pinia';

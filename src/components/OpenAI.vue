@@ -2,13 +2,22 @@
 
 <script>
 
-import { watch } from 'vue';
+import { watch, nextTick } from 'vue';
 import { useTeamsStore } from '../stores/teams-store.js';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import OpenAI from '../services/openai.js';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
+import MarkdownIt from "markdown-it";
+import hljs from 'highlight.js/lib/common';
+
+//import 'highlight.js/styles/stackoverflow-dark.css';
+//import 'highlight.js/styles/srcery.css';
+//import 'highlight.js/styles/nord.css';
+//import 'highlight.js/styles/monokai-sublime.css';
+import 'highlight.js/styles/devibeans.css';
+//import "@quasar/quasar-ui-qmarkdown/dist/index.css";
 
 export default {
     name: 'OpenAI',
@@ -152,13 +161,35 @@ export default {
                     }
 
                     assistantMessage.settings.speechLanguage = speechLanguage.value;
-
+                    const timestamp = Date.now().toString();
                     // Add response to messages. This will trigger an update of the UI.
                     messages.value.push({
-                        timestamp: Date.now().toString(), // Keep here to make timestamp unique
+                        timestamp: timestamp, //Date.now().toString(), // Keep here to make timestamp unique
                         conversationId: conversationId.value,
                         ...assistantMessage,
                         systemMessages: systemMessages
+                    });
+
+                    // Wait for Vue to update the DOM and make the new message element available, before continuing
+                    await nextTick();
+                    let md = new MarkdownIt({
+                        html: true, // Enable HTML tags in source
+                        xhtmlOut: true, // Use '/' to close single tags (<br />).
+                        breaks: true, // Convert '\n' in paragraphs into <br>
+                        linkify: true, // Autoconvert URL-like text to links
+                        typographer: true, // Enable some language-neutral replacement + quotes beautification
+                        quotes: '“”‘’',
+                        highlight: function (str, lang) {
+                            if (lang && hljs.getLanguage(lang)) {
+                                try {
+                                    return '<pre class="hljs"><code>' +
+                                        hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+                                        '</code></pre>';
+                                } catch (__) { }
+                            }
+
+                            return '';
+                        }
                     });
 
                     // Handle the streamed response, i.e. the response is streamed in chunks
@@ -169,6 +200,11 @@ export default {
 
                         // Reference to the last message from the current conversation, so we can update its content with new chunks of text.
                         const lastMessage = messages.value[messages.value.length - 1];
+
+                        // Update the DOM directly to avoid performance degradation and lost content 
+                        // due to frequent virtual DOM updates while receiving the chunks.
+                        const contentElement = document.getElementById('content-' + timestamp);
+                        let messageContent = '';
 
                         while (true) {
                             const { done, value } = await reader.read();
@@ -188,9 +224,15 @@ export default {
                                 const { choices } = chunk;
                                 const { delta } = choices[0]; // we have only one choice, 'n' is always 1
                                 const { role, content } = delta;
-                                if (content) lastMessage.content += content;
+
                                 if (role) lastMessage.role = role;
+                                // Save recieved content; will add it to last message's content when all chunks are recieved
+                                if (content) messageContent += content;
+                                // Render recieved content as markdown
+                                if (contentElement && content) contentElement.innerHTML = md.render(messageContent);
                             });
+                            //if (contentElement && messageContent) contentElement.innerHTML = md.render(messageContent);
+
                             assistantMessage.object = 'chat.completion';
 
                             // TODO: Calculate token usage manually since it's not available when streaming the response
@@ -198,8 +240,10 @@ export default {
 
                             if (dataDone) break;
                         }
+                        // Make sure to store the resulting content in the lastMessage object
+                        // This will trigger an update of the DOM in Messages component and replace the content rendered while recieving the chunks.
+                        lastMessage.content = messageContent;
                     }
-
                     // Check if conversation title exists
                     // todo: if conversation title exists, update its 'updated' key to timestamp
                     if (getConversation(conversationId.value).length == 0) {
