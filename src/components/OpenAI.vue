@@ -236,7 +236,6 @@ export default {
                                     // Render recieved content as markdown
                                     if (contentElement && content) contentElement.innerHTML = md.render(messageContent);
                                 });
-                                //if (contentElement && messageContent) contentElement.innerHTML = md.render(messageContent);
 
                                 assistantMessage.object = 'chat.completion';
 
@@ -246,11 +245,11 @@ export default {
                                 if (dataDone) break;
                             }
                         } catch (error) {
+                            throw new Error(error);
+                        } finally {
                             // Make sure to store the resulting content in the lastMessage object
                             // This will trigger an update of the DOM in Messages component and replace the content rendered while recieving the chunks.
                             if (messageContent) lastMessage.content = messageContent;
-
-                            throw new Error(error);
                         }
                     }
                     // Check if conversation and conversation title exists, create or update it if needed
