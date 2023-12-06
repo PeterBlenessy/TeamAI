@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.4.0 - 2023-12-01
+- Updated dependencies to their latest versions.
+
 ## v1.3.5 - 2023-11-27
 - Fixed error where streamed response messages were not stored in conversation.
 
