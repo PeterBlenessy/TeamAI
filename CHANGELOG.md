@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.5.0 - 2024-01-29
+- Added option to open/close left drawer.
+
 ## v1.4.2 - 2024-01-29
 - Fixed issue where items from last year did not have a valid group in History list.
 - Moved 'Clear messages' in current conversation button from Toolbar to Quick Settings, to avoid clicking it by mistake.

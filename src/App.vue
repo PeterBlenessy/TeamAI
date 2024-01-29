@@ -10,17 +10,18 @@
         <OpenAI />
 
         <!--  Left drawer -->
-        <q-drawer :model-value="true" :mini="true" :persistent="true" bordered :breakpoint="600" side="left"
+        <q-drawer :model-value="true" :mini="miniDrawer" :width="250" :persistent="true" bordered :breakpoint="600" side="left"
             :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
             <q-list padding>
                 <div v-for="item in toolbar" :key="item.tooltip">
                     <div v-show="appMode === 'advanced' || item.appMode === appMode">
 
-                        <q-item clickable v-ripple @click="item.action">
-                            <q-item-section avatar>
+                        <q-item clickable v-ripple="item.tooltip != ''" @click="item.action">
+                            <q-item-section avatar>                                
                                 <q-icon dense flat :name="item.icon" :color="iconColor" />
                             </q-item-section>
-                            <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                            <q-item-section no-wrap>{{ $t(item.tooltip) }}</q-item-section>
+                            <q-tooltip v-if="item.tooltip != ''" :delay="750" transition-show="scale" transition-hide="scale">
                                 {{ $t(item.tooltip) }}
                             </q-tooltip>
                         </q-item>
@@ -33,7 +34,7 @@
             <q-page class="" id="page">
 
                 <!-- Messages -->
-                <Messages v-if="isDBUpgraded == true"/>
+                <Messages v-if="isDBUpgraded == true" />
 
                 <!-- Settings, Information, Personas, and History dialogs -->
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
@@ -123,7 +124,18 @@ export default {
 
         const dbUpgrader = DatabaseUpgrader();
 
-        const toolbar = [
+        const miniDrawer = ref(true);
+
+        // Watch miniDrawer changes and update the toolbar icon
+        watch(miniDrawer, () => { toolbar.value[0].icon = miniDrawer.value === true ? 'mdi-menu' : 'mdi-menu-open' });
+
+        const toolbar = ref([
+            {
+                action: () => { miniDrawer.value = !miniDrawer.value },
+                icon: 'mdi-menu',
+                tooltip: '',
+                appMode: 'basic'
+            },
             {
                 action: newConversation,
                 icon: 'mdi-chat-plus-outline',
@@ -160,7 +172,7 @@ export default {
                 tooltip: 'toolbar.tooltip.info',
                 appMode: 'basic'
             }
-        ];
+        ]);
 
 
         // Check if database upgrade is needed
@@ -257,6 +269,7 @@ export default {
 
         return {
             appMode,
+            miniDrawer,
             chatDirection,
             showSettings,
             showInformation,
