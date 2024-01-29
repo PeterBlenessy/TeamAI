@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.4.1 - 2024-01-29
+- Updated Node and Cargo package dependencies to their latest versions.
+- Fixed CVE-2024-23331.
+
 ## v1.4.0 - 2023-12-01
 - Updated dependencies to their latest versions.
 
