@@ -38,7 +38,8 @@
             <q-separator v-if="!isCreateImageSelected" vertical inset class="q-ma-sm" />
 
             <!-- Image choices selection -->
-            <q-chip v-if="isCreateImageSelected && false" icon="mdi-image-multiple-outline" :label="choices" size="sm" clickable>
+            <q-chip v-if="isCreateImageSelected && false" icon="mdi-image-multiple-outline" :label="choices" size="sm"
+                clickable>
                 <q-menu anchor="top middle" self="bottom middle">
                     <div class="q-pa-sm">
                         <q-slider v-model="choices" snap :min="1" :max="10" :step="1" :markers="1" vertical reverse />
@@ -62,15 +63,17 @@
             </q-chip>
 
             <!-- Image quality toggle -->
-            <q-chip v-if="isCreateImageSelected" :icon="imageQuality == 'hd' ? 'mdi-high-definition' : 'mdi-standard-definition'"
-                size="md" clickable @click="imageQuality = imageQuality == 'hd' ? 'standard' : 'hd'" >
+            <q-chip v-if="isCreateImageSelected"
+                :icon="imageQuality == 'hd' ? 'mdi-high-definition' : 'mdi-standard-definition'" size="md" clickable
+                @click="imageQuality = imageQuality == 'hd' ? 'standard' : 'hd'">
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.quality.label') }}
                 </q-tooltip>
             </q-chip>
 
             <!-- Image style toggle -->
-            <q-chip v-if="isCreateImageSelected" icon="mdi-palette-outline" :label="imageStyle == 'vivid' ? t('settings.openAI.style.vivid') : t('settings.openAI.style.natural')"
+            <q-chip v-if="isCreateImageSelected" icon="mdi-palette-outline"
+                :label="imageStyle == 'vivid' ? t('settings.openAI.style.vivid') : t('settings.openAI.style.natural')"
                 size="sm" clickable @click="imageStyle = imageStyle == 'vivid' ? 'natural' : 'vivid'">
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.style.label') }}
@@ -132,6 +135,15 @@
 
             </q-chip>
 
+            <q-separator v-if="appMode == 'advanced' && !isCreateImageSelected" vertical inset class="q-ma-sm" />
+
+            <!-- Clear messages button -->
+            <q-chip size="md" icon="mdi-delete-sweep" clickable @click="clearMessages()">
+                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('toolbar.tooltip.clear') }}
+                </q-tooltip>
+            </q-chip>
+
         </q-toolbar>
     </div>
 </template>
@@ -168,7 +180,7 @@ export default {
         } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
-        const { isCreateImageSelected, isTeamWorkActivated } = storeToRefs(teamsStore);
+        const { conversationId, isCreateImageSelected, isTeamWorkActivated } = storeToRefs(teamsStore);
         const personaOptions = ref(teamsStore.personas);
 
         // Filters personas based on input characters in the select box
@@ -182,6 +194,10 @@ export default {
                 const needle = val.toLowerCase();
                 personaOptions.value = teamsStore.personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
             });
+        }
+        // Clear messages in current conversation.
+        function clearMessages() {
+            teamsStore.deleteMessages(conversationId.value);
         }
 
         // Load OpenAI model options
@@ -227,6 +243,7 @@ export default {
 
             personaOptions,
             personaFilterFn,
+            clearMessages,
 
             nextModel: () => {
                 if (isCreateImageSelected.value) {

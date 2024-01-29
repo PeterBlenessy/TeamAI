@@ -131,7 +131,7 @@ export default {
             } else if (date >= thisYearStart) {
                 return date.toLocaleString('default', { month: 'long' });
             } else {
-                return date.getFullYear().toString();
+                return 'Older'; //date.getFullYear().toString();
             }
         }
 

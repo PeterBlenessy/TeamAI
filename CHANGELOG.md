@@ -29,6 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.4.2 - 2024-01-29
+- Fixed issue where items from last year did not have a valid group in History list.
+- Moved 'Clear messages' in current conversation button from Toolbar to Quick Settings, to avoid clicking it by mistake.
+- Added new model gpt-4-turbo-preview with knowledge up until 2024-01-25.
+- Added the loading indicator in the input field to be visible also when streaming responses.
+
 ## v1.4.1 - 2024-01-29
 - Updated Node and Cargo package dependencies to their latest versions.
 - Fixed CVE-2024-23331.

@@ -114,7 +114,7 @@ export default {
         const { appMode, darkMode, quickSettings, userLocale, chatDirection, isDBUpgraded } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
-        const { newConversation, conversationId } = teamsStore;
+        const { newConversation } = teamsStore;
 
         const showSettings = ref(false);
         const showInformation = ref(false);
@@ -128,12 +128,6 @@ export default {
                 action: newConversation,
                 icon: 'mdi-chat-plus-outline',
                 tooltip: 'toolbar.tooltip.newConversation',
-                appMode: 'basic'
-            },
-            {
-                action: deleteMessages,
-                icon: 'mdi-notification-clear-all',
-                tooltip: 'toolbar.tooltip.clear',
                 appMode: 'basic'
             },
             {
@@ -194,11 +188,6 @@ export default {
         // Watch runtime changes to locale
         watch(locale, () => userLocale.value = locale.value);
         watch(userLocale, () => locale.value = userLocale.value);
-
-        // Clear messages in current conversation.
-        function deleteMessages() {
-            teamsStore.deleteMessages(conversationId.value);
-        }
 
         // Check for updates
         async function checkForUpdates() {
@@ -278,7 +267,6 @@ export default {
             t,
             newConversation,
             checkForUpdates,
-            deleteMessages,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
             isDBUpgraded
         }

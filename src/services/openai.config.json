@@ -1,8 +1,9 @@
 {
     "gptModels": [
         "gpt-3.5-turbo",
+        "gpt-3.5-turbo-1106",
         "gpt-4",
-        "gpt-4-1106-preview"
+        "gpt-4-turbo-preview"
     ],
     "imageSizeOptions": [
         "1024x1024",
@@ -21,7 +22,7 @@
     "availableModels": [
         "gpt-3.5-turbo",
         "gpt-4",
-        "gpt-4-1106-preview",
+        "gpt-4-turbo-preview",
         "dall-e-2",
         "dall-e-3"
     ],
@@ -31,6 +32,13 @@
             "name": "GPT-3.5 Turbo",
             "maxTokens": 4096,
             "contextWindow": 4096,
+            "description": ""
+        },
+        "gpt-3.5-turbo-1106": {
+            "type": "text",
+            "name": "GPT-3.5 Turbo (updated)",
+            "maxTokens": 4096,
+            "contextWindow": 16385,
             "description": ""
         },
         "gpt-3.5-turbo-16k": {
@@ -47,7 +55,7 @@
             "contextWindow": 8192,
             "description": ""
         },
-        "gpt-4-1106-preview": {
+        "gpt-4-turbo-preview": {
             "type": "text",
             "name": "GPT-4 Turbo (preview)",
             "maxTokens": 4096,
