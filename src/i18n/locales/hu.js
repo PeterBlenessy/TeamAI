@@ -27,6 +27,8 @@ export default {
 
     toolbar: {
         tooltip: {
+            showDrawer: 'Menü megjelenitése',
+            hideDrawer: 'Menü elrejtése',
             newConversation: 'Új beszélgetés',
             clear: 'Üzenetek törlése',
             personas: 'Személyek',
@@ -34,7 +36,7 @@ export default {
             info: 'Információ',
             settings: 'Beállítások',
             history: 'Korábbi beszélgetések',
-            checkForUpdates: 'Frissítések ellenőrzése...',
+            checkForUpdates: 'Frissítések ellenőrzése...'
         },
     },
     

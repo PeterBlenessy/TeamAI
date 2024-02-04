@@ -30,6 +30,8 @@ export default {
 
     toolbar: {
         tooltip: {
+            showDrawer: 'Visa meny',
+            hideDrawer: 'Dölj meny',
             newConversation: 'Ny konversation',
             clear: 'Rensa meddelanden',
             personas: 'Visa personas',

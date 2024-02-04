@@ -10,20 +10,23 @@
         <OpenAI />
 
         <!--  Left drawer -->
-        <q-drawer :model-value="true" :mini="miniDrawer" :width="250" :persistent="true" bordered :breakpoint="600" side="left"
-            :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
+        <q-drawer :model-value="true" :mini="miniDrawer" :width="250" :persistent="true" bordered :breakpoint="600"
+            side="left" :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-4'">
             <q-list padding>
                 <div v-for="item in toolbar" :key="item.tooltip">
                     <div v-show="appMode === 'advanced' || item.appMode === appMode">
 
-                        <q-item clickable v-ripple="item.tooltip != ''" @click="item.action">
-                            <q-item-section avatar>                                
+                        <q-item clickable v-ripple @click="item.action">
+                            <q-item-section avatar>
                                 <q-icon dense flat :name="item.icon" :color="iconColor" />
+                                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                                    {{ $t(item.tooltip) }}
+                                </q-tooltip>
                             </q-item-section>
-                            <q-item-section no-wrap>{{ $t(item.tooltip) }}</q-item-section>
-                            <q-tooltip v-if="item.tooltip != ''" :delay="750" transition-show="scale" transition-hide="scale">
+                            <q-item-section no-wrap
+                                v-if="item.tooltip != 'toolbar.tooltip.showDrawer' && item.tooltip != 'toolbar.tooltip.hideDrawer'">
                                 {{ $t(item.tooltip) }}
-                            </q-tooltip>
+                            </q-item-section>
                         </q-item>
                     </div>
                 </div>
@@ -127,13 +130,16 @@ export default {
         const miniDrawer = ref(true);
 
         // Watch miniDrawer changes and update the toolbar icon
-        watch(miniDrawer, () => { toolbar.value[0].icon = miniDrawer.value === true ? 'mdi-menu' : 'mdi-menu-open' });
+        watch(miniDrawer, () => {
+            toolbar.value[0].icon = miniDrawer.value === true ? 'mdi-menu' : 'mdi-menu-open'
+            toolbar.value[0].tooltip = miniDrawer.value === true ? 'toolbar.tooltip.showDrawer' : 'toolbar.tooltip.hideDrawer'
+        });
 
         const toolbar = ref([
             {
                 action: () => { miniDrawer.value = !miniDrawer.value },
                 icon: 'mdi-menu',
-                tooltip: '',
+                tooltip: 'toolbar.tooltip.showDrawer',
                 appMode: 'basic'
             },
             {

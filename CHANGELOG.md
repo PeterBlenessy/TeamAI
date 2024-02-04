@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.5.2 - 2024-02-04
+- Fixed bug where show/hide menu icon tooltip was missing, causing an error in language texts and also causing the menu to be always shown on Linux.
+- Aligned tooltip to the icons both when menu is hidden (toolbar mode) and when it's shown.
+
 ## v1.5.1 - 2024-02-04
 - Added support for logs in production. Displayed in terminal, or stored in OS specific log folder. Linux: /home/alice/.config/com.tauri.dev; macOS: /Users/Alice/Library/Logs/com.tauri.dev; Windows: C:\Users\Alice\AppData\Roaming\com.tauri.dev
 

@@ -30,6 +30,8 @@ export default {
 
     toolbar: {
         tooltip: {
+            showDrawer: 'Show menu',
+            hideDrawer: 'Hide menu',
             newConversation: 'New conversation',
             clear: 'Clear messages',
             personas: 'Show personas',
@@ -37,7 +39,7 @@ export default {
             info: 'Info',
             settings: 'Show settings',
             history: 'Show conversations',
-            checkForUpdates: 'Check for updates...',
+            checkForUpdates: 'Check for updates...'
         },
     },
     settings: {
