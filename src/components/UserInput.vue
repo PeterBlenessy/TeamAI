@@ -44,10 +44,10 @@
             <template v-slot:append>
                 <q-btn :loading="loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ loading ? t('userInput.tooltip.waiting') : t('userInput.tooltip.send') }}
+                        {{ loading ? t('userInput.tooltip.stop') : t('userInput.tooltip.send') }}
                     </q-tooltip>
                     <template v-slot:loading>
-                        <q-spinner color="primary" />
+                        <q-spinner color="primary" @click="handleUserInput" style="cursor: pointer;"/>
                     </template>
 
                 </q-btn>
@@ -69,7 +69,7 @@ export default {
     name: 'UserInput',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, userInput, isCreateImageSelected } = storeToRefs(teamsStore);
+        const { loading, abortRequest, userInput, isCreateImageSelected } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
         const { speechLanguage, streamResponse } = storeToRefs(settingsStore);
         const question = ref('');
@@ -77,6 +77,9 @@ export default {
         const $q = useQuasar();
 
         function handleUserInput() {
+
+            if (loading.value) { return abortRequest.value = true; }
+
             if (question.value == '') { return; }
 
             userInput.value = question.value;

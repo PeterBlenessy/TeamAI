@@ -17,7 +17,7 @@ export default {
         },
         tooltip: {
             send: 'Küld',
-            waiting: 'Válaszra vár...',
+            waiting: 'Generálást félbeszakít',
             generateText: 'Szöveg generálás',
             generateImage: 'Kép generálás',
             speechStart: 'Diktálás indítása',

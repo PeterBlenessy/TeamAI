@@ -7,7 +7,7 @@ const openAI = () => {
     const { apiKey, model, maxTokens, temperature, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
 
     // Private function. Sets the fetch init options.
-    const setOptions = (messages, stream) => {
+    const setOptions = (messages, stream, abortSignal) => {
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + apiKey.value,
@@ -25,18 +25,19 @@ const openAI = () => {
         const options = {
             method: 'POST',
             headers: headers,
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
+            signal: abortSignal
         }
 
         return options;
     }
 
     // Public function. Creates a chat completion.
-    const createChatCompletion = async (messages, stream) => {
+    const createChatCompletion = async (messages, stream, abortSignal) => {
         // Clean up any undefined elements in the messages array, to avoid failed OpenAI API call.
         messages = messages.filter(message => message !== undefined);
 
-        const requestOptions = setOptions(messages, stream);
+        const requestOptions = setOptions(messages, stream, abortSignal);
 
         try {
             const response = await fetch("https://api.openai.com/v1/chat/completions", requestOptions);

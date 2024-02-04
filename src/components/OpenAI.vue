@@ -25,7 +25,7 @@ export default {
         const { t } = useI18n();
 
         const teamsStore = useTeamsStore();
-        const { loading, conversationId, messages, history, userInput, isCreateImageSelected, isTeamWorkActivated } = storeToRefs(teamsStore);
+        const { loading, abortRequest, conversationId, messages, history, userInput, isCreateImageSelected, isTeamWorkActivated } = storeToRefs(teamsStore);
 
         const settingsStore = useSettingsStore();
         const { conversationMode, maxTokens, model, personas, speechLanguage, streamResponse, temperature, } = storeToRefs(settingsStore);
@@ -111,6 +111,16 @@ export default {
             userInput.value = '';
         });
 
+        let abortController;
+        // -----------------------------------------------------------------------------------------
+        // Watch if user aborts response and call abortController abort function
+        // -----------------------------------------------------------------------------------------
+        watch (abortRequest, () => {
+            if (abortRequest.value) {
+                abortController.abort();
+                abortRequest.value = false;
+            }
+        });
         // -----------------------------------------------------------------------------------------
         // Ask question to OpenAI API
         // -----------------------------------------------------------------------------------------
@@ -142,7 +152,8 @@ export default {
                             conversation = [{ "role": "user", "content": question }];
                         }
 
-                        response = await openAI.createChatCompletion([...systemMessages, ...conversation], streamResponse.value);
+                        abortController = new AbortController();
+                        response = await openAI.createChatCompletion([...systemMessages, ...conversation], streamResponse.value, abortController.signal);
 
                         // Add common parameters to assistantMessage
                         assistantMessage = {
@@ -252,8 +263,6 @@ export default {
                                 if (dataDone) break;
                             }
                         } catch (e) {
-                            // Print error message in application console and log file
-                            error(e);
                             throw new Error(e);
                         } finally {
                             // Make sure to store the resulting content in the lastMessage object
@@ -296,8 +305,16 @@ export default {
                     if (e.response) {
                         message = e.response.status;
                         caption = e.response.data;
-                    } else {
+                    } else { 
+
+                        // Check if user aborted the request
+                        if (e.message == 'AbortError: Fetch is aborted') {
+                            console.log(e.message);
+                            abortController = '';
+                            return;
+                        }
                         const path = 'apiErrors.' + e.message.split(' ')[0];
+
 
                         // Check if error message is defined in i18n language files
                         if ((path + '.message') == t(path + '.message')) {

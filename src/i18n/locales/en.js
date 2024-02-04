@@ -20,7 +20,7 @@ export default {
         },
         tooltip: {
             send: 'Send',
-            waiting: 'Waiting for response...',
+            stop: 'Stop generation',
             generateText: 'Generate text',
             generateImage: 'Generate images',
             speechStart: 'Start dictation',
@@ -317,6 +317,11 @@ export default {
             message: 'Failed to load resource: The request timed out.',
             caption: 'Please try again later.'
         },
+        'AbortError:': {
+            message: 'The request was aborted.',
+            caption: ''
+        },
+        'Request': {},
         undefined: {
             message: 'An unknown error occurred.',
             caption: 'Please try again later.'

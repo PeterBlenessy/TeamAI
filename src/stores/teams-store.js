@@ -26,6 +26,7 @@ export const useTeamsStore = defineStore('teams', () => {
     const userInput = ref('');
     const conversationId = ref('');
     const loading = ref(false);
+    const abortRequest = ref(false);
 
     // Generate chat or image
     const isCreateImageSelected = ref(false);
@@ -207,6 +208,8 @@ export const useTeamsStore = defineStore('teams', () => {
         userInput,
         conversationId,
         loading,
+        abortRequest,
+
         // Generate chat or image
         isCreateImageSelected,
 
@@ -215,7 +218,6 @@ export const useTeamsStore = defineStore('teams', () => {
 
         // Image and avatar objectURL arrays
         refreshObjectURLs: ref(false),
-
 
         // Actions
         newConversation,

@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.5.3 - 2024-02-04
+- Added possibility to stop text generation by clicking the loading spinner.
+
 ## v1.5.2 - 2024-02-04
 - Fixed bug where show/hide menu icon tooltip was missing, causing an error in language texts and also causing the menu to be always shown on Linux.
 - Aligned tooltip to the icons both when menu is hidden (toolbar mode) and when it's shown.
