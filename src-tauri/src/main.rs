@@ -3,6 +3,8 @@
 
 use tauri::Manager;
 use tauri::{SystemTray, SystemTrayEvent};
+use tauri_plugin_log::{LogTarget };
+use log::LevelFilter;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -14,6 +16,10 @@ fn main() {
     let tray = SystemTray::new();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::default().targets([
+            LogTarget::LogDir,
+            LogTarget::Stdout,
+        ]).level(LevelFilter::Warn).build())
         .invoke_handler(tauri::generate_handler![show_main_window])
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {

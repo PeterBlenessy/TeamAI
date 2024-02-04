@@ -1,7 +1,7 @@
 {
   "name": "team-ai",
   "private": true,
-  "version": "1.5.0",
+  "version": "1.5.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -26,6 +26,7 @@
     "markdown-it": "^14.0.0",
     "pinia": "^2.1.7",
     "quasar": "^2.14.3",
+    "tauri-plugin-log-api": "https://github.com/tauri-apps/tauri-plugin-log#v1",
     "vue": "^3.4.15",
     "vue-i18n": "^9.9.0"
   },

@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.5.1 - 2024-02-04
+- Added support for logs in production. Displayed in terminal, or stored in OS specific log folder. Linux: /home/alice/.config/com.tauri.dev; macOS: /Users/Alice/Library/Logs/com.tauri.dev; Windows: C:\Users\Alice\AppData\Roaming\com.tauri.dev
+
+
 ## v1.5.0 - 2024-01-29
 - Added option to open/close left drawer.
 

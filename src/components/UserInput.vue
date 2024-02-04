@@ -46,7 +46,7 @@
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                         {{ loading ? t('userInput.tooltip.waiting') : t('userInput.tooltip.send') }}
                     </q-tooltip>
-                    <template v-slot:loading >
+                    <template v-slot:loading>
                         <q-spinner color="primary" />
                     </template>
 
@@ -117,7 +117,13 @@ export default {
 
                 })
                 .catch(err => {
-                    console.log('No mic for you!')
+                    // Print error in webview console
+                    console.log('Could not load microphone!');
+                    console.error(err);
+                    
+                    // Print error message in application console and log file
+                    error('Could not load microphone!');
+                    error(err);
                 });
         }
 
@@ -125,8 +131,10 @@ export default {
             isMicrophoneActive.value = true;
             try {
                 recognition.start();
-            } catch (error) {
-                console.log("Error: " + error.error + " - " + error.message);
+            } catch (err) {
+                console.log("Error: " + err.error + " - " + err.message);
+                // Print error message in application console and log file
+                error("Error: " + err.error + " - " + err.message);
             }
         }
 

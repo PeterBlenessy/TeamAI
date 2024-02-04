@@ -299,7 +299,7 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.9.6.tgz#2c1fb69e02a3f1506f52698cfdc3a8b6386df9a6"
   integrity sha512-jqzNLhNDvIZOrt69Ce4UjGRpXJBzhUBzawMwnaDAwyHriki3XollsewxWzOzz+4yOFDkuJHtTsZFwMxhYJWmLQ==
 
-"@tauri-apps/api@^1.5.3":
+"@tauri-apps/api@1.5.3", "@tauri-apps/api@^1.5.3":
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-1.5.3.tgz#f7b362b1f30aadb0a8bbeb7ae111755c0ed33d73"
   integrity sha512-zxnDjHHKjOsrIzZm6nO5Xapb/BxqUq1tc7cGkFXsFkGTsSWgCPH1D8mm0XS9weJY2OaR73I3k3S+b7eSzJDfqA==
@@ -985,6 +985,12 @@ source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
+
+"tauri-plugin-log-api@https://github.com/tauri-apps/tauri-plugin-log#v1":
+  version "0.0.0"
+  resolved "https://github.com/tauri-apps/tauri-plugin-log#19f5dcc0425e9127d2c591780e5047b83e77a7c2"
+  dependencies:
+    "@tauri-apps/api" "1.5.3"
 
 to-regex-range@^5.0.1:
   version "5.0.1"

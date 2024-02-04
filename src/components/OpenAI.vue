@@ -16,6 +16,8 @@ import hljs from 'highlight.js/lib/common';
 import 'highlight.js/styles/github-dark.css';
 //import 'highlight.js/styles/base16/google-dark.css';
 
+import { trace, info, error } from "tauri-plugin-log-api";
+
 export default {
     name: 'OpenAI',
     setup() {
@@ -71,9 +73,14 @@ export default {
                 if (json.errorCode) throw new Error(`${data.errorCode}`);
                 // Remove (occasional) optionally escaped leading and trailing apostrophes
                 return json.choices[0].message.content.trim().replace(/^\\?"|\\?"$/g, '');
-            } catch (error) {
-                console.error(error);
-                throw new Error(error);
+            } catch (e) {
+                // Print error in webview console
+                console.error(e);
+
+                // Print error message in application console and log file
+                error(e);
+
+                throw new Error(e);
             }
         }
 
@@ -244,8 +251,10 @@ export default {
 
                                 if (dataDone) break;
                             }
-                        } catch (error) {
-                            throw new Error(error);
+                        } catch (e) {
+                            // Print error message in application console and log file
+                            error(e);
+                            throw new Error(e);
                         } finally {
                             // Make sure to store the resulting content in the lastMessage object
                             // This will trigger an update of the DOM in Messages component and replace the content rendered while recieving the chunks.
@@ -280,15 +289,15 @@ export default {
                             });
                     }
 
-                } catch (error) {
+                } catch (e) {
                     let message = ''
                     let caption = ''
 
-                    if (error.response) {
-                        message = error.response.status;
-                        caption = error.response.data;
+                    if (e.response) {
+                        message = e.response.status;
+                        caption = e.response.data;
                     } else {
-                        const path = 'apiErrors.' + error.message.split(' ')[0];
+                        const path = 'apiErrors.' + e.message.split(' ')[0];
 
                         // Check if error message is defined in i18n language files
                         if ((path + '.message') == t(path + '.message')) {
@@ -299,7 +308,10 @@ export default {
                             caption = t(path + '.caption');
                         }
                     }
+                    // Print error message in application console and log file
+                    error(message + ' ' + caption);
 
+                    // Show error message in app
                     $q.notify({
                         type: 'negative',
                         position: 'top',
