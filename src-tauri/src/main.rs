@@ -18,8 +18,8 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::default().targets([
             LogTarget::LogDir,
-            LogTarget::Stdout,
-        ]).level(LevelFilter::Warn).build())
+            LogTarget::Stdout
+        ]).level(LevelFilter::Info).build())
         .invoke_handler(tauri::generate_handler![show_main_window])
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {

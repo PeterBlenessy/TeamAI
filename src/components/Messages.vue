@@ -165,6 +165,7 @@ import { scroll } from "quasar";
 import { useI18n } from 'vue-i18n';
 import { imageDB } from "../services/localforage";
 import openaiConfig from '../services/openai.config.json';
+import logger from '../services/logger.js';
 
 export default {
     name: "Messages",
@@ -277,7 +278,7 @@ export default {
             try {
                 await navigator.clipboard.write(data);
             } catch (error) {
-                console.log(error);
+                logger.log(error);
             }
         };
 
@@ -290,7 +291,7 @@ export default {
                         : { text: await getContent(message) }
                 );
             } catch (error) {
-                console.log(error);
+                logger.log(error);
             }
         };
 
@@ -347,7 +348,7 @@ export default {
                 readingMessage.value = '';
             };
             utterance.onerror = (event) => {
-                console.log("Error: " + event.error + " - " + event.message);
+                logger.log("Error: " + event.error + " - " + event.message);
                 readingMessage.value = '';
             };
 

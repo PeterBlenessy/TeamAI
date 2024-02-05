@@ -44,10 +44,10 @@
             <template v-slot:append>
                 <q-btn :loading="loading" @click="handleUserInput" dense flat icon="mdi-send" :color="iconColor">
                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                        {{ loading ? t('userInput.tooltip.stop') : t('userInput.tooltip.send') }}
+                        {{ loading ? isCreateImageSelected ? t('userInput.tooltip.generating') : t('userInput.tooltip.stop') : t('userInput.tooltip.send') }}
                     </q-tooltip>
                     <template v-slot:loading>
-                        <q-spinner color="primary" @click="handleUserInput" style="cursor: pointer;"/>
+                        <q-spinner color="primary" @click="handleUserInput" :style="!isCreateImageSelected ? 'cursor: pointer;' : ''"/>
                     </template>
 
                 </q-btn>
@@ -64,6 +64,7 @@ import { useSettingsStore } from "../stores/settings-store.js";
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import logger from '../services/logger';
 
 export default {
     name: 'UserInput',
@@ -78,7 +79,11 @@ export default {
 
         function handleUserInput() {
 
-            if (loading.value) { return abortRequest.value = true; }
+            // Handle user aborts request
+            if (loading.value && !isCreateImageSelected.value) { return abortRequest.value = true; }
+
+            // Handle occasional bug where abortRequest is not reset
+            if (!loading.value && abortRequest.value) { abortRequest.value = false; }
 
             if (question.value == '') { return; }
 
@@ -107,26 +112,21 @@ export default {
                         recognition.lang = speechLanguage.value;
 
                         // Event handlers
-                        recognition.onaudiostart = () => console.log("Audio capturing started");
+                        recognition.onaudiostart = () => logger.log("Audio capturing started");
                         recognition.onspeechstart = () => speechDetected.value = true;
                         recognition.onspeechend = () => speechDetected.value = false;
                         recognition.onresult = (event) => question.value = event.results[0][0].transcript;
-                        recognition.onerror = (event) => console.log("Error: " + event.error + " - " + event.message);
-                        recognition.onaudioend = () => console.log("Audio capturing ended");
+                        recognition.onerror = (event) => logger.error(error);
+                        recognition.onaudioend = () => logger.log("Audio capturing ended");
                     } else {
-                        console.log('SpeechRecognition is not supported in this browser.');
+                        logger.warn('SpeechRecognition is not supported in this browser.');
                         isMicrophoneActive.value = false;
                     }
 
                 })
-                .catch(err => {
-                    // Print error in webview console
-                    console.log('Could not load microphone!');
-                    console.error(err);
-                    
-                    // Print error message in application console and log file
-                    error('Could not load microphone!');
-                    error(err);
+                .catch(error => {
+                    logger.warn('Could not load microphone!');
+                    logger.error(error);
                 });
         }
 
@@ -134,10 +134,8 @@ export default {
             isMicrophoneActive.value = true;
             try {
                 recognition.start();
-            } catch (err) {
-                console.log("Error: " + err.error + " - " + err.message);
-                // Print error message in application console and log file
-                error("Error: " + err.error + " - " + err.message);
+            } catch (error) {
+                logger.error(error);
             }
         }
 

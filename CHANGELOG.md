@@ -29,6 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.5.4 - 2024-02-05
+- Added logger.js, a simple wrapper of calls to webview console logs and tauri-plugin-log-api.
+- Changed all logs to use logger.js.
+- Changed log level to 'info' and above in Tauri backend.
+- Fixed issue where "Stop generation" tooltip was shown instead of "Generating..." when generating images.
+- Fixed issue where "Stop" tooltip was not available in Hungarian and Swedish during text generation.
+- Changed "Stop generation" tooltip text to "Stop" to fit in tooltip box.
+- Fixed issue where loading spinner could hang when generation got aborted during image generation.
+
 ## v1.5.3 - 2024-02-04
 - Added possibility to stop text generation by clicking the loading spinner.
 

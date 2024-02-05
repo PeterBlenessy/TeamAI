@@ -2,6 +2,7 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { imageDB, settingsDB, teamsDB } from '../services/localforage.js';
 import { useSettingsStore } from '../stores/settings-store.js';
+import logger from './logger.js';
 
 const databaseUpgrader = () => {
 
@@ -46,11 +47,11 @@ const databaseUpgrader = () => {
     const setDBVersion = async (version) => await settingsDB.setItem('dBVersion', JSON.stringify(version));
 
     const isUpgradeNeed = async () => {
-        console.log("Checking if database upgrade is needed...");
+        logger.log("Checking if database upgrade is needed...");
         let currentVersion = await getDBVersion();
         let isNeeded = currentVersion < LATEST_DB_VERSION ? true : false;
-        console.log(`\tCurrent version is ${currentVersion}. Latest version is ${LATEST_DB_VERSION}.`)
-        console.log(isNeeded ? "\tUpgrade needed" : "\tUpgrade not needed");
+        logger.log(`\tCurrent version is ${currentVersion}. Latest version is ${LATEST_DB_VERSION}.`)
+        logger.log(isNeeded ? "\tUpgrade needed" : "\tUpgrade not needed");
         return isNeeded;
     }
 
@@ -63,7 +64,7 @@ const databaseUpgrader = () => {
             settingsStore.modelOptions.value = modelOptions;
 
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             throw error;
         }
     }
@@ -73,7 +74,7 @@ const databaseUpgrader = () => {
         try {
             await settingsDB.removeItem('modelOptions');
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             throw error;
         }
     }
@@ -85,34 +86,34 @@ const databaseUpgrader = () => {
             // Get messages from persistent storage
             let messages = JSON.parse(await teamsDB.getItem('messages'));
             if (messages == null) {
-                console.log("Nothing to upgrade.");
+                logger.log("Nothing to upgrade.");
                 return;
             }
 
             for (let m = 0; m < messages.length; m++) {
-                console.log("Processing message: ", messages[m].timestamp);
+                logger.log("Processing message: ", messages[m].timestamp);
 
                 if (messages[m].object == 'image' &&
                     messages[m].hasOwnProperty('choices') &&
                     messages[m].choices.length > 0) {
 
                     for (let i = 0; i < messages[m].choices.length; i++) {
-                        console.log("\tProcessing image: ", messages[m].choices[i].index);
+                        logger.log("\tProcessing image: ", messages[m].choices[i].index);
                         if (messages[m].choices[i].content.startsWith('image')) {
-                            console.log("\t\tImage name: ", messages[m].choices[i].content);
+                            logger.log("\t\tImage name: ", messages[m].choices[i].content);
                             // Check that image exists in imageDB
                             const image = await imageDB.getItem(messages[m].choices[i].content);
                             if (image != null) {
-                                console.log("\t\tImage exists in imageDB.")
+                                logger.log("\t\tImage exists in imageDB.")
                             } else {
-                                console.log("\t\tImage does not exist in imageDB. Removing reference from message.")
+                                logger.log("\t\tImage does not exist in imageDB. Removing reference from message.")
                                 // Remove image reference from message
                                 messages[m].choices.splice(i, 1);
                             }
                         } else if (messages[m].choices[i].content.startsWith('data:image')) {
                             // Found base64 image, move to imageDB
                             let imageName = `image-${messages[m].timestamp}-${messages[m].choices[i].index}`;
-                            console.log('\t\tFound base64 image. Moving to imageDB with imageName: ', imageName);
+                            logger.log('\t\tFound base64 image. Moving to imageDB with imageName: ', imageName);
 
                             try {
                                 // Create blob from base64 image and store it in imageDB
@@ -130,17 +131,17 @@ const databaseUpgrader = () => {
                                 }
 
                             } catch (error) {
-                                console.error(error);
+                                logger.error(error);
                                 throw error;
                             }
                         } else {
-                            console.log("\t\tUnexpected image reference. Removing from message.", messages[m].choices[i].content)
+                            logger.log("\t\tUnexpected image reference. Removing from message.", messages[m].choices[i].content)
                         }
                     }
 
                 } else {
                     // No images in message, do nothing
-                    console.log("\tNo images in message.", messages[m].timestamp);
+                    logger.log("\tNo images in message.", messages[m].timestamp);
                 }
             }
             // Store the potentially updated messages array in persistent storage
@@ -149,13 +150,13 @@ const databaseUpgrader = () => {
             // Verify that messages upgrade was successful
             let testMessages = await teamsDB.getItem('messages');
             if (testMessages != null && testMessages == JSON.stringify(messages)) {
-                console.log("Messages upgrade completed successfully.");
+                logger.log("Messages upgrade completed successfully.");
             } else {
-                console.error("Error when upgrading messages.");
+                logger.error("Error when upgrading messages.");
                 throw new Error("Error when upgrading messages.");
             }
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             throw error;
         }
     }
@@ -180,7 +181,7 @@ const databaseUpgrader = () => {
         try {
             // Execute the needed upgrades
             dBUpgrades.forEach(async (version) => {
-                console.log('Upgrading database to version: ', version.version);
+                logger.log('Upgrading database to version: ', version.version);
                 upgradeDialog({ caption: `${progress++} of ${nbrUpgrades}` });
                 try {
                     version.upgrade();
@@ -197,13 +198,13 @@ const databaseUpgrader = () => {
                         actions: [{ label: t('databaseUpgrade.completed.action'), handler: () => { } }]
                     });
                 } catch (error) {
-                    console.error(error);
+                    logger.error(error);
                     throw error;
                 }
             });
 
         } catch (error) {
-            console.error(error);
+            logger.error(error);
 
             // Notify user of error
             $q.notify({

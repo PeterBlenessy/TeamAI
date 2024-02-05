@@ -20,7 +20,8 @@ export default {
         },
         tooltip: {
             send: 'Send',
-            stop: 'Stop generation',
+            stop: 'Stop',
+            generating: 'Generating...',
             generateText: 'Generate text',
             generateImage: 'Generate images',
             speechStart: 'Start dictation',

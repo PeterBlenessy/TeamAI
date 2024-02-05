@@ -1,6 +1,7 @@
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import { imageDB } from './localforage.js';
+import logger from './logger.js';
 
 const openAI = () => {
     const settingsStore = useSettingsStore()
@@ -97,7 +98,7 @@ const openAI = () => {
                     // todo: Generate image thumbnail
 
                 } catch (error) {
-                    console.error(error);
+                    logger.error(error);
                 }
             }
             return {

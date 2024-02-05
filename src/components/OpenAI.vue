@@ -16,7 +16,7 @@ import hljs from 'highlight.js/lib/common';
 import 'highlight.js/styles/github-dark.css';
 //import 'highlight.js/styles/base16/google-dark.css';
 
-import { trace, info, error } from "tauri-plugin-log-api";
+import logger from '../services/logger.js';
 
 export default {
     name: 'OpenAI',
@@ -73,14 +73,9 @@ export default {
                 if (json.errorCode) throw new Error(`${data.errorCode}`);
                 // Remove (occasional) optionally escaped leading and trailing apostrophes
                 return json.choices[0].message.content.trim().replace(/^\\?"|\\?"$/g, '');
-            } catch (e) {
-                // Print error in webview console
-                console.error(e);
-
-                // Print error message in application console and log file
-                error(e);
-
-                throw new Error(e);
+            } catch (error) {
+                logger.error(error);
+                throw new Error(error);
             }
         }
 
@@ -116,9 +111,16 @@ export default {
         // Watch if user aborts response and call abortController abort function
         // -----------------------------------------------------------------------------------------
         watch (abortRequest, () => {
-            if (abortRequest.value) {
-                abortController.abort();
+            try {
+                if (abortRequest.value) {
+                    logger.log('Aborting generation');
+                    loading.value = false;
+                    abortController.abort();
+                }
+            } catch (error) {
+                logger.error(error);
                 abortRequest.value = false;
+                loading.value = false;
             }
         });
         // -----------------------------------------------------------------------------------------
@@ -262,8 +264,8 @@ export default {
 
                                 if (dataDone) break;
                             }
-                        } catch (e) {
-                            throw new Error(e);
+                        } catch (error) {
+                            throw new Error(error);
                         } finally {
                             // Make sure to store the resulting content in the lastMessage object
                             // This will trigger an update of the DOM in Messages component and replace the content rendered while recieving the chunks.
@@ -277,7 +279,7 @@ export default {
                     if (!conversationTitle) {
                         generateConversationTitle(conversationId.value)
                             .then((title) => conversationTitle = title)
-                            .catch(error => console.error(error))
+                            .catch(error => logger.error(error))
                             .finally(() => {
                                 const timestamp = Date.now().toString();
                                 if (conversationIndex != -1) {
@@ -298,35 +300,33 @@ export default {
                             });
                     }
 
-                } catch (e) {
+                } catch (error) {
                     let message = ''
                     let caption = ''
 
-                    if (e.response) {
-                        message = e.response.status;
-                        caption = e.response.data;
+                    if (error.response) {
+                        message = error.response.status;
+                        caption = error.response.data;
                     } else { 
 
                         // Check if user aborted the request
-                        if (e.message == 'AbortError: Fetch is aborted') {
-                            console.log(e.message);
+                        if (error.message == 'AbortError: Fetch is aborted') {
+                            logger.log("Generation aborted");
                             abortController = '';
                             return;
                         }
-                        const path = 'apiErrors.' + e.message.split(' ')[0];
-
+                        const path = 'apiErrors.' + error.message.split(' ')[0];
 
                         // Check if error message is defined in i18n language files
-                        if ((path + '.message') == t(path + '.message')) {
-                            message = "Unknown error occured. ";
-                            caption = error.message;
-                        } else {
+                        try { 
                             message = t(path + '.message');
                             caption = t(path + '.caption');
+                        } catch (error) {
+                            message = "Unknown error occured. ";
+                            caption = error.message;
                         }
                     }
-                    // Print error message in application console and log file
-                    error(message + ' ' + caption);
+                    logger.error(message + ' ' + caption);
 
                     // Show error message in app
                     $q.notify({
@@ -347,6 +347,7 @@ export default {
                     // Decrease remaining personas to keep loading indicator accurate
                     count--;
                     loading.value = count == 0 ? false : true;
+                    abortRequest.value = false;
                 };
 
                 // Break out of the personas for loop when generating images.

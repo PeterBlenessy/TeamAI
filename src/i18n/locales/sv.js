@@ -20,7 +20,8 @@ export default {
         },
         tooltip: {
             send: 'Skicka din fråga',
-            waiting: 'Avbryt generering',
+            stop: 'Avbryt generering',
+            generating: 'Genererar...',
             generateText: 'Generera text',
             generateImage: 'Generera bilder',
             speechStart: 'Starta diktering',

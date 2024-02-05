@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { imageDB } from '../services/localforage';
+import logger from '../services/logger';
 
 // The teams-store holds the teams creeated by the user in a list. A team is a list of AI assistants, bots
 // Each team object has an array of team member objects and an array of messages.
@@ -49,8 +50,8 @@ export const useTeamsStore = defineStore('teams', () => {
                     message.choices.forEach(choice => {
                         // Delete image from image storage
                         imageDB.removeItem(choice.content)
-                        .then(() => console.log("Deleted image: ", choice.content))
-                        .catch(error => console.log("Error when deleting image: ", choice.content, error));
+                        .then(() => logger.log("Deleted image: ", choice.content))
+                        .catch(error => logger.error("Error when deleting image: " + choice.content + error.toString()));
                     });
                 }
                 return;
@@ -119,8 +120,8 @@ export const useTeamsStore = defineStore('teams', () => {
                     } else {
                         // Delete image from image storage
                         imageDB.removeItem(choice.content)
-                        .then(() => console.log("Deleted image: ", choice.content))
-                        .catch(error => console.log("Error when deleting image: ", choice.content, error));
+                        .then(() => logger.log("Deleted image: ", choice.content))
+                        .catch(error => logger.error("Error when deleting image: " + choice.content + error.toString()));
 
                         return;
                     }
@@ -166,15 +167,15 @@ export const useTeamsStore = defineStore('teams', () => {
         imageDB.iterate((value, key, iterationNumber) => {
             if (!allImages.includes(key)) {
                 imageDB.removeItem(key)
-                .then(() => console.log("Deleted image: ", key))
-                .catch(error => console.log("Error when deleting image: ", key, error));
+                .then(() => logger.log("Deleted image: ", key))
+                .catch(error => logger.error("Error when deleting image: " + key + error.toString()));
             }
         }).then(() => {
             // Restore the persisted state
         }).catch((error) => {
-            console.log(error);
+            logger.error(error);
         }).finally(() => {
-            // console.log("Done iterating imageDB");
+            //logger.log("Done iterating imageDB");
         });
     }
 

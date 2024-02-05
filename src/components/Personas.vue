@@ -229,6 +229,7 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from 'pinia';
+import logger from '../services/logger.js';
 
 export default {
     name: 'Personas',
@@ -266,8 +267,8 @@ export default {
                             });
                         awesomePrompts.value.shift();
                     })
-                    .catch(error => console.error(error))
-                    .finally(() => console.log("fetchPersonas() done"));
+                    .catch(error => logger.error(error))
+                    .finally(() => logger.log("fetchPersonas() done"));
             } else if (source == "ExamplePersonas") {
                 fetch(awesomeSources[source])
                     .then(response => response.json())
@@ -278,8 +279,8 @@ export default {
                             return { id, ...item, readonly };
                         });
                     })
-                    .catch(error => console.error(error))
-                    .finally(() => console.log("fetchPersonas() done"));
+                    .catch(error => logger.error(error))
+                    .finally(() => logger.log("fetchPersonas() done"));
             }
         }
 

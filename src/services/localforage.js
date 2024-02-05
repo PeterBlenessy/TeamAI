@@ -1,4 +1,6 @@
 import localforage from 'localforage';
+import logger from './logger.js';
+
 const dbName = 'TeamAI';
 
 const defaultLocalForageConfiguration = {
@@ -58,9 +60,9 @@ const localForagePlugin = (({ store }) => {
         // Restore the persisted state
         if (Object.keys(persistedState).length != 0) store.$patch(persistedState);
     }).catch((error) => {
-        console.log(error);
+        logger.error(error);
     }).finally(() => {
-        console.log("Persisted states restored from storage: ", store.$id);
+        logger.info("Persisted states restored from storage: " + store.$id);
     });
 
     // Subscribe to store changes and save them to the persistent storage.

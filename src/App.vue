@@ -95,6 +95,7 @@ import { useTeamsStore } from './stores/teams-store.js';
 import { invoke } from '@tauri-apps/api';
 import { checkUpdate, onUpdaterEvent } from '@tauri-apps/api/updater'
 import DatabaseUpgrader from './services/databaseUpgrader.js';
+import logger from './services/logger';
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
@@ -213,7 +214,7 @@ export default {
             // Listen to updater events
             const unlisten = await onUpdaterEvent(({ error, status }) => {
                 // This will log all updater events, including status updates and errors.
-                console.log('Updater event', error, status)
+                logger.log('Updater event', error, status)
 
                 let updater = {
                     'PENDING': { icon: 'mdi-information', type: 'info', message: t('updater.pending.message'), caption: t('updater.pending.caption') },
@@ -240,7 +241,7 @@ export default {
                 const { shouldUpdate, manifest } = await checkUpdate();
 
                 if (shouldUpdate) {
-                    console.log(`Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
+                    logger.log(`Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
                     // Uncomment to enable frontend install/relaunch flow.
                     // Also, disable the built-in Tauri dialog in Tauri config.
 
@@ -266,7 +267,7 @@ export default {
                     // });
                 }
             } catch (error) {
-                console.error(error);
+                logger.error(error);
             }
 
             // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.
