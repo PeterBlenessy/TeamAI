@@ -34,6 +34,6 @@
     "@quasar/vite-plugin": "^1.6.0",
     "@tauri-apps/cli": "^1.5.9",
     "@vitejs/plugin-vue": "^5.0.3",
-    "vite": "^5.0.12"
+    "vite": "^5.0.13"
   }
 }
