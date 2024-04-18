@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.6.0 - 2024-02-06
+- Updated dependencies to their latest versions.
+- Added GPT-4 Turbo
+
 ## v1.5.4 - 2024-02-05
 - Added logger.js, a simple wrapper of calls to webview console logs and tauri-plugin-log-api.
 - Changed all logs to use logger.js.

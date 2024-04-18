@@ -1,9 +1,9 @@
 [package]
 name = "team-ai"
-version = "0.4.5"
+version = "0.5.0"
 description = "An OpenAI powered Tauri application"
 authors = ["Péter Blénessy"]
-license = "MIT"
+license = "MIT License"
 repository = "https://github.com/PeterBlenessy/TeamAI"
 edition = "2021"
 

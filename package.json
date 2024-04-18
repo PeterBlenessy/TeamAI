@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.5.4",
   "type": "module",
+  "license": "MIT License",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

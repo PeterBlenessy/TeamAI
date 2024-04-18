@@ -3,6 +3,7 @@
         "gpt-3.5-turbo",
         "gpt-3.5-turbo-1106",
         "gpt-4",
+        "gpt-4-turbo",
         "gpt-4-turbo-preview"
     ],
     "imageSizeOptions": [
@@ -53,6 +54,13 @@
             "name": "GPT-4",
             "maxTokens": 4096,
             "contextWindow": 8192,
+            "description": ""
+        },
+        "gpt-4-turbo": {
+            "type": "text",
+            "name": "GPT-4 Turbo",
+            "maxTokens": 4096,
+            "contextWindow": 128000,
             "description": ""
         },
         "gpt-4-turbo-preview": {
