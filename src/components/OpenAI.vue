@@ -166,7 +166,6 @@ export default {
                                 maxTokens: maxTokens.value,
                                 temperature: temperature.value,
                                 persona: persona, // Current persona
-                                personas: personas.value, // All personas, to be able to re-load settings
                                 conversationMode: conversationMode.value
                             }
                         };
@@ -294,7 +293,7 @@ export default {
                                         created: timestamp,
                                         updated: timestamp,
                                         conversationId: conversationId.value,
-                                        personas: personas.value
+                                        personas: personas.value // All personas, to be able to re-load settings
                                     });
                                 }
                             });

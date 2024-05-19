@@ -31,7 +31,7 @@ export const useTeamsStore = defineStore('teams', () => {
 
     // Generate chat or image
     const isCreateImageSelected = ref(false);
-    
+
     // The user input is a team assignment
     const isTeamWorkActivated = ref(false);
 
@@ -50,8 +50,8 @@ export const useTeamsStore = defineStore('teams', () => {
                     message.choices.forEach(choice => {
                         // Delete image from image storage
                         imageDB.removeItem(choice.content)
-                        .then(() => logger.log("Deleted image: ", choice.content))
-                        .catch(error => logger.error("Error when deleting image: " + choice.content + error.toString()));
+                            .then(() => logger.log("Deleted image: ", choice.content))
+                            .catch(error => logger.error("Error when deleting image: " + choice.content + error.toString()));
                     });
                 }
                 return;
@@ -120,8 +120,8 @@ export const useTeamsStore = defineStore('teams', () => {
                     } else {
                         // Delete image from image storage
                         imageDB.removeItem(choice.content)
-                        .then(() => logger.log("Deleted image: ", choice.content))
-                        .catch(error => logger.error("Error when deleting image: " + choice.content + error.toString()));
+                            .then(() => logger.log("Deleted image: ", choice.content))
+                            .catch(error => logger.error("Error when deleting image: " + choice.content + error.toString()));
 
                         return;
                     }
@@ -167,8 +167,8 @@ export const useTeamsStore = defineStore('teams', () => {
         imageDB.iterate((value, key, iterationNumber) => {
             if (!allImages.includes(key)) {
                 imageDB.removeItem(key)
-                .then(() => logger.log("Deleted image: ", key))
-                .catch(error => logger.error("Error when deleting image: " + key + error.toString()));
+                    .then(() => logger.log("Deleted image: ", key))
+                    .catch(error => logger.error("Error when deleting image: " + key + error.toString()));
             }
         }).then(() => {
             // Restore the persisted state
@@ -186,17 +186,26 @@ export const useTeamsStore = defineStore('teams', () => {
         // Find latest assistant message with settings
         for (let i = conversation.length - 1; i >= 0; i--) {
             if (conversation[i].role == "assistant" &&
-                conversation[i].hasOwnProperty("settings") && 
+                conversation[i].hasOwnProperty("settings") &&
                 Object.keys(conversation[i].settings).length !== 0) {
-                
-                    // Return a copy of the settings object, to avoid reactive state changes
-                    return { ...conversation[i].settings };
+
+                // Return a copy of the settings object, to avoid reactive state changes
+                return { ...conversation[i].settings };
             }
         }
     }
 
     function getPersona(id) {
         return personas.value.filter(persona => persona.id == id)[0];
+    }
+
+    function getPersonasFromConversation(id) {
+        return history.value.filter(conversation => conversation.conversationId == id)[0].personas;
+    }
+
+    function getPersonaFromConversation(personaId, conversationId) {
+        let personas = getPersonasFromConversation(conversationId);
+        return personas.filter(persona => persona.id == personaId)[0];
     }
 
     return {
@@ -232,6 +241,7 @@ export const useTeamsStore = defineStore('teams', () => {
         getMessage,
         getOrphanedMessages,
         getSettingsFromLastMessage,
-        getPersona
+        getPersona,
+        getPersonaFromConversation
     }
 });

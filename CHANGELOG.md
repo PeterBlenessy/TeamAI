@@ -26,8 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Notarization errors when updating outdated dependencies. Debug by initiating notarization locally.
 - Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
 - When streaming the response, token usage has to be calculated manually since it's not available in the chunks. Check out: https://github.com/dqbd/tiktoken
+- When removing a persona; should check if it is used in messages and alert user.
 
 ## [UNRELEASED]
+
+## v1.6.1 - 2024-05-19
+- Updated Cargo dependencies
+- Added GPT-4o
+- Removed personas from individual messages to speed up loading and decrease storage space per message.
 
 ## v1.6.0 - 2024-02-06
 - Updated dependencies to their latest versions.

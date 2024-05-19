@@ -371,8 +371,8 @@ export default {
 
             if ('settings' in message) {
                 // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
-                persona = 'persona' in message.settings ? teamsStore.getPersona(message.settings.persona.id)
-                    : 'personas' in message.settings ? teamsStore.getPersona(message.settings.personas[0].id)
+                persona = 'persona' in message.settings
+                        ? teamsStore.getPersona(message.settings.persona.id)
                         : null;
 
                 if (persona && 'avatar' in persona) {
@@ -387,13 +387,15 @@ export default {
 
             if ('settings' in message) {
                 // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
-                persona = 'persona' in message.settings ? teamsStore.getPersona(message.settings.persona.id) : null;
+                persona = 'persona' in message.settings 
+                        ? teamsStore.getPersona(message.settings.persona.id) 
+                        : null;
 
                 return (persona && 'name' in persona)
                     ? persona.name
                     : 'model' in message.settings
-                        ? message.settings.model.toUpperCase()
-                        : null;
+                    ? message.settings.model.toUpperCase()
+                    : null;
             }
             return null;
         }
