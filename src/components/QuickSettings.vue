@@ -2,8 +2,16 @@
     <div class="row">
         <q-toolbar>
             <!-- Model name -->
-            <q-chip icon="mdi-brain" :label="isCreateImageSelected ? 'DALL·E 3' : model" size="sm" clickable
-                @click="nextModel()">
+            <q-chip icon="mdi-brain" :label="isCreateImageSelected ? 'DALL·E 3' : model" size="sm" clickable>
+                <q-menu anchor="top left" self="bottom left">
+                    <q-list dense>
+                        <q-item v-for="item in modelOptions" :key="item" clickable @click="model = item" :active="model == item">
+                            <q-item-section>
+                                <q-item-label>{{ item }}</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.openAI.model.label') }}
                 </q-tooltip>
@@ -15,7 +23,8 @@
 
                 <q-menu anchor="top middle" self="bottom middle">
                     <div class="q-pa-sm">
-                        <q-slider v-model="maxTokens" :min="64" :max="4096" :step="16" :markers="1024" vertical reverse />
+                        <q-slider v-model="maxTokens" :min="64" :max="4096" :step="16" :markers="1024" vertical
+                            reverse />
                     </div>
                 </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
@@ -51,10 +60,12 @@
             </q-chip>
 
             <!-- Image size -->
-            <q-chip v-if="isCreateImageSelected" icon="mdi-image-size-select-large" :label="imageSize" size="sm" clickable>
+            <q-chip v-if="isCreateImageSelected" icon="mdi-image-size-select-large" :label="imageSize" size="sm"
+                clickable>
                 <q-menu anchor="top middle" self="bottom middle">
                     <div class="q-pa-sm">
-                        <q-slider v-model="imageSizeValue" snap :min="0" :max="2" :step="1" :markers="1" vertical reverse />
+                        <q-slider v-model="imageSizeValue" snap :min="0" :max="2" :step="1" :markers="1" vertical
+                            reverse />
                     </div>
                 </q-menu>
                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
@@ -228,6 +239,7 @@ export default {
             conversationMode,
             appMode,
             model,
+            modelOptions,
             maxTokens,
             temperature,
             choices,
@@ -260,4 +272,3 @@ export default {
     },
 }
 </script>
-

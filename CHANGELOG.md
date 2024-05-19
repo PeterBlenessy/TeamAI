@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.6.2 - 2024-05-19
+- Changed QuickSettings model selection to display available models.
+- Removed old models.
+
 ## v1.6.1 - 2024-05-19
 - Updated Cargo dependencies
 - Added GPT-4o
