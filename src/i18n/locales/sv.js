@@ -34,7 +34,6 @@ export default {
             showDrawer: 'Visa meny',
             hideDrawer: 'Dölj meny',
             newConversation: 'Ny konversation',
-            clear: 'Rensa meddelanden',
             personas: 'Visa personas',
             addTeam: 'Lägg till ett nytt team',
             info: 'Info',
@@ -43,6 +42,19 @@ export default {
             checkForUpdates: 'Kolla efter uppdateringar...'
         },
     },
+
+    quickSettings: {
+        copy: {
+            tooltip: 'Kopiera'
+        },
+        share: {
+            tooltip: 'Dela'
+        },
+        delete: {
+            tooltip: 'Ta bort'
+        },
+    },
+
     settings: {
         title: 'Inställningar',
         avatar: {
@@ -50,59 +62,80 @@ export default {
             caption: 'Välj din avatar',
             tooltip: 'Klicka för att välja din avatar'
         },
-        darkMode: {
-            label: 'Mörkt läge',
-            caption: 'Växla mellan mörkt/auto/ljust läge',
-            tooltip: 'Växla mellan mörkt/auto/ljust läge'
-        },
-        locale: {
-            label: 'Applikationsspråk',
-            caption: 'Välj språk för applikationstext',
-            tooltip: 'Välj språk för applikationstext'
-        },
-        speech: {
-            label: 'Talspråk',
-            caption: 'Välj språk för tal-till-text och text-till-tal',
-            tooltip: 'Välj språk för tal'
-        },
-        conversationMode: {
-            label: 'Konversationsläge',
-            caption: 'Skicka individuella meddelanden eller hela konversationshistoriken',
-            tooltip: 'Växla konversationsläge på/av'
-        },
-        appMode: {
-            label: 'Applikationsläge',
-            caption: 'Använd applikationen i grundläge eller avancerat läge',
-            tooltip: 'Växla mellan grundläge och avancerat läge för applikationen'
-        },
-        chatDirection: {
-            label: 'Chattriktning',
-            caption: 'Växla riktningen av chattmeddelandena upp/ner',
-            tooltip: 'Växla riktningen av chattmeddelandena upp/ner'
-        },
-        quickSettings: {
-            label: 'Snabbinställningar',
-            caption: 'Visa snabbinställningar i chatfönstret',
-            tooltip: 'Visa snabbinställningar'
-        },
-        streamResponse: {
-            label: "Strömma svar",
-            caption: "Strömma svaret från AI-assistenten",
-            tooltip: "Strömma svaret från AI-assistenten istället för att vänta på att hela svaret ska genereras."
-        },
-    
-        teamWork: {
-            label: 'Teamarbete',
-            caption: 'Aktivera teamarbete',
-            tooltip: 'Aktivera teamarbete. När det är aktiverat skickas din fråga till den första personan, svaret skickas till nästa, och så vidare. När det är inaktivt kommer varje persona att svara med ett individuellt svar på din fråga.'
+
+        general: {
+            label: 'Allmänna',
+            tooltip: 'Allmänna inställningar',
+
+            darkMode: {
+                label: 'Mörkt läge',
+                caption: 'Växla mellan mörkt/auto/ljust läge',
+                tooltip: 'Växla mellan mörkt/auto/ljust läge'
+            },
+            locale: {
+                label: 'Applikationsspråk',
+                caption: 'Välj språk för applikationstext',
+                tooltip: 'Välj språk för applikationstext'
+            },
+            speech: {
+                label: 'Talspråk',
+                caption: 'Välj språk för tal-till-text och text-till-tal',
+                tooltip: 'Välj språk för tal'
+            },
+            conversationMode: {
+                label: 'Konversationsläge',
+                caption: 'Skicka individuella meddelanden eller hela konversationshistoriken',
+                tooltip: 'Växla konversationsläge på/av'
+            },
+            appMode: {
+                label: 'Applikationsläge',
+                caption: 'Använd applikationen i grundläge eller avancerat läge',
+                tooltip: 'Växla mellan grundläge och avancerat läge för applikationen'
+            },
+            chatDirection: {
+                label: 'Chattriktning',
+                caption: 'Växla riktningen av chattmeddelandena upp/ner',
+                tooltip: 'Växla riktningen av chattmeddelandena upp/ner'
+            },
+            quickSettings: {
+                label: 'Snabbinställningar',
+                caption: 'Visa snabbinställningar i chatfönstret',
+                tooltip: 'Visa snabbinställningar'
+            },
+            streamResponse: {
+                label: "Strömma svar",
+                caption: "Strömma svaret från AI-assistenten",
+                tooltip: "Strömma svaret från AI-assistenten istället för att vänta på att hela svaret ska genereras."
+            },
         },
 
-        openAI: {
+        api: {
+            label: 'API Leverantör',
+            tooltip: 'API Leverantör inställningar',
+
+            provider: {
+                label: 'API leverantör',
+                caption: 'Välj den API-leverantör som ska användas för generering',
+                tooltip: 'Välj den API-leverantör som ska användas för generering'
+            },
+
+            url: {
+                label: 'Serveradress',
+                placeholder: 'https://api.example.com:443',
+                tooltip: 'Serverns adress'
+            },
+
             apiKey: {
                 label: 'OpenAI API-nyckel',
                 placeholder: 'Din OpenAI API-nyckel',
-                tooltip: 'Din OpenAI API-nyckel. Du hittar den i din OpenAI-dashboard.'
-            },
+                tooltip: 'Din OpenAI API-nyckel. Du kan hitta den på din OpenAI-dashboard.'
+            }
+        },
+
+        text: {
+            label: 'Textgenerering',
+            tooltip: 'Inställningar för textgenerering',
+
             model: {
                 label: 'OpenAI-modell',
                 tooltip: 'OpenAI-modell som ska användas för att generera svaret.'
@@ -115,6 +148,23 @@ export default {
                 label: 'Temperatur',
                 tooltip: 'Temperaturen är en mått på slumpmässigheten i texten. Lägre värden resulterar i mer förutsägbar text, medan högre värden resulterar i mer överraskande text.'
             },
+
+            persona: {
+                label: 'Personas',
+                caption: 'Välj AI assistentens personas.',
+                tooltip: 'Välj AI assistentens personas.'
+            },
+            teamWork: {
+                label: 'Teamarbete',
+                caption: 'Aktivera teamarbete',
+                tooltip: 'Aktivera teamarbete. När det är aktiverat skickas din fråga till den första personan, svaret skickas till nästa, och så vidare. När det är inaktivt kommer varje persona att svara med ett individuellt svar på din fråga.'
+            },
+        },
+
+        image: {
+            label: 'Bildgenerering',
+            tooltip: 'Inställningar för bildgenerering',
+
             choices: {
                 label: 'Antal bilder',
                 tooltip: 'Antal bilder att generera.'
@@ -133,12 +183,7 @@ export default {
                 vivid: 'Levande',
                 natural: 'Naturlig'
             }
-        },
-        persona: {
-            label: 'Personas',
-            caption: 'Välj AI assistentens personas.',
-            tooltip: 'Välj AI assistentens personas.'
-        },
+        }
     },
 
     page: {},
@@ -304,7 +349,7 @@ export default {
             message: 'Servern hade ett fel när den behandlade ditt anrop.',
             caption: 'Försök igen om en stund och kontakta oss om problemet kvarstår.'
         },
-        '503' : {
+        '503': {
             message: 'Servern är för närvarande otillgänglig.',
             caption: 'Försök igen om en stund.'
         },

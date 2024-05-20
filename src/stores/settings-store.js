@@ -15,7 +15,8 @@ export const useSettingsStore = defineStore('settings', () => {
         quickSettings: ref(true),
         streamResponse: ref(true),
 
-        // OpenAI settings
+        // API settings
+        apiProvider: ref('OpenAI'),     // OpenAI | Ollama | Custom
         apiKey: ref(''),
 
         // Chat completion settings

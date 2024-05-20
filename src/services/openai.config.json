@@ -1,4 +1,7 @@
 {
+    "apiProviders": [
+        "OpenAI"
+    ],
     "gptModels": [
         "gpt-4o",
         "gpt-4",

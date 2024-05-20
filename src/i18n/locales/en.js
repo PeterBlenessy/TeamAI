@@ -34,7 +34,6 @@ export default {
             showDrawer: 'Show menu',
             hideDrawer: 'Hide menu',
             newConversation: 'New conversation',
-            clear: 'Clear messages',
             personas: 'Show personas',
             addTeam: 'Add a new team',
             info: 'Info',
@@ -43,66 +42,102 @@ export default {
             checkForUpdates: 'Check for updates...'
         },
     },
+
+    quickSettings: {
+        copy: {
+            tooltip: 'Copy'
+        },
+        share: {
+            tooltip:'Share'
+        },
+        delete: {
+            tooltip:'Delete'
+        },
+    },
+
     settings: {
         title: 'Settings',
+
         avatar: {
             label: 'Avatar',
             caption: 'Select a user avatar avatar',
             tooltip: 'Click to select a user avatar'
         },
-        darkMode: {
-            label: 'Dark mode',
-            caption: 'Toggle dark/auto/light mode',
-            tooltip: 'Toggle dark/auto/light mode'
-        },
-        locale: {
-            label: 'Application language',
-            caption: 'Select the preferred application language',
-            tooltip: 'Select the preferred application language'
-        },
-        speech: {
-            label: 'Speech language',
-            caption: 'Select the prefered speech language',
-            tooltip: 'Select the prefered speech language'
-        },
-        conversationMode: {
-            label: 'Conversation mode',
-            caption: 'Send individual messages or entire conversation history',
-            tooltip: 'Toggle conversation mode on/off'
-        },
-        appMode: {
-            label: 'Application mode',
-            caption: 'Use the application in basic or advanced mode',
-            tooltip: 'Toggle basic/advanced application mode'
-        },
-        chatDirection: {
-            label: 'Chat direction',
-            caption: 'Change the direction of the chat messages up/down',
-            tooltip: 'Change the direction of the chat messages up/down'
-        },
-        quickSettings: {
-            label: 'Quick settings',
-            caption: 'Show quick settings in chat window',
-            tooltip: 'Show quick settings'
-        },
-        streamResponse: {
-            label: 'Stream response',
-            caption: 'Stream the response from the AI assistant',
-            tooltip: 'Stream the response from the AI assistant as small chunks of text, as opposed to waiting for the entire response to be generated.'
+
+        general: {
+            label: 'General',
+            tooltip: 'General settings',
+
+            darkMode: {
+                label: 'Dark mode',
+                caption: 'Toggle dark/auto/light mode',
+                tooltip: 'Toggle dark/auto/light mode'
+            },
+            locale: {
+                label: 'Application language',
+                caption: 'Select the preferred application language',
+                tooltip: 'Select the preferred application language'
+            },
+            speech: {
+                label: 'Speech language',
+                caption: 'Select the prefered speech language',
+                tooltip: 'Select the prefered speech language'
+            },
+
+            conversationMode: {
+                label: 'Conversation mode',
+                caption: 'Send individual messages or entire conversation history',
+                tooltip: 'Toggle conversation mode on/off'
+            },
+            appMode: {
+                label: 'Application mode',
+                caption: 'Use the application in basic or advanced mode',
+                tooltip: 'Toggle basic/advanced application mode'
+            },
+            chatDirection: {
+                label: 'Chat direction',
+                caption: 'Change the direction of the chat messages up/down',
+                tooltip: 'Change the direction of the chat messages up/down'
+            },
+            quickSettings: {
+                label: 'Quick settings',
+                caption: 'Show quick settings in chat window',
+                tooltip: 'Show quick settings'
+            },
+            streamResponse: {
+                label: 'Stream response',
+                caption: 'Stream the response from the AI assistant',
+                tooltip: 'Stream the response from the AI assistant as small chunks of text, as opposed to waiting for the entire response to be generated.'
+            },        
         },
 
-        teamWork: {
-            label: 'Team work',
-            caption: 'Activate team work',
-            tooltip: 'Activate team work. When activated, your question will be sent to the first persona, the response will be sent to the next, and so on. When inactive, each persona will respond with an individual response to your question.',
-        },
-    
-        openAI: {
+        api: {
+            label: 'API Provider',
+            tooltip: 'API Provider settings',
+
+            provider: {
+                label: 'API provider',
+                caption: 'Select the API provider to use for generation',
+                tooltip: 'Select the API provider to use for generation'
+            },
+
+            url: {
+                label: 'Server address',
+                placeholder: 'https://api.example.com:443',
+                tooltip: 'The address of the server'
+            },
+
             apiKey: {
                 label: 'OpenAI API key',
                 placeholder: 'Your OpenAI API key',
                 tooltip: 'Your OpenAI API key. You can find it in your OpenAI dashboard.'
-            },
+            }
+        },
+
+        text: {
+            label: 'Text generation',
+            tooltip: 'Text generation settings',
+
             model: {
                 label: 'OpenAI model',
                 tooltip: 'The OpenAI model to use for generating the response.'
@@ -119,6 +154,24 @@ export default {
                 label: 'Number of images',
                 tooltip: 'Number of images to generate.'
             },
+
+            personas: {
+                label: 'Personas',
+                caption: 'Select the personas of the AI assistant',
+                tooltip: 'Select the personas of the AI assistant'
+            },
+            teamWork: {
+                label: 'Team work',
+                caption: 'Activate team work',
+                tooltip: 'Activate team work. When activated, your question will be sent to the first persona, the response will be sent to the next, and so on. When inactive, each persona will respond with an individual response to your question.',
+            },
+
+        },
+    
+        image: {
+            label: 'Image generation',
+            tooltip: 'Image generation settings',
+
             size: {
                 label: 'Image size',
                 tooltip: 'The size of the image to generate.'
@@ -134,11 +187,6 @@ export default {
                 natural: 'Natural'
             }
         },
-        persona: {
-            label: 'Personas',
-            caption: 'Select the personas of the AI assistant',
-            tooltip: 'Select the personas of the AI assistant'
-        }
     },
 
     page: {},

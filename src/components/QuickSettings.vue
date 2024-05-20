@@ -5,15 +5,16 @@
             <q-chip icon="mdi-brain" :label="isCreateImageSelected ? 'DALL·E 3' : model" size="sm" clickable>
                 <q-menu anchor="top left" self="bottom left">
                     <q-list dense>
-                        <q-item v-for="item in modelOptions" :key="item" clickable @click="model = item" :active="model == item">
+                        <q-item v-for="item in modelOptions" :key="item" clickable @click="model = item"
+                            :active="model == item">
                             <q-item-section>
                                 <q-item-label>{{ item }}</q-item-label>
                             </q-item-section>
                         </q-item>
                     </q-list>
                 </q-menu>
-                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                    {{ t('settings.openAI.model.label') }}
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.text.model.label') }}
                 </q-tooltip>
             </q-chip>
 
@@ -27,8 +28,8 @@
                             reverse />
                     </div>
                 </q-menu>
-                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                    {{ t('settings.openAI.maxTokens.label') }}
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.text.maxTokens.label') }}
                 </q-tooltip>
             </q-chip>
 
@@ -39,8 +40,8 @@
                         <q-slider v-model="temperature" :min="0" :max="2" :step="0.1" :markers="0.5" vertical reverse />
                     </div>
                 </q-menu>
-                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                    {{ t('settings.openAI.temperature.label') }}
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.text.temperature.label') }}
                 </q-tooltip>
             </q-chip>
 
@@ -54,8 +55,8 @@
                         <q-slider v-model="choices" snap :min="1" :max="10" :step="1" :markers="1" vertical reverse />
                     </div>
                 </q-menu>
-                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                    {{ t('settings.openAI.choices.label') }}
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.text.choices.label') }}
                 </q-tooltip>
             </q-chip>
 
@@ -68,8 +69,8 @@
                             reverse />
                     </div>
                 </q-menu>
-                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                    {{ t('settings.openAI.size.label') }}
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.image.size.label') }}
                 </q-tooltip>
             </q-chip>
 
@@ -77,8 +78,8 @@
             <q-chip v-if="isCreateImageSelected"
                 :icon="imageQuality == 'hd' ? 'mdi-high-definition' : 'mdi-standard-definition'" size="md" clickable
                 @click="imageQuality = imageQuality == 'hd' ? 'standard' : 'hd'">
-                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                    {{ t('settings.openAI.quality.label') }}
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.image.quality.label') }}
                 </q-tooltip>
             </q-chip>
 
@@ -86,8 +87,8 @@
             <q-chip v-if="isCreateImageSelected" icon="mdi-palette-outline"
                 :label="imageStyle == 'vivid' ? t('settings.openAI.style.vivid') : t('settings.openAI.style.natural')"
                 size="sm" clickable @click="imageStyle = imageStyle == 'vivid' ? 'natural' : 'vivid'">
-                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                    {{ t('settings.openAI.style.label') }}
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.image.style.label') }}
                 </q-tooltip>
             </q-chip>
 
@@ -103,7 +104,7 @@
                             <q-icon v-else name="mdi-account-circle" size="sm" />
                         </q-avatar>
                         {{ scope.opt.name }}
-                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ scope.opt.prompt }}
                         </q-tooltip>
 
@@ -121,7 +122,7 @@
                         <q-item-section>
                             <q-item-label>{{ scope.opt.name }}</q-item-label>
                         </q-item-section>
-                        <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
+                        <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                             {{ scope.opt.prompt }}
                         </q-tooltip>
 
@@ -138,22 +139,37 @@
                 clickable>
 
                 <q-toggle v-model="isTeamWorkActivated" flat dense left-label size="md"
-                    :label="t('settings.teamWork.label')" unchecked-icon="mdi-account" checked-icon="mdi-account-group">
-                    <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                        {{ t('settings.teamWork.tooltip') }}
+                    :label="t('settings.text.teamWork.label')" unchecked-icon="mdi-account" checked-icon="mdi-account-group">
+                    <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                        {{ t('settings.text.teamWork.tooltip') }}
                     </q-tooltip>
                 </q-toggle>
 
             </q-chip>
 
             <q-separator v-if="appMode == 'advanced' && !isCreateImageSelected" vertical inset class="q-ma-sm" />
-
+            <q-space />
             <!-- Clear messages button -->
-            <q-chip size="md" icon="mdi-delete-sweep" clickable @click="clearMessages()">
-                <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
-                    {{ t('toolbar.tooltip.clear') }}
+            <q-btn flat dense padding="xs" size="sm" icon="mdi-content-copy" clickable
+                @click="copyConversation(conversationId)">
+                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                    {{ $t('quickSettings.copy.tooltip') }}
                 </q-tooltip>
-            </q-chip>
+            </q-btn>
+
+            <q-btn dense flat padding="xs" size="sm" icon="mdi-export-variant" clickable
+                @click="shareConversation(conversationId)">
+                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                    {{ $t('quickSettings.share.tooltip') }}
+                </q-tooltip>
+            </q-btn>
+
+            <q-btn dense flat padding="xs" size="sm" icon="mdi-delete-outline" clickable
+                @click="deleteConversation(conversationId)">
+                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                    {{ $t('quickSettings.delete.tooltip') }}
+                </q-tooltip>
+            </q-btn>
 
         </q-toolbar>
     </div>
@@ -206,10 +222,6 @@ export default {
                 personaOptions.value = teamsStore.personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
             });
         }
-        // Clear messages in current conversation.
-        function clearMessages() {
-            teamsStore.deleteMessages(conversationId.value);
-        }
 
         // Load OpenAI model options
         const modelOptions = openaiConfig.gptModels;
@@ -255,17 +267,11 @@ export default {
 
             personaOptions,
             personaFilterFn,
-            clearMessages,
+            conversationId,
 
-            nextModel: () => {
-                if (isCreateImageSelected.value) {
-                    return;
-                }
-
-                let index = modelOptions.indexOf(model.value);
-                index = (index + 1) % modelOptions.length;
-                model.value = modelOptions[index];
-            },
+            copyConversation: (id) => navigator.clipboard.writeText(JSON.stringify(teamsStore.getConversation(id))),
+            deleteConversation: (id) => teamsStore.deleteConversation(id),
+            shareConversation: (id) => { try { navigator.share({ text: JSON.stringify(teamsStore.getConversation(id)) }) } catch (e) { } },
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

@@ -30,6 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+
+## v1.7.0 - 2024-05-20
+- Added copy, share, and delete actions to QuickSettings.
+- Removed Beta label from streamed responses setting.
+- Added UI support for API Provider selection in settings. However, only OpenAI is supported right now.
+- Arranged settings in tabs: General, API Provider, Text generation, and Image generation
+
 ## v1.6.2 - 2024-05-19
 - Changed QuickSettings model selection to display available models.
 - Removed old models.

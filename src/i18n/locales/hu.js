@@ -31,7 +31,6 @@ export default {
             showDrawer: 'Menü megjelenitése',
             hideDrawer: 'Menü elrejtése',
             newConversation: 'Új beszélgetés',
-            clear: 'Üzenetek törlése',
             personas: 'Személyek',
             addTeam: 'Új csapat',
             info: 'Információ',
@@ -40,7 +39,19 @@ export default {
             checkForUpdates: 'Frissítések ellenőrzése...'
         },
     },
-    
+
+    quickSettings: {
+        copy: {
+            tooltip: 'Másol'
+        },
+        share: {
+            tooltip:'Megoszt'
+        },
+        delete: {
+            tooltip:'Töröl'
+        }
+    },
+
     settings: {
         title: 'Beállítások',
         avatar: {
@@ -48,60 +59,82 @@ export default {
             caption: 'Válaszd ki a profilképedet',
             tooltip: 'Válaszd ki a profilképedet'
         },
-        darkMode: {
-            label: 'Sötét mód',
-            caption: 'Sötét/auto/világos mód váltása',
-            tooltip: 'Sötét/auto/világos mód váltása'
-        },
-        locale: {
-            label: 'Alkalmazás nyelv',
-            caption: 'Válaszd ki az alkalmazás nyelvét',
-            tooltip: 'Válaszd ki az alkalmazás nyelvét'
-        },
-        speech: {
-            label: 'Beszéd nyelv',
-            caption: 'Válszd ki a beszéd nyelvét',
-            tooltip: 'Válszd ki a beszéd nyelvét'
-        },
-        conversationMode: {
-            label: 'Beszélgetés mód',
-            caption: 'Egyéni üzenetek vagy teljes beszélgetéstörténet küldése',
-            tooltip: 'Beszélgetés mód ki/be kapcsolása'
-        },
-        appMode: {
-            label: 'Alkalmazás mód',
-            caption: 'Használja az alkalmazást alap vagy haladó módban',
-            tooltip: 'Alkalmazás alap/haladó mód váltása'
-        },
-        chatDirection: {
-            label: 'Beszélgetés megjelenítésének iránya',
-            caption: 'Beszélgetés üzeneteinek megjelenítésének irányváltása fel/le',
-            tooltip: 'Beszélgetés üzeneteinek megjelenítésének irányváltása fel/le'
-        },
-        quickSettings: {
-            label: 'Gyors beállítások',
-            caption: 'Gyors beállítások megjelenítése/elrejtése a chat ablakban',
-            tooltip: 'Gyors beállítások megjelenítése/elrejtése'
-        },
 
-        streamResponse: {
-            label: "Streamelt válasz",
-            caption: "Streamelt válasz az AI asszisztenstől",
-            tooltip: "Streamelt válasz az AI asszisztenstől, az egész válasz generálása helyett."
-        },
+        general: {
+            label: 'Általános',
+            tooltip: 'Általános beállítások',
 
-        teamWork: {
-            label: 'Csapatmunka',
-            caption: 'Aktiváld a csapatmunkát',
-            tooltip: 'Aktiváld a csapatmunkát. Amikor aktiválva van, a kérdésre az első persona válaszol, a választ a következő kapja mint kérdés, és így tovább. Amikor inaktív, minden persona egyéni választ ad a kérdésre.'
-        },
+            darkMode: {
+                label: 'Sötét mód',
+                caption: 'Sötét/auto/világos mód váltása',
+                tooltip: 'Sötét/auto/világos mód váltása'
+            },
+            locale: {
+                label: 'Alkalmazás nyelv',
+                caption: 'Válaszd ki az alkalmazás nyelvét',
+                tooltip: 'Válaszd ki az alkalmazás nyelvét'
+            },
+            speech: {
+                label: 'Beszéd nyelv',
+                caption: 'Válszd ki a beszéd nyelvét',
+                tooltip: 'Válszd ki a beszéd nyelvét'
+            },
+            conversationMode: {
+                label: 'Beszélgetés mód',
+                caption: 'Egyéni üzenetek vagy teljes beszélgetéstörténet küldése',
+                tooltip: 'Beszélgetés mód ki/be kapcsolása'
+            },
+            appMode: {
+                label: 'Alkalmazás mód',
+                caption: 'Használja az alkalmazást alap vagy haladó módban',
+                tooltip: 'Alkalmazás alap/haladó mód váltása'
+            },
+            chatDirection: {
+                label: 'Beszélgetés megjelenítésének iránya',
+                caption: 'Beszélgetés üzeneteinek megjelenítésének irányváltása fel/le',
+                tooltip: 'Beszélgetés üzeneteinek megjelenítésének irányváltása fel/le'
+            },
+            quickSettings: {
+                label: 'Gyors beállítások',
+                caption: 'Gyors beállítások megjelenítése/elrejtése a chat ablakban',
+                tooltip: 'Gyors beállítások megjelenítése/elrejtése'
+            },
 
-        openAI: {
+            streamResponse: {
+                label: "Streamelt válasz",
+                caption: "Streamelt válasz az AI asszisztenstől",
+                tooltip: "Streamelt válasz az AI asszisztenstől, az egész válasz generálása helyett."
+            },
+        },
+    
+        api: {
+            label: 'API Szolgáltató',
+            tooltip: 'API Szolgáltató beállítások',
+
+            provider: {
+                label: 'API szolgáltató',
+                caption: 'Válassza ki az API szolgáltatót a generáláshoz',
+                tooltip: 'Válassza ki az API szolgáltatót a generáláshoz'
+            },
+
+            url: {
+                label: 'Szerver cím',
+                placeholder: 'https://api.example.com:443',
+                tooltip: 'A szerver címe'
+            },
+
             apiKey: {
                 label: 'OpenAI API kulcs',
                 placeholder: 'Az OpenAI API kulcs',
                 tooltip: 'Az OpenAI API kulcs. Az OpenAI dashboard-on található.'
-            },
+            }
+        },
+    
+        text: {
+            label: 'Szöveg generálás',
+            tooltip: 'Szöveg generálás beállításai',
+
+
             model: {
                 label: 'OpenAI modell',
                 tooltip: 'Az OpenAI modell, amelyet a válasz generálásához használunk.'
@@ -114,6 +147,23 @@ export default {
                 label: 'Hőmérséklet',
                 tooltip: 'A hőmérséklet a szövegben található véletlenszerűség mértéke. Az alacsonyabb értékek előrejelezhetőbb szöveget eredményeznek, míg a magasabb értékek meglepőbb szöveget eredményeznek.'
             },
+
+            personas: {
+                label: 'Personas',
+                caption: 'Válaszd ki az AI asszisztens personáit',
+                tooltip: 'Válaszd ki az AI asszisztens personáit'
+            },
+                teamWork: {
+                label: 'Csapatmunka',
+                caption: 'Aktiváld a csapatmunkát',
+                tooltip: 'Aktiváld a csapatmunkát. Amikor aktiválva van, a kérdésre az első persona válaszol, a választ a következő kapja mint kérdés, és így tovább. Amikor inaktív, minden persona egyéni választ ad a kérdésre.'
+            },    
+        },
+
+        image: {
+            label: 'Kép generálás',
+            tooltip: 'Kép generálás beállításai',
+
             choices: {
                 label: 'Képek száma',
                 tooltip: 'Generálandó képek száma.'
@@ -132,11 +182,6 @@ export default {
                 vivid: 'Élénk',
                 natural: 'Természetes',
             }
-        },
-        persona: {
-            label: 'Personas',
-            caption: 'Válaszd ki az AI asszisztens personáit',
-            tooltip: 'Válaszd ki az AI asszisztens personáit'
         },
     },
 
@@ -278,7 +323,7 @@ export default {
             search: {
                 placeholder: 'Keresés...'
             }
-       },
+        },
         tableHeading: {
             name: 'Név',
             prompt: 'Rendszerüzenet'
@@ -306,7 +351,7 @@ export default {
             message: 'A szerver hibát észlelt a kérés feldolgozása során.',
             caption: 'Kérjük, próbálja újra rövid várakozás után, és lépjen velünk kapcsolatba, ha a probléma továbbra is fennáll.'
         },
-        '503' : {
+        '503': {
             message: 'A szerver jelenleg nem elérhető.',
             caption: 'Kérjük, próbálja újra rövid várakozás után.'
         },
