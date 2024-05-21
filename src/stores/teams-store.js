@@ -135,14 +135,19 @@ export const useTeamsStore = defineStore('teams', () => {
     // Getters
     // ---------------------------------------------------------------------------------------------
 
-    // Get message from timestamp
+    // Returns message from timestamp and role
     function getMessage(timestamp, role) {
         return messages.value.filter(message => message.timestamp == timestamp && message.role == role)[0];
     }
 
-    // Get messages from a conversation
+    // Returns conversation as a JSON object
     function getConversation(id) {
         return messages.value.filter(message => message.conversationId == id);
+    }
+
+    // Returns the conversations metadata, such as title, created date, etc.
+    function getConversationInfo(id) {
+        return history.value.filter(conversation => conversation.conversationId == id)[0];
     }
 
     function getConversationIds() {
@@ -204,8 +209,7 @@ export const useTeamsStore = defineStore('teams', () => {
     }
 
     function getPersonaFromConversation(personaId, conversationId) {
-        let personas = getPersonasFromConversation(conversationId);
-        return personas.filter(persona => persona.id == personaId)[0];
+        return getPersonasFromConversation(conversationId).filter(persona => persona.id == personaId)[0];
     }
 
     return {
@@ -238,6 +242,7 @@ export const useTeamsStore = defineStore('teams', () => {
 
         // Getters
         getConversation,
+        getConversationInfo,
         getMessage,
         getOrphanedMessages,
         getSettingsFromLastMessage,

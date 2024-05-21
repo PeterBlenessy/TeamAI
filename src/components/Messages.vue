@@ -57,14 +57,14 @@
 
                                                 <!-- Image actions -->
                                                 <q-card-actions vertical class="justify-around">
-                                                    <q-btn size="sm" flat dense round icon="mdi-export-variant"
+                                                    <q-btn size="sm" flat dense padding="xs" icon="mdi-export-variant"
                                                         :color="iconColor" @click="shareMessage(item, message.object)">
                                                         <q-tooltip :delay="750" transition-show="scale"
                                                             transition-hide="scale">
                                                             {{ $t("messages.tooltip.share") }}
                                                         </q-tooltip>
                                                     </q-btn>
-                                                    <q-btn size="sm" flat dense round icon="mdi-delete-outline"
+                                                    <q-btn size="sm" flat dense padding="xs" icon="mdi-delete-outline"
                                                         :color="iconColor"
                                                         @click="deleteChoice(message.timestamp, message.role, item.index)">
                                                         <q-tooltip :delay="750" transition-show="scale"

@@ -139,7 +139,8 @@
                 clickable>
 
                 <q-toggle v-model="isTeamWorkActivated" flat dense left-label size="md"
-                    :label="t('settings.text.teamWork.label')" unchecked-icon="mdi-account" checked-icon="mdi-account-group">
+                    :label="t('settings.text.teamWork.label')" unchecked-icon="mdi-account"
+                    checked-icon="mdi-account-group">
                     <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                         {{ t('settings.text.teamWork.tooltip') }}
                     </q-tooltip>
@@ -147,9 +148,19 @@
 
             </q-chip>
 
+            <q-chip>
+                <q-toggle v-model="conversationMode" flat dense size="md" unchecked-icon="mdi-message-outline"
+                    checked-icon="mdi-forum-outline" />
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.general.conversationMode.tooltip') }}
+                </q-tooltip>
+            </q-chip>
+
             <q-separator v-if="appMode == 'advanced' && !isCreateImageSelected" vertical inset class="q-ma-sm" />
+
             <q-space />
-            <!-- Clear messages button -->
+
+            <!-- Action buttons: Copy, Share, Delete -->
             <q-btn flat dense padding="xs" size="sm" icon="mdi-content-copy" clickable
                 @click="copyConversation(conversationId)">
                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
@@ -183,6 +194,7 @@ import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import openaiConfig from '../services/openai.config.json';
+import { exportConversation } from '../services/helpers.js';
 
 export default {
     name: "QuickSettings",
@@ -269,9 +281,9 @@ export default {
             personaFilterFn,
             conversationId,
 
-            copyConversation: (id) => navigator.clipboard.writeText(JSON.stringify(teamsStore.getConversation(id))),
+            copyConversation: (id) => navigator.clipboard.writeText(exportConversation(id)),
             deleteConversation: (id) => teamsStore.deleteConversation(id),
-            shareConversation: (id) => { try { navigator.share({ text: JSON.stringify(teamsStore.getConversation(id)) }) } catch (e) { } },
+            shareConversation: (id) => { try { navigator.share({ text: exportConversation(id) }) } catch (e) { } },
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

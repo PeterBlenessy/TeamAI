@@ -84,8 +84,9 @@
 import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { exportConversation } from '../services/helpers.js';
 
 export default {
     name: 'History',
@@ -160,9 +161,9 @@ export default {
         return {
             t,
             showConversation: (id) => conversationId.value = id,
-            copyConversation: (id) => navigator.clipboard.writeText(JSON.stringify(teamsStore.getConversation(id))),
+            copyConversation: (id) => navigator.clipboard.writeText(exportConversation(id)),
             deleteConversation: (id) => teamsStore.deleteConversation(id),
-            shareConversation: (id) => { try { navigator.share({ text: JSON.stringify(teamsStore.getConversation(id)) }) } catch (e) {} },
+            shareConversation: (id) => { try { navigator.share({ text: exportConversation(id) }) } catch (e) { } },
             conversationId,
             history,
             groupedHistory,

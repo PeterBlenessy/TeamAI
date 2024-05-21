@@ -30,6 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.8.0 - 2024-05-21
+- Added conversation mode toggle to QuickSettings.
+- Changed conversation copy/share to export text instead of a JSON object.
+- Changed image action button highlights to square.
+- Updated tauri GitHub Actions script to latest, to fix missing builds for x86_64-apple-darwin.
 
 ## v1.7.0 - 2024-05-20
 - Added copy, share, and delete actions to QuickSettings.

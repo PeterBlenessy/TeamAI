@@ -12,49 +12,52 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        settings:
-            - platform: 'macos-latest'
+        include:
+            - platform: 'macos-latest' # for Arm based macs (M1 and above).
               args: '--target x86_64-apple-darwin'
-            - platform: 'macos-latest'
+            - platform: 'macos-latest' # for Intel based macs.
               args: '--target aarch64-apple-darwin'
-            - platform: 'ubuntu-20.04'
+            - platform: 'ubuntu-20.04' # for Tauri v2 you could replace this with ubuntu-22.04.
               args: ''
             - platform: 'windows-latest'
               args: ''
 
-    runs-on: ${{ matrix.settings.platform }}
+    runs-on: ${{ matrix.platform }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+#          cache: 'yarn' # Set this to npm, yarn or pnpm.
+
+      - name: Install Rust stable
+          uses: dtolnay/rust-toolchain@stable
+          with:
+            # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+            targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+    #   - name: Rust cache
+    #     uses: swatinem/rust-cache@v2
+    #     with:
+    #       workspaces: './src-tauri -> target'
 
       - name: Install dependencies (ubuntu only)
-        if: matrix.settings.platform == 'ubuntu-20.04'
-        # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
+        # This must match the platform value defined above.
+        if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+        # webkitgtk 4.0 is for Tauri v1 - webkitgtk 4.1 is for Tauri v2.
+        # You can remove libappindicator3-dev if you don't use the system tray feature.
 
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
-        if: matrix.settings.platform == 'macos-latest'
-        with:
-            targets: aarch64-apple-darwin
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: yarn install # Change this to npm, yarn or pnpm.
+        run: yarn install # Change this to npm, yarn, pnpm or bun depending on which one you use.
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
@@ -77,4 +80,4 @@ jobs:
           releaseBody: ${{ github.event.head_commit.message }}
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.settings.args }}
+          args: ${{ matrix.args }}
