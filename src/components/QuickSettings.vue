@@ -85,7 +85,7 @@
 
             <!-- Image style toggle -->
             <q-chip v-if="isCreateImageSelected" icon="mdi-palette-outline"
-                :label="imageStyle == 'vivid' ? t('settings.openAI.style.vivid') : t('settings.openAI.style.natural')"
+                :label="imageStyle == 'vivid' ? t('settings.image.style.vivid') : t('settings.image.style.natural')"
                 size="sm" clickable @click="imageStyle = imageStyle == 'vivid' ? 'natural' : 'vivid'">
                 <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.image.style.label') }}
@@ -182,6 +182,12 @@
                 </q-tooltip>
             </q-btn>
 
+            <q-btn dense flat padding="xs" size="sm" icon="mdi-information-outline" clickable
+                @click="showConversationInfo(conversationId)">
+                <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
+                    {{ $t('quickSettings.info.tooltip') }}
+                </q-tooltip>
+            </q-btn>
         </q-toolbar>
     </div>
 </template>
@@ -195,6 +201,7 @@ import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import openaiConfig from '../services/openai.config.json';
 import { exportConversation } from '../services/helpers.js';
+import logger from '../services/logger';
 
 export default {
     name: "QuickSettings",
@@ -219,7 +226,7 @@ export default {
         } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
-        const { conversationId, isCreateImageSelected, isTeamWorkActivated } = storeToRefs(teamsStore);
+        const { conversationId, isCreateImageSelected, isTeamWorkActivated, messages } = storeToRefs(teamsStore);
         const personaOptions = ref(teamsStore.personas);
 
         // Filters personas based on input characters in the select box
@@ -257,6 +264,37 @@ export default {
             imageStyle.value = imageStyleOptions[imageStyleValue.value];
         });
 
+
+        // Show message info
+        const showConversationInfo = (id) => {
+        
+            
+            let totalTokens = messages.value
+                .filter((message) => message.conversationId == conversationId.value)
+                .reduce((sum, message) => {
+                    return sum + (message?.usage?.total_tokens || 0);
+                }, 0);
+
+            let info = `
+                <div class="text-subtitle1">${t('quickSettings.info.usage')}</div>
+                <div class="text-caption"><pre>${totalTokens}</pre></div>
+            `;
+
+            $q.dialog({
+                title: t('quickSettings.info.title'),
+                message: info,
+                html: true,
+                cancel: false,
+                persistent: false,
+                ok: {
+                    label: 'Ok',
+                    color: 'primary',
+                    flat: true
+                }
+            });
+        };
+
+
         return {
             t,
             speechLanguage,
@@ -281,9 +319,10 @@ export default {
             personaFilterFn,
             conversationId,
 
-            copyConversation: (id) => navigator.clipboard.writeText(exportConversation(id)),
+            copyConversation: (id) => navigator.clipboard.writeText(exportConversation(id)).then(logger.log("Copied to clipboard")).catch(e => logger.error(e)),
             deleteConversation: (id) => teamsStore.deleteConversation(id),
-            shareConversation: (id) => { try { navigator.share({ text: exportConversation(id) }) } catch (e) { } },
+            shareConversation: (id) => navigator.share({ text: exportConversation(id) }).then().catch(e => logger.error(e)),
+            showConversationInfo,
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
         }

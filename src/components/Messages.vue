@@ -84,7 +84,9 @@
 
                     <!-- User messages and text completions do not support multiple choices and are stored as 'content'.  -->
                     <div v-else>
-                        <q-markdown :id="'content-'+message.timestamp" no-heading-anchor-links :src="message.content" :plugins="mdPlugins" />
+                        <!-- <q-markdown :id="'content-'+message.timestamp" no-heading-anchor-links :src="message.content" :plugins="mdPlugins" /> -->
+                        <div :id="'content-' + message.timestamp" v-html="markdown.render(message.content)"
+                            class="md-body"></div>
                     </div>
                 </q-item-section>
 
@@ -126,8 +128,8 @@
                                     </template>
 
                                     <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
-                                        {{ readingMessage == message.timestamp ? $t("messages.tooltip.stop")
-                                            : $t("messages.tooltip.speak") }}
+                                        {{ readingMessage == message.timestamp ? $t("messages.tooltip.stop") :
+        $t("messages.tooltip.speak") }}
                                     </q-tooltip>
                                 </q-btn>
                                 <q-btn v-if="message.role != 'user'" size="sm" flat dense icon="mdi-information-outline"
@@ -157,8 +159,6 @@
 import { useTeamsStore } from "../stores/teams-store.js";
 import { useSettingsStore } from "../stores/settings-store.js";
 import { storeToRefs } from "pinia";
-import { QMarkdown } from "@quasar/quasar-ui-qmarkdown";
-import "@quasar/quasar-ui-qmarkdown/dist/index.css";
 import { useQuasar } from "quasar";
 import { computed, ref, watch } from "vue";
 import { scroll } from "quasar";
@@ -166,12 +166,11 @@ import { useI18n } from 'vue-i18n';
 import { imageDB } from "../services/localforage";
 import openaiConfig from '../services/openai.config.json';
 import logger from '../services/logger.js';
+import { useMarkdown } from '../composables/markdown.js'
 
 export default {
     name: "Messages",
-    components: {
-        QMarkdown,
-    },
+    components: {},
     setup() {
         const $q = useQuasar();
         const { t } = useI18n();
@@ -179,6 +178,8 @@ export default {
         const { loading, conversationId, messages } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
         const { chatDirection, speechLanguage, userAvatar } = storeToRefs(settingsStore);
+
+        const markdown = useMarkdown();
 
         // Page should scroll to end (latest message), only when new messages are added.
         let shouldScroll = true;
@@ -275,11 +276,9 @@ export default {
             const blob = new Blob([content], { type });
             const data = [new ClipboardItem({ [type]: blob })];
 
-            try {
-                await navigator.clipboard.write(data);
-            } catch (error) {
-                logger.log(error);
-            }
+            navigator.clipboard.write(data)
+                .then(() => logger.log('Copied to clipboard'))
+                .catch((error) => logger.log(error));
         };
 
         // Share message content via 'navigator.share', the native sharing mechanism
@@ -291,7 +290,7 @@ export default {
                         : { text: await getContent(message) }
                 );
             } catch (error) {
-                logger.log(error);
+                logger.error(error);
             }
         };
 
@@ -372,8 +371,8 @@ export default {
             if ('settings' in message) {
                 // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
                 persona = 'persona' in message.settings
-                        ? teamsStore.getPersona(message.settings.persona.id)
-                        : null;
+                    ? teamsStore.getPersona(message.settings.persona.id)
+                    : null;
 
                 if (persona && 'avatar' in persona) {
                     return persona.avatar;
@@ -387,15 +386,15 @@ export default {
 
             if ('settings' in message) {
                 // Note: handle persona == null. A persona is set on message, but has been deleted from personas array
-                persona = 'persona' in message.settings 
-                        ? teamsStore.getPersona(message.settings.persona.id) 
-                        : null;
+                persona = 'persona' in message.settings
+                    ? teamsStore.getPersona(message.settings.persona.id)
+                    : null;
 
                 return (persona && 'name' in persona)
                     ? persona.name
                     : 'model' in message.settings
-                    ? message.settings.model.toUpperCase()
-                    : null;
+                        ? message.settings.model.toUpperCase()
+                        : null;
             }
             return null;
         }
@@ -411,6 +410,7 @@ export default {
             getBgColor,
             iconColor: computed(() => ($q.dark.isActive ? "grey-4" : "grey-8")),
             loading,
+            markdown,
             mdPlugins: [],
             hasChoices,
             copyMessage,
@@ -455,11 +455,5 @@ export default {
 .message-card {
     padding-bottom: 10px;
     padding-top: 10px;
-}
-
-/* Markdown div styling */
-.q-markdown {
-    padding-left: 50px;
-    padding-right: 50px;
 }
 </style>

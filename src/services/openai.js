@@ -14,12 +14,20 @@ const openAI = () => {
             'Authorization': 'Bearer ' + apiKey.value,
         };
 
+        const streamOptions = !stream ? {} :
+            {
+                "stream": stream,
+                "stream_options": {
+                    "include_usage": true
+                },
+            };
+
         const body = {
             "model": model.value,
             "messages": messages,
             "max_tokens": maxTokens.value,
             "temperature": temperature.value,
-            "stream": stream,
+            ...streamOptions,
             "n": 1
         };
 

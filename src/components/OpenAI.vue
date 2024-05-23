@@ -9,12 +9,7 @@ import { storeToRefs } from 'pinia';
 import OpenAI from '../services/openai.js';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import MarkdownIt from "markdown-it";
-import hljs from 'highlight.js/lib/common';
-
-//import 'highlight.js/styles/devibeans.css';
-import 'highlight.js/styles/github-dark.css';
-//import 'highlight.js/styles/base16/google-dark.css';
+import { useMarkdown } from '../composables/markdown.js'
 
 import logger from '../services/logger.js';
 
@@ -29,6 +24,8 @@ export default {
 
         const settingsStore = useSettingsStore();
         const { conversationMode, maxTokens, model, personas, speechLanguage, streamResponse, temperature, } = storeToRefs(settingsStore);
+
+        const markdown = useMarkdown();
 
         const openAI = OpenAI();
 
@@ -47,13 +44,6 @@ export default {
         }
 
         // -----------------------------------------------------------------------------------------
-        // Returns an array of the messages of a specific conversation
-        // -----------------------------------------------------------------------------------------
-        const getConversation = (id) => {
-            return history.value.filter(item => item.conversationId == id);
-        }
-
-        // -----------------------------------------------------------------------------------------
         // Returns the index of a specific conversation
         // -----------------------------------------------------------------------------------------
         const getConversationIndex = (id) => {
@@ -68,7 +58,7 @@ export default {
                 let response = await openAI.createChatCompletion([
                     { "role": "user", "content": t('prompts.generateTitle') },
                     [...getMessages(id)][0]
-                ], false);
+                ], false, null);
                 const json = await response.json();
                 if (json.errorCode) throw new Error(`${data.errorCode}`);
                 // Remove (occasional) optionally escaped leading and trailing apostrophes
@@ -110,7 +100,7 @@ export default {
         // -----------------------------------------------------------------------------------------
         // Watch if user aborts response and call abortController abort function
         // -----------------------------------------------------------------------------------------
-        watch (abortRequest, () => {
+        watch(abortRequest, () => {
             try {
                 if (abortRequest.value) {
                     logger.log('Aborting generation');
@@ -176,10 +166,10 @@ export default {
                             if (json.errorCode) throw new Error(`${data.errorCode}`);
 
                             // Add parameters from chat.completion message
-                            assistantMessage.role = json.choices[0].message.role,
-                                assistantMessage.content = json.choices[0].message.content,
-                                assistantMessage.object = json.object,
-                                assistantMessage.usage = json.usage;
+                            assistantMessage.role = json.choices[0].message.role;
+                            assistantMessage.content = json.choices[0].message.content;
+                            assistantMessage.object = json.object;
+                            assistantMessage.usage = json.usage;
                         }
                     }
 
@@ -195,25 +185,6 @@ export default {
 
                     // Wait for Vue to update the DOM and make the new message element available, before continuing
                     await nextTick();
-                    let md = new MarkdownIt({
-                        html: true, // Enable HTML tags in source
-                        xhtmlOut: true, // Use '/' to close single tags (<br />).
-                        breaks: true, // Convert '\n' in paragraphs into <br>
-                        linkify: true, // Autoconvert URL-like text to links
-                        typographer: true, // Enable some language-neutral replacement + quotes beautification
-                        quotes: '“”‘’',
-                        highlight: function (str, lang) {
-                            if (lang && hljs.getLanguage(lang)) {
-                                try {
-                                    return '<pre class="hljs"><code>' +
-                                        hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
-                                        '</code></pre>';
-                                } catch (__) { }
-                            }
-
-                            return '';
-                        }
-                    });
 
                     // Handle the streamed response, i.e. the response is streamed in chunks
                     if (streamResponse.value) {
@@ -231,6 +202,8 @@ export default {
 
                         try {
                             while (true) {
+                                let usage = null;
+
                                 const { done, value } = await reader.read();
                                 if (done) break;
 
@@ -244,16 +217,21 @@ export default {
                                         dataDone = true;
                                         return;
                                     }
-                                    const chunk = JSON.parse(line.substring(6)); // Skip 'data: '
-                                    const { choices } = chunk;
-                                    const { delta } = choices[0]; // we have only one choice, 'n' is always 1
-                                    const { role, content } = delta;
 
+                                    const chunk = JSON.parse(line.substring(6)); // Skip 'data: '
+                                    usage = "usage" in chunk ? chunk.usage : null;
+
+                                    const { choices } = chunk;
+                                    const { delta } = choices?.[0] || ''; // we have only one choice, 'n' is always 1
+                                    const role = delta?.role || '';
+                                    const content = delta?.content || '';
+                                    
                                     if (role) lastMessage.role = role;
+                                    if (usage) lastMessage.usage = usage;
                                     // Save recieved content; will add it to last message's content when all chunks are recieved
                                     if (content) messageContent += content;
                                     // Render recieved content as markdown
-                                    if (contentElement && content) contentElement.innerHTML = md.render(messageContent);
+                                    if (contentElement && content) contentElement.innerHTML = markdown.render(messageContent);
                                 });
 
                                 assistantMessage.object = 'chat.completion';
@@ -300,13 +278,14 @@ export default {
                     }
 
                 } catch (error) {
+                    logger.error(error);
                     let message = ''
                     let caption = ''
 
                     if (error.response) {
                         message = error.response.status;
                         caption = error.response.data;
-                    } else { 
+                    } else {
 
                         // Check if user aborted the request
                         if (error.message == 'AbortError: Fetch is aborted') {
@@ -317,7 +296,7 @@ export default {
                         const path = 'apiErrors.' + error.message.split(' ')[0];
 
                         // Check if error message is defined in i18n language files
-                        try { 
+                        try {
                             message = t(path + '.message');
                             caption = t(path + '.caption');
                         } catch (error) {

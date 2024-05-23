@@ -53,6 +53,12 @@ export default {
         delete: {
             tooltip: 'Ta bort'
         },
+        info: {
+            tooltip:'Info',
+            title: 'Konversationsinfo',
+            usage: 'Token användning',
+        },
+
     },
 
     settings: {

@@ -1,3 +1,4 @@
+
 # Changelog
 All notable changes to this project will be documented in this file.
 
@@ -23,12 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [KNOWN-BUGS]
 - ResizeObserver loop completed with undelivered notifications. 
   https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
-- Notarization errors when updating outdated dependencies. Debug by initiating notarization locally.
 - Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
-- When streaming the response, token usage has to be calculated manually since it's not available in the chunks. Check out: https://github.com/dqbd/tiktoken
 - When removing a persona; should check if it is used in messages and alert user.
 
 ## [UNRELEASED]
+
+## v1.9.0 - 2024-05-23
+- Removed QMarkdown component using Prism.js.
+- Added markdown-it composable with highlight.js as code highlighter.
+- Added copy button to code blocks.
+- Changed streaming response handler to use the markdown-it composable.
+- Added then().catch() to copy/share conversation.
+- Added support for getting token usage from streamed responses.
+- Added info button to QuickSettings to show token usage.
+- Fixed text reference for image style vivid.
+- Fixed an issue where conversation title was not generated when streamed response was active.
 
 ## v1.8.0 - 2024-05-21
 - Added conversation mode toggle to QuickSettings.

@@ -49,7 +49,13 @@ export default {
         },
         delete: {
             tooltip:'Töröl'
-        }
+        },
+        info: {
+            tooltip: 'Infó',
+            title: 'Üzenet információk',
+            usage: 'Token használat',
+        },
+
     },
 
     settings: {
