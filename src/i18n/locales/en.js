@@ -118,15 +118,55 @@ export default {
             },        
         },
 
+        provider: {
+            label: 'API provider',
+            description: 'Select the API provider to use for generation or create a new one.',
+            caption: 'Select the API provider to use for generation',
+            tooltip: 'Select the API provider to use for generation',
+
+            new: {
+                buttonLabel: 'Add new',
+                label: 'Add new API provider',
+                caption: 'Fill in the below information for the new API provider',
+                tooltip: 'Create a new API provider'
+            },
+            edit: {
+                buttonLabel: 'Edit',
+                label: 'Edit the selected API provider',
+                caption: 'Update the API provider information',
+                tooltip: 'Edit the selected API provider'
+            },
+            delete: {
+                buttonLabel: 'Delete',
+                label: 'Delete API provider',
+                caption: 'Delete the selected API provider',
+                tooltip: 'Delete the selected API provider'
+            },
+            name: {
+                label: 'Name',
+                placeholder: 'The name of the API provider',
+                tooltip: 'Select the API provider to use for generation'
+            },
+            baseUrl: {
+                label: 'Base URL of the API',
+                placeholder: 'The API providers URL',
+                tooltip: 'The API provider URL'
+            },
+            apiType: {
+                label: 'API type',
+                caption: 'Only OpenAI-like APIs are supported right now',
+                tooltip: 'Select the type of the API provider'
+            },
+            apiKey: {
+                label: 'API key',
+                placeholder: 'Secret API key',
+                tooltip: 'Your secret API key.'
+            }
+        },
+
         api: {
             label: 'API Provider',
             tooltip: 'API Provider settings',
-
-            provider: {
-                label: 'API provider',
-                caption: 'Select the API provider to use for generation',
-                tooltip: 'Select the API provider to use for generation'
-            },
 
             url: {
                 label: 'Server address',
@@ -134,11 +174,6 @@ export default {
                 tooltip: 'The address of the server'
             },
 
-            apiKey: {
-                label: 'OpenAI API key',
-                placeholder: 'Your OpenAI API key',
-                tooltip: 'Your OpenAI API key. You can find it in your OpenAI dashboard.'
-            }
         },
 
         text: {

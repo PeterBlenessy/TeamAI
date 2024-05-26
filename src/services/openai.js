@@ -2,16 +2,17 @@ import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
 import { imageDB } from './localforage.js';
 import logger from './logger.js';
+import providersConfig from '../services/providers.config.json';
 
 const openAI = () => {
     const settingsStore = useSettingsStore()
-    const { apiKey, model, maxTokens, temperature, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
+    const { apiKey, apiProviders, model, maxTokens, temperature, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
 
     // Private function. Sets the fetch init options.
-    const setOptions = (messages, stream, abortSignal) => {
+    const setOptions = (modelProvider, messages, stream, abortSignal) => {
         const headers = {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + apiKey.value,
+            'Authorization': 'Bearer ' + modelProvider.apiKey,
         };
 
         const streamOptions = !stream ? {} :
@@ -43,13 +44,15 @@ const openAI = () => {
 
     // Public function. Creates a chat completion.
     const createChatCompletion = async (messages, stream, abortSignal) => {
+        // const modelProvider = providersConfig.find(provider => provider.models.includes(model.value));
+        const modelProvider = apiProviders.value.find(provider => provider.models.includes(model.value));
+
         // Clean up any undefined elements in the messages array, to avoid failed OpenAI API call.
         messages = messages.filter(message => message !== undefined);
-
-        const requestOptions = setOptions(messages, stream, abortSignal);
+        const requestOptions = setOptions(modelProvider, messages, stream, abortSignal);
 
         try {
-            const response = await fetch("https://api.openai.com/v1/chat/completions", requestOptions);
+            const response = await fetch(`${modelProvider.baseUrl}/chat/completions`, requestOptions);
             if (!response.ok) throw new Error(`${response.status} - ${response.statusText}`);
 
             return response;
@@ -61,14 +64,18 @@ const openAI = () => {
 
     // Public function. Creates an image given a user prompt.
     const createImageCompletion = async (prompt) => {
+        const imageModel = "dall-e-3";
+        const modelProviderName = providersConfig.find(provider => provider.imageModels.includes(imageModel)).name;
+        const modelProvider = apiProviders.value.find(provider => provider.name === modelProviderName);
+
         const requestOptions = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + apiKey.value
+                'Authorization': 'Bearer ' + modelProvider.apiKey
             },
             body: JSON.stringify({
-                "model": "dall-e-3",
+                "model": imageModel,
                 "prompt": prompt,
                 "size": imageSize.value,
                 "quality": imageQuality.value,

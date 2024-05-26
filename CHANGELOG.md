@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.10.0 - 2024-05-26
+- Added support for local LLMs using Ollama and OpenAI API-format.
+
 ## v1.9.0 - 2024-05-23
 - Removed QMarkdown component using Prism.js.
 - Added markdown-it composable with highlight.js as code highlighter.

@@ -1,5 +1,5 @@
 <template>
-    <div v-for="message in filteredMessages" :key="message.timestamp" scroll>
+    <div v-for="message in filteredMessages" :key="message.timestamp" scroll @mouseover="hoveredTimestamp = message.timestamp" @mouseleave="hoveredTimestamp = ''">
         <q-card flat square :class="'message-card ' + getBgColor(message.role)">
             <q-item top dense>
 
@@ -91,8 +91,8 @@
                 </q-item-section>
 
                 <!-- Message actions -->
-                <q-item-section side top>
-                    <div class="q-gutter-xs">
+                <q-item-section side top style="width: 100px; min-height: 55px">
+                    <div class="q-gutter-xs" v-if="hoveredTimestamp == message.timestamp">
                         <div class="column items-end">
                             <div class="col">
                                 <q-btn v-if="message.object != 'image'" size="sm" flat dense icon="mdi-content-copy"
@@ -410,6 +410,7 @@ export default {
             getBgColor,
             iconColor: computed(() => ($q.dark.isActive ? "grey-4" : "grey-8")),
             loading,
+            hoveredTimestamp: ref(''),
             markdown,
             mdPlugins: [],
             hasChoices,

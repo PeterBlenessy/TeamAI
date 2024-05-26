@@ -193,13 +193,14 @@
 </template>
 <script>
 
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import openaiConfig from '../services/openai.config.json';
+import providersConfig from '../services/providers.config.json';
 import { exportConversation } from '../services/helpers.js';
 import logger from '../services/logger';
 
@@ -213,6 +214,7 @@ export default {
         const {
             appMode,
             conversationMode,
+            apiProviders,
             model,
             maxTokens,
             temperature,
@@ -242,8 +244,10 @@ export default {
             });
         }
 
-        // Load OpenAI model options
-        const modelOptions = openaiConfig.gptModels;
+        // Array of all models from available providers to use in select options
+        const modelOptions = providersConfig.map(provider => provider.models).flat();
+
+        // Load OpenAI API format parameters
         const imageSizeOptions = openaiConfig.imageSizeOptions;
         const imageQualityOptions = openaiConfig.imageQualityOptions;
         const imageStyleOptions = openaiConfig.imageStyleOptions;

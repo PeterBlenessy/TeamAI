@@ -1,0 +1,28 @@
+[
+    {
+        "name": "OpenAI",
+        "baseUrl": "https://api.openai.com/v1",
+        "apiKey": "",
+        "apiFormat": ["OpenAI"],
+        "models": [
+            "gpt-4o",
+            "gpt-4.5-turbo",
+            "gpt-3.5-turbo"
+        ],
+        "defaultTextModel": "gpt-4o",
+        "imageModels": [
+            "dall-e-2",
+            "dall-e-3"
+        ],
+        "deletable": false
+    },
+    {
+        "name": "Ollama - localhost",
+        "baseUrl": "http://localhost:11434/v1",
+        "apiKey": "ollama",
+        "apiFormat": ["OpenAI"],
+        "models": ["llama2", "llama3", "mistral", "phi3"],
+        "defaultTextModel": "mistral",
+        "deletable": false
+    }
+]

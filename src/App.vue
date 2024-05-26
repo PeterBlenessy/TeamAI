@@ -183,15 +183,20 @@ export default {
 
 
         // Check if database upgrade is needed
-        onBeforeMount(() => {
+        onBeforeMount( async () => {
             isDBUpgraded.value = false;
-        });
-
-        onMounted(async () => {
             if (await dbUpgrader.isUpgradeNeed()) {
                 dbUpgrader.upgrade();
             }
             isDBUpgraded.value = true;
+
+        });
+
+        onMounted(async () => {
+            // if (await dbUpgrader.isUpgradeNeed()) {
+            //     dbUpgrader.upgrade();
+            // }
+            // isDBUpgraded.value = true;
         });
 
         // Set application locale to the one selected by the user and stored in the settings store.

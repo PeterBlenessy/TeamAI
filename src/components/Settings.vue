@@ -1,5 +1,5 @@
 <template>
-    <q-card style="min-width: 50%; max-width: 60%">
+    <q-card style="width: 70%">
         <q-card-section>
             <q-item>
                 <q-item-section top>
@@ -199,41 +199,7 @@
 
                 <!-- API Provider settings -->
                 <q-tab-panel name="api">
-                    <q-list>
-
-                        <q-item>
-                            <q-item-section avatar>
-                                <q-icon name="mdi-web" :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label>{{ t('settings.api.provider.label') }}</q-item-label>
-                                <q-item-label caption>{{ t('settings.api.provider.caption') }}</q-item-label>
-                            </q-item-section>
-                            <q-item-section side>
-                                <q-select v-model="apiProvider" :options="apiProviderOptions" dense options-dense />
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.api.provider.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item>
-                            <q-item-section avatar>
-                                <q-icon name="mdi-key" :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-input :model-value="apiKey" @change="val => { apiKey = val }"
-                                    :label="t('settings.api.apiKey.label')"
-                                    :placeholder="t('settings.api.apiKey.placeholder')" dense />
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.api.apiKey.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                    </q-list>
+                    <ProviderSettings />
                 </q-tab-panel>
 
                 <!-- Text generation settings -->
@@ -432,9 +398,13 @@ import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import openaiConfig from '../services/openai.config.json';
+import ProviderSettings from "./ProviderSettings.vue";
 
 export default {
     name: "AppSettings",
+    components: {
+        ProviderSettings
+    },
 
     setup() {
         const $q = useQuasar();
@@ -445,8 +415,7 @@ export default {
             darkMode,
             conversationMode,
             chatDirection,
-            apiProvider,
-            apiKey,
+            apiProviders,
             model,
             maxTokens,
             temperature,
@@ -476,9 +445,10 @@ export default {
             });
         }
 
-        // Load OpenAI model options
-        const apiProviderOptions = openaiConfig.apiProviders;
-        const modelOptions = openaiConfig.gptModels;
+        // Array of all models from available providers to use in select options
+        const modelOptions = apiProviders.value.map(provider => provider.models).flat();
+
+        // Load OpenAI API format parameters
         const imageSizeOptions = openaiConfig.imageSizeOptions;
         const imageQualityOptions = openaiConfig.imageQualityOptions;
         const imageStyleOptions = openaiConfig.imageStyleOptions;
@@ -526,9 +496,6 @@ export default {
             darkMode,
             conversationMode,
             chatDirection,
-            apiProvider,
-            apiProviderOptions,
-            apiKey,
             model,
             modelOptions,
             maxTokens,

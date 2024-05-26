@@ -16,11 +16,12 @@ export const useSettingsStore = defineStore('settings', () => {
         streamResponse: ref(true),
 
         // API settings
-        apiProvider: ref('OpenAI'),     // OpenAI | Ollama | Custom
+        apiProviders: ref([]),
+        defaultProvider: ref('OpenAI'),     // OpenAI | Ollama | Custom
         apiKey: ref(''),
 
         // Chat completion settings
-        model: ref('gpt-4-1106-preview'),
+        model: ref('gpt-4o'),
         maxTokens: ref(4096),
         temperature: ref(0.2),
 
