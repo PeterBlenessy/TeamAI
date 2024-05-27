@@ -115,6 +115,53 @@ export default {
             },
         },
 
+        provider: {
+            label: 'API-leverantör',
+            description: 'Välj den API-leverantör som ska användas för generering eller skapa en ny.',
+            caption: 'Välj den API-leverantör som ska användas för generering',
+            tooltip: 'Välj den API-leverantör som ska användas för generering',
+        
+            new: {
+                buttonLabel: 'Lägg till',
+                label: 'Lägg till ny API-leverantör',
+                caption: 'Fyll i informationen nedan för den nya API-leverantören',
+                tooltip: 'Skapa en ny API-leverantör'
+            },
+            edit: {
+                buttonLabel: 'Redigera',
+                label: 'Redigera den valda API-leverantören',
+                caption: 'Uppdatera API-leverantörens information',
+                tooltip: 'Redigera den valda API-leverantören'
+            },
+            delete: {
+                buttonLabel: 'Radera',
+                label: 'Radera API-leverantör',
+                caption: 'Radera den valda API-leverantören',
+                tooltip: 'Radera den valda API-leverantören'
+            },
+            name: {
+                label: 'Namn',
+                placeholder: 'API-leverantörens namn',
+                tooltip: 'Välj den API-leverantör som ska användas för generering'
+            },
+            baseUrl: {
+                label: 'Bas-URL för API',
+                placeholder: 'API-leverantörens URL',
+                tooltip: 'API-leverantörens URL'
+            },
+            apiType: {
+                label: 'API-typ',
+                caption: 'Endast OpenAI-liknande API:er stöds just nu',
+                tooltip: 'Välj typen av API-leverantör'
+            },
+            apiKey: {
+                label: 'API-nyckel',
+                placeholder: 'Hemlig API-nyckel',
+                tooltip: 'Din hemliga API-nyckel.'
+            }
+        },
+        
+
         api: {
             label: 'API Leverantör',
             tooltip: 'API Leverantör inställningar',

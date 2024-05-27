@@ -212,7 +212,18 @@
                             </q-item-section>
                             <q-item-section>
                                 <q-item-label caption>{{ t('settings.text.model.label') }}</q-item-label>
-                                <q-select v-model="model" :options="modelOptions" dense options-dense />
+                                <q-select v-model="model" :options="modelOptions" emit-value dense options-dense>
+                                    <template v-slot:option="{itemProps, opt}">
+                                        <q-item v-bind="itemProps">
+                                            <q-item-section>
+                                                <q-item-label>{{ opt.label }}</q-item-label>
+                                            </q-item-section>
+                                            <q-item-section side>
+                                                <q-item-label caption>{{ opt.provider }}</q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                    </template>
+                                </q-select>
                                 <q-tooltip :delay="750" max-width="300px" transition-show="scale"
                                     transition-hide="scale">
                                     {{ t('settings.text.model.tooltip') }}
@@ -446,7 +457,17 @@ export default {
         }
 
         // Array of all models from available providers to use in select options
-        const modelOptions = apiProviders.value.map(provider => provider.models).flat();
+        // const modelOptions = apiProviders.value.map(provider => provider.models).flat();
+        // Computed array of { providers, models } to use in select options
+        const modelOptions = computed(() => {
+            return apiProviders.value.map(provider => {
+                return provider.models.map(model => ({
+                    "label": model,
+                    "provider": provider.name,
+                    "value": model
+                }));
+            }).flat()
+        });
 
         // Load OpenAI API format parameters
         const imageSizeOptions = openaiConfig.imageSizeOptions;

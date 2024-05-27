@@ -112,6 +112,52 @@ export default {
                 tooltip: "Streamelt válasz az AI asszisztenstől, az egész válasz generálása helyett."
             },
         },
+
+        provider: {
+            label: 'API szolgáltató',
+            description: 'Válassza ki a generáláshoz használandó API szolgáltatót, vagy hozzon létre egy újat.',
+            caption: 'Válassza ki a generáláshoz használandó API szolgáltatót',
+            tooltip: 'Válassza ki a generáláshoz használandó API szolgáltatót',
+        
+            new: {
+                buttonLabel: 'Hozzáad',
+                label: 'Új API szolgáltató hozzáadása',
+                caption: 'Töltse ki az alábbi információkat az új API szolgáltatóhoz',
+                tooltip: 'Új API szolgáltató létrehozása'
+            },
+            edit: {
+                buttonLabel: 'Editál',
+                label: 'A kiválasztott API szolgáltató szerkesztése',
+                caption: 'Frissítse az API szolgáltató információit',
+                tooltip: 'A kiválasztott API szolgáltató szerkesztése'
+            },
+            delete: {
+                buttonLabel: 'Töröl',
+                label: 'API szolgáltató törlése',
+                caption: 'A kiválasztott API szolgáltató törlése',
+                tooltip: 'A kiválasztott API szolgáltató törlése'
+            },
+            name: {
+                label: 'Név',
+                placeholder: 'Az API szolgáltató neve',
+                tooltip: 'Válassza ki a generáláshoz használandó API szolgáltatót'
+            },
+            baseUrl: {
+                label: 'Az API alap URL-je',
+                placeholder: 'Az API szolgáltató URL-je',
+                tooltip: 'Az API szolgáltató URL-je'
+            },
+            apiType: {
+                label: 'API típus',
+                caption: 'Jelenleg csak az OpenAI-szerű API-k támogatottak',
+                tooltip: 'Válassza ki az API szolgáltató típusát'
+            },
+            apiKey: {
+                label: 'API kulcs',
+                placeholder: 'Az API kulcs',
+                tooltip: 'Az API kulcs'
+            },
+        },
     
         api: {
             label: 'API Szolgáltató',

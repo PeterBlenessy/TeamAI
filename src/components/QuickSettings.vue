@@ -3,12 +3,14 @@
         <q-toolbar>
             <!-- Model name -->
             <q-chip icon="mdi-brain" :label="isCreateImageSelected ? 'DALL·E 3' : model" size="sm" clickable>
-                <q-menu anchor="top left" self="bottom left">
+                <q-menu anchor="top left" self="bottom left" style="max-width: 350px">
                     <q-list dense>
-                        <q-item v-for="item in modelOptions" :key="item" clickable @click="model = item"
-                            :active="model == item">
-                            <q-item-section>
-                                <q-item-label>{{ item }}</q-item-label>
+                        <q-item v-for="(item, index) in modelOptions" :key="index" clickable @click="model = item.model"
+                            :active="model == item.model">
+                            <q-item-section><q-item-label caption>{{ item.model }}</q-item-label>
+                                <q-tooltip :delay="100" transition-show="scale" transition-hide="scale">
+                                    {{ item.provider }}
+                                </q-tooltip>
                             </q-item-section>
                         </q-item>
                     </q-list>
@@ -17,6 +19,7 @@
                     {{ t('settings.text.model.label') }}
                 </q-tooltip>
             </q-chip>
+
 
             <!-- Max tokens selection -->
             <q-chip v-if="!isCreateImageSelected" :label="maxTokens" size="sm" clickable
@@ -193,7 +196,7 @@
 </template>
 <script>
 
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from "pinia";
@@ -244,8 +247,15 @@ export default {
             });
         }
 
-        // Array of all models from available providers to use in select options
-        const modelOptions = providersConfig.map(provider => provider.models).flat();
+        // Computed array of { providers, models } to use in select options
+        const modelOptions = computed(() => {
+            return apiProviders.value.map(provider => {
+                return provider.models.map(model => ({
+                    provider: provider.name,
+                    model: model
+                }));
+            }).flat()
+        });
 
         // Load OpenAI API format parameters
         const imageSizeOptions = openaiConfig.imageSizeOptions;
@@ -271,8 +281,8 @@ export default {
 
         // Show message info
         const showConversationInfo = (id) => {
-        
-            
+
+
             let totalTokens = messages.value
                 .filter((message) => message.conversationId == conversationId.value)
                 .reduce((sum, message) => {

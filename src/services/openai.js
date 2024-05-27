@@ -6,7 +6,7 @@ import providersConfig from '../services/providers.config.json';
 
 const openAI = () => {
     const settingsStore = useSettingsStore()
-    const { apiKey, apiProviders, model, maxTokens, temperature, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
+    const { apiProviders, model, maxTokens, temperature, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
 
     // Private function. Sets the fetch init options.
     const setOptions = (modelProvider, messages, stream, abortSignal) => {
@@ -44,7 +44,6 @@ const openAI = () => {
 
     // Public function. Creates a chat completion.
     const createChatCompletion = async (messages, stream, abortSignal) => {
-        // const modelProvider = providersConfig.find(provider => provider.models.includes(model.value));
         const modelProvider = apiProviders.value.find(provider => provider.models.includes(model.value));
 
         // Clean up any undefined elements in the messages array, to avoid failed OpenAI API call.

@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.11.0 - 2024-05-27
+- Added info about the API provider to the model selection in Settings and QuickSettings.
+- Added Swedish and Hungarian translations of provider settings texts.
+- Changed loading of API providers in Settings and QuickSettings to be reactive.
+
 ## v1.10.0 - 2024-05-26
 - Added support for local LLMs using Ollama and OpenAI API-format.
 
