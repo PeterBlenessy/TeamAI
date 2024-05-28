@@ -5,12 +5,16 @@
             <q-chip icon="mdi-brain" :label="isCreateImageSelected ? 'DALL·E 3' : model" size="sm" clickable>
                 <q-menu anchor="top left" self="bottom left" style="max-width: 350px">
                     <q-list dense>
-                        <q-item v-for="(item, index) in modelOptions" :key="index" clickable @click="model = item.model"
+                        <q-item v-for="(item, index) in modelOptions" :key="index" clickable 
+                             @click="model = item.model"
                             :active="model == item.model">
-                            <q-item-section><q-item-label caption>{{ item.model }}</q-item-label>
+                            <q-item-section no-wrap><q-item-label >{{ item.model }}</q-item-label>
                                 <q-tooltip :delay="100" transition-show="scale" transition-hide="scale">
                                     {{ item.provider }}
                                 </q-tooltip>
+                            </q-item-section>
+                            <q-item-section no-wrap side>
+                                <q-item-label caption>{{ item.provider }}</q-item-label>
                             </q-item-section>
                         </q-item>
                     </q-list>
@@ -19,7 +23,6 @@
                     {{ t('settings.text.model.label') }}
                 </q-tooltip>
             </q-chip>
-
 
             <!-- Max tokens selection -->
             <q-chip v-if="!isCreateImageSelected" :label="maxTokens" size="sm" clickable
@@ -257,6 +260,16 @@ export default {
             }).flat()
         });
 
+        const modelOptions2 = computed(() => {
+            return apiProviders.value.map(provider => {
+                return provider.models.map(model => ({
+                    "label": model,
+                    "provider": provider.name,
+                    "value": model
+                }));
+            }).flat()
+        });
+
         // Load OpenAI API format parameters
         const imageSizeOptions = openaiConfig.imageSizeOptions;
         const imageQualityOptions = openaiConfig.imageQualityOptions;
@@ -316,6 +329,7 @@ export default {
             appMode,
             model,
             modelOptions,
+            modelOptions2,
             maxTokens,
             temperature,
             choices,

@@ -52,7 +52,10 @@ const openAI = () => {
 
         try {
             const response = await fetch(`${modelProvider.baseUrl}/chat/completions`, requestOptions);
-            if (!response.ok) throw new Error(`${response.status} - ${response.statusText}`);
+            if (!response.ok) {
+                logger.error(response);
+                throw new Error(`${response.status} - ${response.statusText}`);
+            }
 
             return response;
 
@@ -88,6 +91,7 @@ const openAI = () => {
 
             const response = await fetch("https://api.openai.com/v1/images/generations", requestOptions);
             if (!response.ok) {
+                logger.error(response);
                 throw new Error(`${response.status} - ${response.statusText}`);
             }
 

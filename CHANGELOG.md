@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.11.1 - 2024-05-28
+- Added API provider name to QuickSettings select options.
+- Added additional error logs for API responses.
+
 ## v1.11.0 - 2024-05-27
 - Added info about the API provider to the model selection in Settings and QuickSettings.
 - Added Swedish and Hungarian translations of provider settings texts.

@@ -94,8 +94,8 @@
                             </template>
                         </q-input>
 
-                        <q-select  v-model="tmpProvider.models" new-value-mode="add-unique" use-chips use-input multiple
-                            hide-dropdown-icon input-debounce="0" >
+                        <q-select v-model="tmpProvider.models" new-value-mode="add-unique" use-chips use-input multiple
+                            hide-dropdown-icon input-debounce="0">
                             <template v-slot:prepend>
                                 <q-icon size="xs" name="mdi-brain" />
                             </template>
@@ -154,7 +154,7 @@ export default {
             addProvider,
             editProvider,
             showProviderForm: computed(() => editProvider.value || addProvider.value),
-            
+
             // Show/hide password
             isPwd: ref(true),
 
