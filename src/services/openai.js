@@ -53,7 +53,7 @@ const openAI = () => {
         try {
             const response = await fetch(`${modelProvider.baseUrl}/chat/completions`, requestOptions);
             if (!response.ok) {
-                logger.error(response);
+                logger.error(`[openai] - createChatCompletion() error:\n${JSON.stringify(response)}`);
                 throw new Error(`${response.status} - ${response.statusText}`);
             }
 
@@ -91,7 +91,7 @@ const openAI = () => {
 
             const response = await fetch("https://api.openai.com/v1/images/generations", requestOptions);
             if (!response.ok) {
-                logger.error(response);
+                logger.error(`[openai] - createImageCompletion() error:\n${JSON.stringify(response)}`);
                 throw new Error(`${response.status} - ${response.statusText}`);
             }
 
@@ -116,7 +116,7 @@ const openAI = () => {
                     // todo: Generate image thumbnail
 
                 } catch (error) {
-                    logger.error(error);
+                    logger.error(`[openai] - createImageCompletion() error:\n${JSON.stringify(error)}`);
                 }
             }
             return {

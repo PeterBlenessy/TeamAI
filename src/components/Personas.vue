@@ -267,8 +267,8 @@ export default {
                             });
                         awesomePrompts.value.shift();
                     })
-                    .catch(error => logger.error(error))
-                    .finally(() => logger.log("fetchPersonas() done"));
+                    .catch(error => logger.error(`[Personas] - ${error}`))
+                    .finally(() => logger.log("[Personas] - fetch awesome prompts done"));
             } else if (source == "ExamplePersonas") {
                 fetch(awesomeSources[source])
                     .then(response => response.json())
@@ -279,8 +279,8 @@ export default {
                             return { id, ...item, readonly };
                         });
                     })
-                    .catch(error => logger.error(error))
-                    .finally(() => logger.log("fetchPersonas() done"));
+                    .catch(error => logger.error(`[Personas] - ${error}`))
+                    .finally(() => logger.log("[Personas] - fetch example personas done"));
             }
         }
 

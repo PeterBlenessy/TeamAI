@@ -15,6 +15,7 @@ export default {
             text: 'Kérdezz bátran',
             image: 'Írd le a képet amit generálni akarsz'
         },
+        label: "Ctrl+Enter elküld",
         tooltip: {
             send: 'Küld',
             stop: 'Megállítás',
@@ -340,7 +341,7 @@ export default {
         }
     },
     prompts: {
-        generateTitle: 'Generálj egy címet ehhez a beszélgetéshez.'
+        generateTitle: 'Generálj címet ehhez a beszélgetéshez. Tartsd röviden és tömören. Ne használj jelöléseket, emojikat vagy speciális karaktereket. Csak egyszerű szöveget használj.'
     },
     personas: {
         title: 'Personák',

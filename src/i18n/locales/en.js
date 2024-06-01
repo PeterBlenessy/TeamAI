@@ -20,6 +20,7 @@ export default {
             text: 'Ask your question',
             image: 'Describe the image to generate'
         },
+        label: "Ctrl+Enter to send",
         tooltip: {
             send: 'Send',
             stop: 'Stop',
@@ -331,7 +332,7 @@ export default {
         }
     },
     prompts: {
-        generateTitle: 'Generate a title for this conversation.'
+        generateTitle: 'Generate a title for this conversation. Keep it short and concise. Do not use markup, emojis, or special characters. Use just plain text.',
     },
     personas: {
         title: 'Personas',

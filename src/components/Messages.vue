@@ -215,6 +215,9 @@ export default {
 
                 settingsStore.$patch(settings);
             }
+            //logger.info(`[Messages] - Restored settings from last message:\n${JSON.stringify(settings)}`);
+            // TODO: store ony avatar id in settings, not image. Too large printout.
+            logger.info(`[Messages] - Restored settings from last message`);
         };
 
         // Load messages from conversationId
@@ -277,8 +280,8 @@ export default {
             const data = [new ClipboardItem({ [type]: blob })];
 
             navigator.clipboard.write(data)
-                .then(() => logger.log('Copied to clipboard'))
-                .catch((error) => logger.log(error));
+                .then(() => logger.log('[Messages] - Copied to clipboard'))
+                .catch((error) => logger.error(`[Messages] - ${error}`));
         };
 
         // Share message content via 'navigator.share', the native sharing mechanism
@@ -290,7 +293,7 @@ export default {
                         : { text: await getContent(message) }
                 );
             } catch (error) {
-                logger.error(error);
+                logger.error(`[Messages] - Share message error: ${error}`);
             }
         };
 
@@ -347,7 +350,7 @@ export default {
                 readingMessage.value = '';
             };
             utterance.onerror = (event) => {
-                logger.log("Error: " + event.error + " - " + event.message);
+                logger.error(`[Messages] - Speech error: ${event.error}, ${event.message}`);
                 readingMessage.value = '';
             };
 

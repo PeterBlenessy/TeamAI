@@ -204,197 +204,12 @@
 
                 <!-- Text generation settings -->
                 <q-tab-panel name="text">
-                    <q-list>
-
-                        <q-item>
-                            <q-item-section avatar>
-                                <q-icon name="mdi-brain" :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label caption>{{ t('settings.text.model.label') }}</q-item-label>
-                                <q-select v-model="model" :options="modelOptions" emit-value dense options-dense>
-                                    <template v-slot:option="{itemProps, opt}">
-                                        <q-item v-bind="itemProps">
-                                            <q-item-section>
-                                                <q-item-label>{{ opt.label }}</q-item-label>
-                                            </q-item-section>
-                                            <q-item-section side>
-                                                <q-item-label caption>{{ opt.provider }}</q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-                                    </template>
-                                </q-select>
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.text.model.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item>
-                            <q-item-section avatar>
-                                <q-icon
-                                    :name="maxTokens < 1024 ? 'mdi-text-short' : maxTokens < 2048 ? 'mdi-text' : 'mdi-text-long'"
-                                    :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label caption>{{ t('settings.text.maxTokens.label') }} ({{ maxTokens
-                                    }})</q-item-label>
-                                <q-slider :model-value="maxTokens" @change="val => { maxTokens = val }" :min="64"
-                                    :max="4096" :step="16" :markers="1024" label />
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.text.maxTokens.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item>
-                            <q-item-section avatar>
-                                <q-icon name="mdi-thermometer" :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label caption>{{ t('settings.text.temperature.label') }} ({{ temperature
-                                    }})</q-item-label>
-                                <q-slider :model-value="temperature" @change="val => { temperature = val }" :min="0"
-                                    :max="2" :step="0.1" :markers="0.5" label />
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.text.temperature.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                        <!-- Persona selection -->
-                        <q-separator v-if="appMode == 'advanced'" />
-
-                        <q-item v-if="appMode == 'advanced'">
-                            <q-item-section avatar>
-                                <q-icon name="mdi-card-account-details-outline" :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label>{{ t('settings.text.personas.label') }}</q-item-label>
-                                <q-item-label caption>{{ $t('settings.text.personas.caption') }}</q-item-label>
-                                <q-select dense options-dense use-input input-debounce="0" use-chips multiple
-                                    :option-label="(item) => item === null ? 'Null value' : item.name"
-                                    v-model="personas" :options="personaOptions" @filter="personaFilterFn">
-
-                                    <template v-slot:selected-item="scope">
-                                        <q-chip dense size="sm" class="q-ma-none" removable
-                                            @remove="scope.removeAtIndex(scope.index)" color="primary">
-                                            <q-avatar size="sm">
-                                                <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
-                                                <q-icon v-else name="mdi-account-circle" size="sm" />
-                                            </q-avatar>
-                                            {{ scope.opt.name }}
-                                            <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                                transition-hide="scale">
-                                                {{ scope.opt.prompt }}
-                                            </q-tooltip>
-
-                                        </q-chip>
-                                    </template>
-
-                                    <template v-slot:option="scope">
-                                        <q-item v-bind="scope.itemProps">
-                                            <q-item-section avatar>
-                                                <q-avatar size="sm">
-                                                    <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
-                                                    <q-icon v-else name="mdi-account-circle" size="sm" />
-                                                </q-avatar>
-                                            </q-item-section>
-                                            <q-item-section>
-                                                <q-item-label>{{ scope.opt.name }}</q-item-label>
-                                            </q-item-section>
-                                            <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                                transition-hide="scale">
-                                                {{ scope.opt.prompt }}
-                                            </q-tooltip>
-
-                                        </q-item>
-
-                                    </template>
-
-                                </q-select>
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
+                    <TextGenerationSettings />
                 </q-tab-panel>
 
                 <!-- Image generation settings -->
                 <q-tab-panel name="image">
-                    <q-list>
-
-                        <q-item v-if="false">
-                            <q-item-section avatar>
-                                <q-icon name="mdi-image-multiple-outline" :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label caption>{{ t('settings.image.choices.label') }} ({{ choices
-                                    }})</q-item-label>
-                                <q-slider :model-value="choices" @change="val => { choices = val }" snap :min="1"
-                                    :max="10" :step="1" :markers="1" label />
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.image.choices.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item>
-                            <q-item-section avatar>
-                                <q-icon name="mdi-image-size-select-large" :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label caption>{{ t('settings.image.size.label') }} ({{ imageSize
-                                    }})</q-item-label>
-                                <q-slider :model-value="imageSizeValue"
-                                    @update:model-value="val => { imageSizeValue = val }" snap :min="0" :max="2"
-                                    :step="1" :markers="1" label :label-value="imageSize" />
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.image.size.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item>
-                            <q-item-section avatar>
-                                <q-icon :name="imageQuality == 'hd' ? 'mdi-high-definition' : 'mdi-standard-definition'"
-                                    :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label caption>{{ t('settings.image.quality.label') }} ({{ imageQuality
-                                    }})</q-item-label>
-                                <q-slider :model-value="imageQualityValue"
-                                    @update:model-value="val => { imageQualityValue = val }" snap :min="0" :max="1"
-                                    :step="1" :markers="1" label :label-value="imageQuality" />
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.image.quality.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item>
-                            <q-item-section avatar>
-                                <q-icon name="mdi-palette" :color="iconColor" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label caption>{{ t('settings.image.style.label') }} ({{ imageStyle
-                                    }})</q-item-label>
-                                <q-slider :model-value="imageStyleValue"
-                                    @update:model-value="val => { imageStyleValue = val }" snap :min="0" :max="1"
-                                    :step="1" :markers="1" label :label-value="imageStyle" />
-                                <q-tooltip :delay="750" max-width="300px" transition-show="scale"
-                                    transition-hide="scale">
-                                    {{ t('settings.image.style.tooltip') }}
-                                </q-tooltip>
-                            </q-item-section>
-                        </q-item>
-
-                    </q-list>
-
+                    <ImageGenerationSettings />
                 </q-tab-panel>
             </q-tab-panels>
         </q-card-section>
@@ -404,17 +219,20 @@
 <script>
 import { computed, ref, watch } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
-import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import openaiConfig from '../services/openai.config.json';
 import ProviderSettings from "./ProviderSettings.vue";
+import TextGenerationSettings from "./TextGenerationSettings.vue";
+import ImageGenerationSettings from "./ImageGenerationSettings.vue";
 
 export default {
     name: "AppSettings",
     components: {
-        ProviderSettings
+        ProviderSettings,
+        TextGenerationSettings,
+        ImageGenerationSettings
     },
 
     setup() {
@@ -426,48 +244,14 @@ export default {
             darkMode,
             conversationMode,
             chatDirection,
-            apiProviders,
-            model,
-            maxTokens,
-            temperature,
-            choices,
             imageSize,
             imageQuality,
             imageStyle,
-            personas,
             quickSettings,
             streamResponse,
             speechLanguage,
             userAvatar
         } = storeToRefs(settingsStore);
-        const teamsStore = useTeamsStore();
-        const personaOptions = ref(teamsStore.personas);
-
-        // Filters personas based on input characters in the select box
-        function personaFilterFn(val, update) {
-            if (val === '') {
-                update(() => personaOptions.value = teamsStore.personas);
-                return;
-            }
-
-            update(() => {
-                const needle = val.toLowerCase();
-                personaOptions.value = teamsStore.personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
-            });
-        }
-
-        // Array of all models from available providers to use in select options
-        // const modelOptions = apiProviders.value.map(provider => provider.models).flat();
-        // Computed array of { providers, models } to use in select options
-        const modelOptions = computed(() => {
-            return apiProviders.value.map(provider => {
-                return provider.models.map(model => ({
-                    "label": model,
-                    "provider": provider.name,
-                    "value": model
-                }));
-            }).flat()
-        });
 
         // Load OpenAI API format parameters
         const imageSizeOptions = openaiConfig.imageSizeOptions;
@@ -517,20 +301,7 @@ export default {
             darkMode,
             conversationMode,
             chatDirection,
-            model,
-            modelOptions,
-            maxTokens,
-            temperature,
-            choices,
-            imageSize,
-            imageSizeValue,
-            imageQuality,
-            imageQualityValue,
-            imageStyle,
-            imageStyleValue,
-            personaOptions,
-            personaFilterFn,
-            personas,
+
             userAvatar,
             handleAvatarPicker,
             handleAvatarSelected,
@@ -538,6 +309,7 @@ export default {
             avatarImage,
             showActionButton: ref(false),
             quickSettings,
+
             streamResponse,
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')

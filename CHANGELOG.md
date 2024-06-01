@@ -26,8 +26,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
 - Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
 - When removing a persona; should check if it is used in messages and alert user.
+- When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
 ## [UNRELEASED]
+
+## v1.12.0 - 2024-06-01
+- Updated prompt for conversation title generation to be more concise and to not use markdown.
+- Added streamed response setting to QuickSettings.
+- Changed user input to multi-row text box with auto-grow, allowing user to add new lines when pressing Enter. Ctrl+Enter sends the message.
+- Refactored Settings component. Created TextGenerationSettings and ImageGenerationSettings components. 
+- Fixed conversation mode on/off settings visible in image generation mode.
+- Fixed issue where text generation models were shown in QuickSettings when image generation was active and user clicked the Dall-e chip.
+- Fixed issue where calling logger() with multiple arguments did not print to console.
 
 ## v1.11.1 - 2024-05-28
 - Added API provider name to QuickSettings select options.

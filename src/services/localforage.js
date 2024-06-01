@@ -60,9 +60,9 @@ const localForagePlugin = (({ store }) => {
         // Restore the persisted state
         if (Object.keys(persistedState).length != 0) store.$patch(persistedState);
     }).catch((error) => {
-        logger.error(error);
+        logger.error(`[localforage] - Error loading the persisted state: ${JSON.stringify(error)}`);
     }).finally(() => {
-        logger.info("Persisted states restored from storage: " + store.$id);
+        logger.info(`[localforage] - Persisted states restored from storage:  ${store.$id}`);
     });
 
     // Subscribe to store changes and save them to the persistent storage.

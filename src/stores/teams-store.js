@@ -50,8 +50,8 @@ export const useTeamsStore = defineStore('teams', () => {
                     message.choices.forEach(choice => {
                         // Delete image from image storage
                         imageDB.removeItem(choice.content)
-                            .then(() => logger.log("Deleted image: ", choice.content))
-                            .catch(error => logger.error("Error when deleting image: " + choice.content + error.toString()));
+                            .then(() => logger.log(`[teams-store] - Deleted image from message: ${choice.content}`))
+                            .catch(error => logger.error(`[teams-store] - deleteMessage() error when deleting image:  ${choice.content}, ${error.toString()}`));
                     });
                 }
                 return;
@@ -120,9 +120,8 @@ export const useTeamsStore = defineStore('teams', () => {
                     } else {
                         // Delete image from image storage
                         imageDB.removeItem(choice.content)
-                            .then(() => logger.log("Deleted image: ", choice.content))
-                            .catch(error => logger.error("Error when deleting image: " + choice.content + error.toString()));
-
+                            .then(() => logger.log(`[teams-store] - Deleted image from message: ${choice.content}`))
+                            .catch(error => logger.error(`[teams-store] - deleteChoice() error when deleting image:  ${choice.content}, ${error.toString()}`));
                         return;
                     }
                 });
@@ -172,15 +171,15 @@ export const useTeamsStore = defineStore('teams', () => {
         imageDB.iterate((value, key, iterationNumber) => {
             if (!allImages.includes(key)) {
                 imageDB.removeItem(key)
-                    .then(() => logger.log("Deleted image: ", key))
-                    .catch(error => logger.error("Error when deleting image: " + key + error.toString()));
+                    .then(() => logger.log(`[teams-store] - Deleted image: ${key}`))
+                    .catch(error => logger.error(`[teams-store] - deleteOrphanedImages() error when deleting image: ${key}, ${error.toString()}`));
             }
         }).then(() => {
             // Restore the persisted state
         }).catch((error) => {
-            logger.error(error);
+            logger.error(`[teams-store] - deleteOrphanedImages() error: ${error.toString()}`);
         }).finally(() => {
-            //logger.log("Done iterating imageDB");
+            logger.log(`[teams-store] - Done iterating imageDB`);
         });
     }
 

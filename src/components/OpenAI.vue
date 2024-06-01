@@ -64,7 +64,7 @@ export default {
                 // Remove (occasional) optionally escaped leading and trailing apostrophes
                 return json.choices[0].message.content.trim().replace(/^\\?"|\\?"$/g, '');
             } catch (error) {
-                logger.error(error);
+                logger.error(`[OpenAI] - ${error}`);
                 throw new Error(error);
             }
         }
@@ -103,12 +103,12 @@ export default {
         watch(abortRequest, () => {
             try {
                 if (abortRequest.value) {
-                    logger.log('Aborting generation');
+                    logger.log('[OpenAI] - Aborting generation');
                     loading.value = false;
                     abortController.abort();
                 }
             } catch (error) {
-                logger.error(error);
+                logger.error(`[OpenAI] - ${error}`);
                 abortRequest.value = false;
                 loading.value = false;
             }
@@ -256,7 +256,7 @@ export default {
                     if (!conversationTitle) {
                         generateConversationTitle(conversationId.value)
                             .then((title) => conversationTitle = title)
-                            .catch(error => logger.error(error))
+                            .catch(error => logger.error(`[OpenAI] - ${error}`))
                             .finally(() => {
                                 const timestamp = Date.now().toString();
                                 if (conversationIndex != -1) {
@@ -278,7 +278,7 @@ export default {
                     }
 
                 } catch (error) {
-                    logger.error(error);
+                    logger.error(`[OpenAI] - ${error}`);
                     let message = ''
                     let caption = ''
 
@@ -289,7 +289,7 @@ export default {
 
                         // Check if user aborted the request
                         if (error.message == 'AbortError: Fetch is aborted') {
-                            logger.log("Generation aborted");
+                            logger.log('[OpenAI] - Generation aborted');
                             abortController = '';
                             return;
                         }
@@ -304,7 +304,8 @@ export default {
                             caption = error.message;
                         }
                     }
-                    logger.error(message + ' ' + caption);
+                    logger.error(`[OpenAI] - ${message} ${caption}`);
+
 
                     // Show error message in app
                     $q.notify({

@@ -219,7 +219,7 @@ export default {
             // Listen to updater events
             const unlisten = await onUpdaterEvent(({ error, status }) => {
                 // This will log all updater events, including status updates and errors.
-                logger.log('Updater event', error, status)
+                logger.log(`[App] - Updater event': ${error}, ${status}`);
 
                 let updater = {
                     'PENDING': { icon: 'mdi-information', type: 'info', message: t('updater.pending.message'), caption: t('updater.pending.caption') },
@@ -246,7 +246,7 @@ export default {
                 const { shouldUpdate, manifest } = await checkUpdate();
 
                 if (shouldUpdate) {
-                    logger.log(`Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
+                    logger.log(`[App] - Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
                     // Uncomment to enable frontend install/relaunch flow.
                     // Also, disable the built-in Tauri dialog in Tauri config.
 
@@ -272,7 +272,7 @@ export default {
                     // });
                 }
             } catch (error) {
-                logger.error(error);
+                logger.error(`[App] - ${error}`);
             }
 
             // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.

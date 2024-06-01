@@ -18,6 +18,7 @@ export default {
             text: 'Ställ din fråga',
             image: 'Beskriv bilden du vill generera'
         },
+        label: "Ctrl+Enter skickar",
         tooltip: {
             send: 'Skicka din fråga',
             stop: 'Avbryt generering',
@@ -340,7 +341,7 @@ export default {
         }
     },
     prompts: {
-        generateTitle: 'Generera en titel för denna konversation.'
+        generateTitle: 'Generera en titel för denna konversation. Håll den kort och koncis. Använd inte markup, emojis eller specialtecken. Använd bara vanlig text.'
     },
     personas: {
         title: 'Personas',

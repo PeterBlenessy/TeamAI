@@ -3,12 +3,11 @@
         <q-toolbar>
             <!-- Model name -->
             <q-chip icon="mdi-brain" :label="isCreateImageSelected ? 'DALL·E 3' : model" size="sm" clickable>
-                <q-menu anchor="top left" self="bottom left" style="max-width: 350px">
+                <q-menu v-if="!isCreateImageSelected" anchor="top left" self="bottom left" style="max-width: 350px">
                     <q-list dense>
-                        <q-item v-for="(item, index) in modelOptions" :key="index" clickable 
-                             @click="model = item.model"
+                        <q-item v-for="(item, index) in modelOptions" :key="index" clickable @click="model = item.model"
                             :active="model == item.model">
-                            <q-item-section no-wrap><q-item-label >{{ item.model }}</q-item-label>
+                            <q-item-section no-wrap><q-item-label>{{ item.model }}</q-item-label>
                                 <q-tooltip :delay="100" transition-show="scale" transition-hide="scale">
                                     {{ item.provider }}
                                 </q-tooltip>
@@ -141,7 +140,7 @@
             <q-separator v-if="appMode == 'advanced' && !isCreateImageSelected" vertical inset class="q-ma-sm" />
 
             <!-- Team work toggle -->
-            <q-chip v-if="appMode == 'advanced' && !isCreateImageSelected" size="sm" icon="mdi-account-group-outline"
+            <q-chip dense v-if="appMode == 'advanced' && !isCreateImageSelected" size="sm" icon="mdi-account-group-outline"
                 clickable>
 
                 <q-toggle v-model="isTeamWorkActivated" flat dense left-label size="md"
@@ -154,11 +153,20 @@
 
             </q-chip>
 
-            <q-chip>
+            <q-chip v-if="!isCreateImageSelected" dense>
                 <q-toggle v-model="conversationMode" flat dense size="md" unchecked-icon="mdi-message-outline"
                     checked-icon="mdi-forum-outline" />
                 <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.general.conversationMode.tooltip') }}
+                </q-tooltip>
+            </q-chip>
+
+            <q-chip v-if="!isCreateImageSelected" dense>
+                <q-toggle v-model="streamResponse" dense :toggle-indeterminate="false" 
+                    unchecked-icon="mdi-text-box-outline" checked-icon="mdi-text-short" size="md"
+                />
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.general.streamResponse.tooltip') }}
                 </q-tooltip>
             </q-chip>
 
@@ -220,6 +228,7 @@ export default {
         const {
             appMode,
             conversationMode,
+            streamResponse,
             apiProviders,
             model,
             maxTokens,
@@ -326,6 +335,7 @@ export default {
             t,
             speechLanguage,
             conversationMode,
+            streamResponse,
             appMode,
             model,
             modelOptions,
@@ -338,18 +348,19 @@ export default {
             imageQuality,
             imageQualityValue,
             imageStyle,
-            personas,
             userAvatar,
             isCreateImageSelected,
             isTeamWorkActivated,
 
+            personas,
             personaOptions,
             personaFilterFn,
+
             conversationId,
 
-            copyConversation: (id) => navigator.clipboard.writeText(exportConversation(id)).then(logger.log("Copied to clipboard")).catch(e => logger.error(e)),
+            copyConversation: (id) => navigator.clipboard.writeText(exportConversation(id)).then(logger.log("[QuickSettings] - Copied conversation to clipboard")).catch(e => logger.error(`[QuickSettings] - ${e}`)),
             deleteConversation: (id) => teamsStore.deleteConversation(id),
-            shareConversation: (id) => navigator.share({ text: exportConversation(id) }).then().catch(e => logger.error(e)),
+            shareConversation: (id) => navigator.share({ text: exportConversation(id) }).then(logger.log("[QuickSettings] - Shared conversation")).catch(e => logger.error(`[QuickSettings] - ${e}`)),
             showConversationInfo,
 
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')

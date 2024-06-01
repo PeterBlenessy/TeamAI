@@ -1,8 +1,9 @@
 <template>
     <q-toolbar>
-        <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive"
+        <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive" stack-label
             :placeholder="isCreateImageSelected ? t('userInput.placeholder.image') : t('userInput.placeholder.text')"
-            @keydown.enter.prevent="handleUserInput" v-model="question">
+            :label="isCreateImageSelected ? t('userInput.label') : t('userInput.label')"
+            @keydown.ctrl.enter.prevent="handleUserInput" v-model="question" type="textarea">
 
             <template v-slot:prepend>
 
@@ -112,12 +113,12 @@ export default {
                         recognition.lang = speechLanguage.value;
 
                         // Event handlers
-                        recognition.onaudiostart = () => logger.log("Audio capturing started");
+                        recognition.onaudiostart = () => logger.log(`[UserInput] - Audio capturing started`);
                         recognition.onspeechstart = () => speechDetected.value = true;
                         recognition.onspeechend = () => speechDetected.value = false;
                         recognition.onresult = (event) => question.value = event.results[0][0].transcript;
-                        recognition.onerror = (event) => logger.error(error);
-                        recognition.onaudioend = () => logger.log("Audio capturing ended");
+                        recognition.onerror = (event) => logger.error(`[UserInput] - Speech recognition error: ${JSON.stringify(event)}`);
+                        recognition.onaudioend = () => logger.log(`[UserInput] - Audio capturing ended`);
                     } else {
                         logger.warn('SpeechRecognition is not supported in this browser.');
                         isMicrophoneActive.value = false;
@@ -125,8 +126,7 @@ export default {
 
                 })
                 .catch(error => {
-                    logger.warn('Could not load microphone!');
-                    logger.error(error);
+                    logger.error(`[UserInput] - Microphone permission error: ${JSON.stringify(error)}`);
                 });
         }
 
@@ -135,7 +135,7 @@ export default {
             try {
                 recognition.start();
             } catch (error) {
-                logger.error(error);
+                logger.error(`[UserInput] - Speech recognition error: ${JSON.stringify(error)}`);
             }
         }
 
