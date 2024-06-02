@@ -18,7 +18,7 @@ export default {
             text: 'Ställ din fråga',
             image: 'Beskriv bilden du vill generera'
         },
-        label: "Ctrl+Enter skickar",
+        label: "Ctrl+↵ skickar",
         tooltip: {
             send: 'Skicka din fråga',
             stop: 'Avbryt generering',

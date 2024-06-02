@@ -3,10 +3,10 @@
         <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive" stack-label
             :placeholder="isCreateImageSelected ? t('userInput.placeholder.image') : t('userInput.placeholder.text')"
             :label="isCreateImageSelected ? t('userInput.label') : t('userInput.label')"
-            @keydown.ctrl.enter.prevent="handleUserInput" v-model="question" type="textarea">
+            @keydown.ctrl.enter.prevent="handleUserInput" v-model="question" type="textarea"
+            @keydown.up.prevent="getLastUserMessage">
 
             <template v-slot:prepend>
-
                 <q-btn dense flat :icon="!isCreateImageSelected ? 'mdi-tooltip-text' : 'mdi-tooltip-text-outline'"
                     :color="!isCreateImageSelected ? 'primary' : iconColor"
                     @click="isCreateImageSelected = !isCreateImageSelected">
@@ -71,7 +71,7 @@ export default {
     name: 'UserInput',
     setup() {
         const teamsStore = useTeamsStore();
-        const { loading, abortRequest, userInput, isCreateImageSelected } = storeToRefs(teamsStore);
+        const { loading, abortRequest, conversationId, userInput, isCreateImageSelected } = storeToRefs(teamsStore);
         const settingsStore = useSettingsStore();
         const { speechLanguage, streamResponse } = storeToRefs(settingsStore);
         const question = ref('');
@@ -85,6 +85,9 @@ export default {
 
             // Handle occasional bug where abortRequest is not reset
             if (!loading.value && abortRequest.value) { abortRequest.value = false; }
+
+            // Trim user input of any whitespace characters
+            question.value = question.value.replace(/^\s+|\s+$/g, '');
 
             if (question.value == '') { return; }
 
@@ -145,6 +148,9 @@ export default {
             recognition.stop();
         }
 
+        const getLastUserMessage = () => {
+            console.log(teamsStore.getLastUserMessage(conversationId));
+        }
         return {
             handleUserInput,
             isCreateImageSelected,
@@ -158,6 +164,8 @@ export default {
             speechDetected,
             startSpeechRecognition,
             stopSpeechRecognition,
+
+            getLastUserMessage
         }
     }
 }

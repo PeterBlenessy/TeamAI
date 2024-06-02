@@ -2,7 +2,7 @@
     <div class="row">
         <q-toolbar>
             <!-- Model name -->
-            <q-chip icon="mdi-brain" :label="isCreateImageSelected ? 'DALL·E 3' : model" size="sm" clickable>
+            <q-chip icon="mdi-creation" :label="isCreateImageSelected ? 'DALL·E 3' : model" size="sm" clickable>
                 <q-menu v-if="!isCreateImageSelected" anchor="top left" self="bottom left" style="max-width: 350px">
                     <q-list dense>
                         <q-item v-for="(item, index) in modelOptions" :key="index" clickable @click="model = item.model"

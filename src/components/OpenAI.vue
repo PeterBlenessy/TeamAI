@@ -64,7 +64,7 @@ export default {
                 // Remove (occasional) optionally escaped leading and trailing apostrophes
                 return json.choices[0].message.content.trim().replace(/^\\?"|\\?"$/g, '');
             } catch (error) {
-                logger.error(`[OpenAI] - ${error}`);
+                logger.error(`[OpenAI] - Error generating conversation title: ${error}`);
                 throw new Error(error);
             }
         }
@@ -108,7 +108,7 @@ export default {
                     abortController.abort();
                 }
             } catch (error) {
-                logger.error(`[OpenAI] - ${error}`);
+                logger.error(`[OpenAI] - Error aborting request: ${error}`);
                 abortRequest.value = false;
                 loading.value = false;
             }
@@ -225,7 +225,7 @@ export default {
                                     const { delta } = choices?.[0] || ''; // we have only one choice, 'n' is always 1
                                     const role = delta?.role || '';
                                     const content = delta?.content || '';
-                                    
+
                                     if (role) lastMessage.role = role;
                                     if (usage) lastMessage.usage = usage;
                                     // Save recieved content; will add it to last message's content when all chunks are recieved

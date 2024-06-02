@@ -20,7 +20,7 @@ export default {
             text: 'Ask your question',
             image: 'Describe the image to generate'
         },
-        label: "Ctrl+Enter to send",
+        label: "Ctrl+↵ sends",
         tooltip: {
             send: 'Send',
             stop: 'Stop',
@@ -31,7 +31,6 @@ export default {
             speechStop: 'Stop',
         },
     },
-
     toolbar: {
         tooltip: {
             showDrawer: 'Show menu',

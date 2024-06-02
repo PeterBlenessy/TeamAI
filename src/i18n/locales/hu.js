@@ -15,7 +15,7 @@ export default {
             text: 'Kérdezz bátran',
             image: 'Írd le a képet amit generálni akarsz'
         },
-        label: "Ctrl+Enter elküld",
+        label: "Ctrl+↵ elküld",
         tooltip: {
             send: 'Küld',
             stop: 'Megállítás',

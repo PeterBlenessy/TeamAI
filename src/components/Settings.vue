@@ -222,7 +222,7 @@ import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
-import openaiConfig from '../services/openai.config.json';
+
 import ProviderSettings from "./ProviderSettings.vue";
 import TextGenerationSettings from "./TextGenerationSettings.vue";
 import ImageGenerationSettings from "./ImageGenerationSettings.vue";
@@ -243,36 +243,12 @@ export default {
             appMode,
             darkMode,
             conversationMode,
-            chatDirection,
-            imageSize,
-            imageQuality,
-            imageStyle,
+            chatDirection, 
             quickSettings,
             streamResponse,
             speechLanguage,
             userAvatar
         } = storeToRefs(settingsStore);
-
-        // Load OpenAI API format parameters
-        const imageSizeOptions = openaiConfig.imageSizeOptions;
-        const imageQualityOptions = openaiConfig.imageQualityOptions;
-        const imageStyleOptions = openaiConfig.imageStyleOptions;
-
-        const imageSizeValue = ref(imageSizeOptions.indexOf(imageSize.value));
-        const imageQualityValue = ref(imageQualityOptions.indexOf(imageQuality.value));
-        const imageStyleValue = ref(imageStyleOptions.indexOf(imageStyle.value));
-
-        watch(imageSizeValue, () => {
-            imageSize.value = imageSizeOptions[imageSizeValue.value];
-        });
-
-        watch(imageQualityValue, () => {
-            imageQuality.value = imageQualityOptions[imageQualityValue.value];
-        });
-
-        watch(imageStyleValue, () => {
-            imageStyle.value = imageStyleOptions[imageStyleValue.value];
-        });
 
         // Avatar related
         const avatarImage = ref(null);

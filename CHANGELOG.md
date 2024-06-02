@@ -30,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.12.1 - 2024-06-02
+- Fixed issue in UserInput component where messages with whitespace characters only were sent.
+- Updated Tauri packages to latest versions.
+- Updated frontend packages to latest versions.
+- Changed model icon from mdi-brain to mdi-creation.
+
 ## v1.12.0 - 2024-06-01
 - Updated prompt for conversation title generation to be more concise and to not use markdown.
 - Added streamed response setting to QuickSettings.

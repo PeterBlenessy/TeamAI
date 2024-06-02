@@ -3,7 +3,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-brain" :color="iconColor" />
+                <q-icon name="mdi-creation" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label caption>{{ t('settings.text.model.label') }}</q-item-label>
@@ -133,7 +133,7 @@ export default {
         } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
-        const personaOptions = ref([...new Set( teamsStore.personas)]);
+        const personaOptions = ref(teamsStore.personas);
 
         watch(personaOptions, () => console.log(personaOptions.value));
         watch(personas, () => console.log(personas.value));

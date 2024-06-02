@@ -97,7 +97,7 @@
                         <q-select v-model="tmpProvider.models" new-value-mode="add-unique" use-chips use-input multiple
                             hide-dropdown-icon input-debounce="0">
                             <template v-slot:prepend>
-                                <q-icon size="xs" name="mdi-brain" />
+                                <q-icon size="xs" name="mdi-creation" />
                             </template>
                         </q-select>
                     </q-item-section>
