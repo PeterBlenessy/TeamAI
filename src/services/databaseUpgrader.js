@@ -15,25 +15,25 @@ const databaseUpgrader = () => {
             version: 1,
             description: 'First database version',
             caption: t('databaseUpgrade.inProgress.caption', { version: '1' }),
-            upgrade: () => { }
+            upgrade: async () => { }
         },
         {
             version: 6,
             description: 'Optimized database structure by moving images from messages to separate table.',
             caption: t('databaseUpgrade.inProgress.caption', { version: '6' }),
-            upgrade: () => upgradeToVersion6()
+            upgrade: async () => upgradeToVersion6()
         },
         {
             version: 7,
             description: 'Added new OpenAI models.',
             caption: t('databaseUpgrade.inProgress.caption', { version: '7' }),
-            upgrade: () => upgradeToVersion7()
+            upgrade: async () => upgradeToVersion7()
         },
         {
             version: 8,
             description: 'Removed OpenAI API parameter options from persistent storage.',
             caption: t('databaseUpgrade.inProgress.caption', { version: '8' }),
-            upgrade: () => upgradeToVersion8()
+            upgrade: async () => upgradeToVersion8()
         }
     ];
 
@@ -58,13 +58,15 @@ const databaseUpgrader = () => {
     // Add new OpenAI models
     const upgradeToVersion7 = async () => {
         try {
+            const settingsStore = useSettingsStore();
+            
+            if (!settingsStore.hasOwnProperty('modelOptions')) return;
+            
+            settingsStore.modelOptions.value = modelOptions;
             const modelOptions = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-1106-preview'];
             await settingsDB.setItem('modelOptions', JSON.stringify(modelOptions));
-            const settingsStore = useSettingsStore();
-            settingsStore.modelOptions.value = modelOptions;
-
         } catch (error) {
-            logger.error(error);
+            logger.error(`[dbUpgrader][v7] - Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -72,10 +74,9 @@ const databaseUpgrader = () => {
     // Clean up stuff that should not be persisted as states
     const upgradeToVersion8 = async () => {
         try {
-            logger.log(`[dbUpgrader] - upgradeToVersion8() - Starting upgrade...`);
             await settingsDB.removeItem('modelOptions');
         } catch (error) {
-            logger.error(`[dbUpgrader] - upgradeToVersion8() error: ${JSON.stringify(error)}`);
+            logger.error(`[dbUpgrader][v8] - Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -84,39 +85,37 @@ const databaseUpgrader = () => {
     const upgradeToVersion6 = async () => {
 
         try {
-            logger.log(`[dbUpgrader] - upgradeToVersion6() - Starting upgrade...`);
-
             // Get messages from persistent storage
             let messages = JSON.parse(await teamsDB.getItem('messages'));
             if (messages == null) {
-                logger.error(`[dbUpgrader] - Nothing to upgrade`);
+                logger.error(`[dbUpgrader][v6] - Nothing to upgrade`);
                 return;
             }
 
             for (let m = 0; m < messages.length; m++) {
-                logger.log(`[dbUpgrader] - Processing message: ${messages[m].timestamp}`);
+                logger.log(`[dbUpgrader][v6] - Processing message: ${messages[m].timestamp}`);
 
                 if (messages[m].object == 'image' &&
                     messages[m].hasOwnProperty('choices') &&
                     messages[m].choices.length > 0) {
 
                     for (let i = 0; i < messages[m].choices.length; i++) {
-                        logger.log(`[dbUpgrader] - \tProcessing image: ${messages[m].choices[i].index}`);
+                        logger.log(`[dbUpgrader][v6] - [v6]:\tProcessing image: ${messages[m].choices[i].index}`);
                         if (messages[m].choices[i].content.startsWith('image')) {
-                            logger.log(`[dbUpgrader] - \t\tImage name: ${messages[m].choices[i].content}`);
+                            logger.log(`[dbUpgrader][v6] - \t\tImage name: ${messages[m].choices[i].content}`);
                             // Check that image exists in imageDB
                             const image = await imageDB.getItem(messages[m].choices[i].content);
                             if (image != null) {
-                                logger.log("[dbUpgrader] - \t\tImage exists in imageDB.")
+                                logger.log("[dbUpgrader][v6] - \t\tImage exists in imageDB.")
                             } else {
-                                logger.log("[dbUpgrader] - \t\tImage does not exist in imageDB. Removing reference from message.")
+                                logger.log("[dbUpgrader][v6] - \t\tImage does not exist in imageDB. Removing reference from message.")
                                 // Remove image reference from message
                                 messages[m].choices.splice(i, 1);
                             }
                         } else if (messages[m].choices[i].content.startsWith('data:image')) {
                             // Found base64 image, move to imageDB
                             let imageName = `image-${messages[m].timestamp}-${messages[m].choices[i].index}`;
-                            logger.log(`[dbUpgrader] - \t\tFound base64 image. Moving to imageDB with imageName: ${imageName}`);
+                            logger.log(`[dbUpgrader][v6] - \t\tFound base64 image. Moving to imageDB with imageName: ${imageName}`);
 
                             try {
                                 // Create blob from base64 image and store it in imageDB
@@ -130,21 +129,21 @@ const databaseUpgrader = () => {
                                     const newItem = { index: messages[m].choices[i].index, content: imageName };
                                     messages[m].choices.splice(i, 1, newItem);
                                 } else {
-                                    throw new Error("Error when moving image: " + imageName);
+                                    throw new Error("[dbUpgrader][v6] - Error when moving image: " + imageName);
                                 }
 
                             } catch (error) {
-                                logger.error(`[dbUpgrader] - Store image error: ${JSON.stringify(error)}`);
+                                logger.error(`[dbUpgrader][v6] - Store image error: ${JSON.stringify(error)}`);
                                 throw error;
                             }
                         } else {
-                            logger.log(`[dbUpgrader] - \t\tUnexpected image reference. Removing from message. ${messages[m].choices[i].content}`)
+                            logger.log(`[dbUpgrader][v6] - \t\tUnexpected image reference. Removing from message. ${messages[m].choices[i].content}`)
                         }
                     }
 
                 } else {
                     // No images in message, do nothing
-                    logger.log(`[dbUpgrader] - \tNo images in message. ${messages[m].timestamp}`);
+                    logger.log(`[dbUpgrader][v6] - \tNo images in message. ${messages[m].timestamp}`);
                 }
             }
             // Store the potentially updated messages array in persistent storage
@@ -153,13 +152,13 @@ const databaseUpgrader = () => {
             // Verify that messages upgrade was successful
             let testMessages = await teamsDB.getItem('messages');
             if (testMessages != null && testMessages == JSON.stringify(messages)) {
-                logger.log(`[dbUpgrader] -Messages upgrade completed successfully.`);
+                logger.log(`[dbUpgrader][v6] - Messages upgrade completed successfully.`);
             } else {
-                logger.error(`[dbUpgrader] - Error when upgrading messages.`);
+                logger.error(`[dbUpgrader][v6] - Error when upgrading messages.`);
                 throw new Error("Error when upgrading messages.");
             }
         } catch (error) {
-            logger.error(`[dbUpgrader] - upgradeToVersion6() - Error: ${JSON.stringify(error)}`);
+            logger.error(`[dbUpgrader][v6] - Error: ${JSON.stringify(error)}`);
             throw error;
         }
     }
@@ -187,9 +186,13 @@ const databaseUpgrader = () => {
                 logger.log(`[dbUpgrader] - Upgrading database to version: ${version.version}`);
                 upgradeDialog({ caption: `${progress++} of ${nbrUpgrades}` });
                 try {
-                    version.upgrade();
+                    logger.log(`[dbUpgrader][v${version.version}] - Upgrading...`);
+                    await version.upgrade();
+                    logger.log(`[dbUpgrader][v${version.version}] - Upgrade finished`);
+
                     await setDBVersion(version.version);
                     dbVersionAfterUpgrade = await getDBVersion();
+                    logger.log(`[dbUpgrader][v${version.version}] - DB version set to ${dbVersionAfterUpgrade}`);
 
                     // All upgrades are done
                     upgradeDialog({
