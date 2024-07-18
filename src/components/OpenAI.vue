@@ -119,6 +119,11 @@ export default {
         const askQuestion = async (question) => {
             loading.value = true;
 
+            if (personas.value.length == 0) {
+                logger.warn('[OpenAI] - No persona selected, setting default persona');
+                personas.value = [teamsStore.personas[0]];
+             }
+
             let count = isCreateImageSelected.value ? 1 : personas.value.length;
             let assistantMessage = '';
             let systemMessages = '';
@@ -278,22 +283,25 @@ export default {
                     }
 
                 } catch (error) {
-                    logger.error(`[OpenAI] - ${error}`);
                     let message = ''
                     let caption = ''
 
-                    if (error.response) {
+                    if (response in error) {
                         message = error.response.status;
                         caption = error.response.data;
                     } else {
 
                         // Check if user aborted the request
-                        if (error.message == 'AbortError: Fetch is aborted') {
+                        if (error == 'AbortError: Fetch is aborted' || 
+                            error == 'Error: Fetch is aborted' ||
+                            error == "Aborting generation"
+                        ) {
                             logger.log('[OpenAI] - Generation aborted');
                             abortController = '';
                             return;
                         }
-                        const path = 'apiErrors.' + error.message.split(' ')[0];
+
+                        const path = 'apiErrors.' + (message in error ? error.message.split(' ')[0] : error.split(' ')[0]);
 
                         // Check if error message is defined in i18n language files
                         try {
@@ -301,11 +309,10 @@ export default {
                             caption = t(path + '.caption');
                         } catch (error) {
                             message = "Unknown error occured. ";
-                            caption = error.message;
+                            caption = error;
                         }
                     }
                     logger.error(`[OpenAI] - ${message} ${caption}`);
-
 
                     // Show error message in app
                     $q.notify({

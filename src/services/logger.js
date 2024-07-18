@@ -1,4 +1,4 @@
-import { trace, debug, info, warn, error } from "tauri-plugin-log-api";
+import { trace, debug, info, warn, error } from "@tauri-apps/plugin-log";
 
     // ---------------------------------------------------------------------------------------------
     // Print 'message' based on selected log level.
