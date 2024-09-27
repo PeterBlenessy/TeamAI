@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## v1.12.2 - 2024-06-02
+- Merged dependabot PR:s fixing some voulnerabilities.
+ 
 ## v1.12.1 - 2024-06-02
 - Fixed issue in UserInput component where messages with whitespace characters only were sent.
 - Updated Tauri packages to latest versions.
