@@ -28,8 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
+## v2.0.2 - 2024-12-23
+- Fixed bug where Linux build failed, due to wrong Ubuntu version in release script.
+
 ## v2.0.1 - 2024-12-23
-- Fixe dbug where build could not be signed for Mac OSX due to wrong Tauri signing key environment variables in release script.
+- Fixed bug where build could not be signed for Mac OSX due to wrong Tauri signing key environment variables in release script.
 
 ## v2.0.0 - 2024-12-23
 - Migrated to Tauri v2.

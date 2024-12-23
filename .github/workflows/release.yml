@@ -14,10 +14,8 @@ jobs:
       matrix:
         include:
             - platform: 'macos-latest' # for Arm based macs (M1 and above).
-              args: '--target x86_64-apple-darwin'
-            - platform: 'macos-latest' # for Intel based macs.
               args: '--target aarch64-apple-darwin'
-            - platform: 'ubuntu-20.04' # for Tauri v2 you could replace this with ubuntu-22.04.
+            - platform: 'ubuntu-22.04' # Ubuntu version for Tauri v2
               args: ''
             - platform: 'windows-latest'
               args: ''
@@ -27,31 +25,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install dependencies (ubuntu only)
+        # This must match the platform value defined above.
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+        # webkitgtk 4.0 is for Tauri v1 - webkitgtk 4.1 is for Tauri v2.
+        # You can remove libappindicator3-dev if you don't use the system tray feature.
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-#          cache: 'yarn' # Set this to npm, yarn or pnpm.
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
 
-    #   - name: Rust cache
-    #     uses: swatinem/rust-cache@v2
-    #     with:
-    #       workspaces: './src-tauri -> target'
-
-      - name: Install dependencies (ubuntu only)
-        # This must match the platform value defined above.
-        if: matrix.platform == 'ubuntu-20.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev  libappindicator3-dev librsvg2-dev patchelf
-        # webkitgtk 4.0 is for Tauri v1 - webkitgtk 4.1 is for Tauri v2.
-        # You can remove libappindicator3-dev if you don't use the system tray feature.
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
 
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
