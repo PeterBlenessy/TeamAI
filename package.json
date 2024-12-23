@@ -1,7 +1,7 @@
 {
   "name": "team-ai",
   "private": true,
-  "version": "1.12.1",
+  "version": "1.12.2",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -38,6 +38,6 @@
   "devDependencies": {
     "@quasar/vite-plugin": "^1.6.0",
     "@vitejs/plugin-vue": "^5.0.3",
-    "vite": "^5.0.12"
+    "vite": "^5.2.14"
   }
 }
