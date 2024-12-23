@@ -92,8 +92,9 @@ import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from './stores/settings-store.js';
 import { useTeamsStore } from './stores/teams-store.js';
-import { invoke } from '@tauri-apps/api';
-import { checkUpdate, onUpdaterEvent } from '@tauri-apps/api/updater'
+import { invoke } from '@tauri-apps/api/core';
+import { check } from '@tauri-apps/plugin-updater'
+import { relaunch } from '@tauri-apps/plugin-process';
 import DatabaseUpgrader from './services/databaseUpgrader.js';
 import logger from './services/logger';
 
@@ -217,36 +218,42 @@ export default {
         async function checkForUpdates() {
 
             // Listen to updater events
-            const unlisten = await onUpdaterEvent(({ error, status }) => {
-                // This will log all updater events, including status updates and errors.
-                logger.log(`[App] - Updater event': ${error}, ${status}`);
+            // const unlisten = await onUpdaterEvent(({ error, status }) => {
+            //     // This will log all updater events, including status updates and errors.
+            //     logger.log(`[App] - Updater event': ${error}, ${status}`);
 
-                let updater = {
-                    'PENDING': { icon: 'mdi-information', type: 'info', message: t('updater.pending.message'), caption: t('updater.pending.caption') },
-                    'ERROR': { icon: 'mdi-alert', type: 'negative', message: t('updater.error.message'), caption: t('updater.error.caption') },
-                    'DONE': { icon: 'mdi-check', type: 'positive', message: t('updater.done.message'), caption: t('updater.done.caption') },
-                    'UPTODATE': { icon: 'mdi-check', type: 'positive', message: t('updater.upToDate.message'), caption: t('updater.upToDate.caption') }
-                };
+            //     let updater = {
+            //         'PENDING': { icon: 'mdi-information', type: 'info', message: t('updater.pending.message'), caption: t('updater.pending.caption') },
+            //         'ERROR': { icon: 'mdi-alert', type: 'negative', message: t('updater.error.message'), caption: t('updater.error.caption') },
+            //         'DONE': { icon: 'mdi-check', type: 'positive', message: t('updater.done.message'), caption: t('updater.done.caption') },
+            //         'UPTODATE': { icon: 'mdi-check', type: 'positive', message: t('updater.upToDate.message'), caption: t('updater.upToDate.caption') }
+            //     };
 
-                $q.notify({
-                    position: 'top',
-                    icon: updater[status].icon,
-                    type: updater[status].type,
-                    spinner: false,
-                    message: updater[status].message,
-                    caption: updater[status].caption,
-                    timeout: 2000
-                });
-            });
+            //     $q.notify({
+            //         position: 'top',
+            //         icon: updater[status].icon,
+            //         type: updater[status].type,
+            //         spinner: false,
+            //         message: updater[status].message,
+            //         caption: updater[status].caption,
+            //         timeout: 2000
+            //     });
+            // });
 
 
             try {
-                // checkUpdate() displays Tauri update flow if an update is available.
+                // check() displays Tauri update flow if an update is available.
                 // When no update is available, onUpdaterEvent() will be triggered and frontend notifications used.
-                const { shouldUpdate, manifest } = await checkUpdate();
+                // const { shouldUpdate, manifest } = await check();
+                const update = await check();
 
-                if (shouldUpdate) {
-                    logger.log(`[App] - Update available ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`);
+                if (update?.available) {
+                    logger.log(`[App] - Update to ${update.version} available! Date: ${update.date}`);
+                    logger.log(`[App] - Release notes: ${update.body}`);
+                    await update.downloadAndInstall();
+                    // requires the `process` plugin
+                    await relaunch();
+
                     // Uncomment to enable frontend install/relaunch flow.
                     // Also, disable the built-in Tauri dialog in Tauri config.
 
@@ -270,13 +277,15 @@ export default {
                     //         { label: t('updater.relaunch.actions.later'), color: 'white', handler: () => { } }
                     //     ],
                     // });
+                } else {
+                    logger.log("[App] - No update available")
                 }
             } catch (error) {
                 logger.error(`[App] - ${error}`);
             }
 
             // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.
-            unlisten();
+            // unlisten();
         }
 
         return {

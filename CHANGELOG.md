@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
 ## [UNRELEASED]
+- Fixed notification issue for errors with no language translations.
+- Fixed issue application got stuck in loading state when no persona was selected.
+- Migrated to Tauri 2.0 beta.
+- Removed entitlements.mac.plist as it was already covered by entitlements.plist.
+- Removed tray icon support as it had no functionality.
 
 ## v1.12.2 - 2024-06-02
 - Merged dependabot PR:s fixing some voulnerabilities.
