@@ -1,8 +1,3 @@
-// This is just an example,
-// so you can safely delete all default props below
-
-import { info } from "tauri-plugin-log-api";
-
 export default {
     general: {
         failed: 'Action failed',

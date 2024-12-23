@@ -28,10 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
-## [UNRELEASED]
+## v2.0.0 - 2024-12-23
+- Migrated to Tauri v2.
 - Fixed notification issue for errors with no language translations.
 - Fixed issue application got stuck in loading state when no persona was selected.
-- Migrated to Tauri 2.0 beta.
 - Removed entitlements.mac.plist as it was already covered by entitlements.plist.
 - Removed tray icon support as it had no functionality.
 
