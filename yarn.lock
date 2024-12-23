@@ -366,7 +366,6 @@
   version "2.0.0-beta.22"
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli/-/cli-2.0.0-beta.22.tgz#a8c58568db903271b767ecec689bdf7632fbc8cf"
   integrity sha512-OAuiDdSRKxNmr/dseQKKMoZZxIhQ6aAxmXJctGYJxCnkd62tQ8xeq87roVXGNS5Qkuv7WpySAyR0ntiMjvNLUA==
-
   optionalDependencies:
     "@tauri-apps/cli-darwin-arm64" "2.0.0-beta.22"
     "@tauri-apps/cli-darwin-x64" "2.0.0-beta.22"
@@ -1001,10 +1000,10 @@ unplugin@^1.1.0:
     webpack-sources "^3.2.3"
     webpack-virtual-modules "^0.6.1"
 
-vite@^5.0.12:
-  version "5.3.4"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.3.4.tgz#b36ebd47c8a5e3a8727046375d5f10bf9fdf8715"
-  integrity sha512-Cw+7zL3ZG9/NZBB8C+8QbQZmR54GwqIz+WMI4b3JgdYJvX+ny9AjJXqkGQlDXSXRP9rP0B4tbciRMOVEKulVOA==
+vite@^5.3.6:
+  version "5.3.6"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.3.6.tgz#e097c0a7b79adb2e60bec9ef7907354f09d027bd"
+  integrity sha512-es78AlrylO8mTVBygC0gTC0FENv0C6T496vvd33ydbjF/mIi9q3XQ9A3NWo5qLGFKywvz10J26813OkLvcQleA==
   dependencies:
     esbuild "^0.21.3"
     postcss "^8.4.39"
