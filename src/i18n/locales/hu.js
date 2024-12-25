@@ -469,5 +469,79 @@ export default {
             message: "Hiba történt az adatbázis frissítése közben.",
             caption: "Elfogad"
         }
+    },
+    icloud: {
+        sync: {
+            checking: {
+                message: 'Frissítések ellenőrzése...'
+            },
+            inProgress: {
+                message: 'Beállítások szinkronizálása...'
+            },
+            success: {
+                message: 'Beállítások szinkronizálva'
+            },
+            error: {
+                message: 'Szinkronizálás sikertelen',
+                caption: 'Nem sikerült szinkronizálni az iCloud-dal'
+            },
+            settings: {
+                found: {
+                    title: 'Újabb beállítások találhatók',
+                    message: 'Újabb beállítások találhatók az iCloud-ban. Szeretné szinkronizálni őket most?'
+                },
+                loaded: {
+                    message: 'Beállítások frissítve az iCloud-ból'
+                },
+                actions: {
+                    sync: 'Szinkronizálás most',
+                    skip: 'Kihagyás'
+                },
+                synced: {
+                    message: 'Beállítások feltöltve az iCloud-ra'
+                },
+                error: {
+                    message: 'A beállítások szinkronizálása sikertelen'
+                }
+            },
+            personas: {
+                found: {
+                    title: 'Újabb személyiségek találhatók',
+                    message: 'Újabb személyiségek találhatók az iCloud-ban. Szeretné szinkronizálni őket most?'
+                },
+                loaded: {
+                    message: 'Személyiségek frissítve az iCloud-ból'
+                },
+                actions: {
+                    sync: 'Szinkronizálás most',
+                    skip: 'Kihagyás'
+                },
+                synced: {
+                    message: 'Személyiségek feltöltve az iCloud-ra'
+                },
+                error: {
+                    message: 'A személyiségek szinkronizálása sikertelen'
+                }
+            },
+            conversations: {
+                found: {
+                    title: 'Újabb beszélgetések találhatók',
+                    message: 'Újabb beszélgetések találhatók az iCloud-ban. Szeretné szinkronizálni őket most?'
+                },
+                loaded: {
+                    message: 'Beszélgetések frissítve az iCloud-ból'
+                },
+                actions: {
+                    sync: 'Szinkronizálás most',
+                    skip: 'Kihagyás'
+                },
+                synced: {
+                    message: 'Beszélgetések feltöltve az iCloud-ra'
+                },
+                error: {
+                    message: 'A beszélgetések szinkronizálása sikertelen'
+                }
+            }
+        }
     }
 }

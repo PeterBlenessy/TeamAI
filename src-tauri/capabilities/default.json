@@ -1,37 +1,56 @@
 {
-    "$schema": "../gen/schemas/desktop-schema.json",
-    "identifier": "default",
-    "description": "Capability for the main window",
-    "local": true,
-    "platforms": [
-        "macOS",
-        "windows",
-        "linux"
-    ],
-    "windows": [
-        "main"
-    ],
-    "permissions": [
-        "core:default",
-        "http:default",
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "Capability for the main window",
+  "local": true,
+  "platforms": [
+    "macOS",
+    "windows",
+    "linux"
+  ],
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "fs:default",
+    "fs:allow-write-file",
+    "fs:write-files",
+    "fs:allow-home-write",
+    "fs:allow-home-write-recursive",
+    {
+      "identifier": "fs:scope",
+      "allow": [
         {
-            "identifier": "http:default",
-            "allow": [
-                {
-                    "url": "http://*:*/*"
-                },
-                {
-                    "url": "https://*:*/*"
-                }
-            ]
+          "path": "$HOME/Library/Mobile Documents/com~apple~CloudDocs/TeamAI",
+          "recursive": true
         },
-        "log:default",
-        "process:allow-exit",
-        "process:allow-restart",
-        "updater:allow-check",
-        "updater:allow-download",
-        "updater:allow-install",
-        "updater:allow-download-and-install",
-        "process:default"
-    ]
+        {
+          "path": "$HOME/Library/Mobile Documents/com~apple~CloudDocs/TeamAI/*",
+          "recursive": true
+        }
+      ]
+    },
+    "core:default",
+    "http:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "http://*:*/*"
+        },
+        {
+          "url": "https://*:*/*"
+        }
+      ]
+    },
+    "log:default",
+    "process:allow-exit",
+    "process:allow-restart",
+    "updater:allow-check",
+    "updater:allow-download",
+    "updater:allow-install",
+    "updater:allow-download-and-install",
+    "process:default",
+    "window-state:default"
+  ]
 }

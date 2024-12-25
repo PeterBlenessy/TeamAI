@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
+
+## v2.1.0 - 2024-12-25
+- Added support for cloud sync of application data such as settings, personas, and conversations. This is available for Mac users using iCloud.
+
 ## v2.0.3 - 2024-12-23
 - Updated application icon to be in line with Apple guidelines.
 

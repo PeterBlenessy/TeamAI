@@ -1,5 +1,5 @@
 <template>
-    <q-card style="width: 70%">
+    <q-card style="min-width: 30%; max-width: 90%;">
         <q-card-section>
             <q-item>
                 <q-item-section top>
@@ -33,11 +33,12 @@
 
         <q-card-section>
 
-            <q-tabs v-model="tab" dense active-color="primary" indicator-color="primary" no-caps>
+            <q-tabs v-model="tab" dense active-color="primary" indicator-color="primary" no-caps mobile-arrows outside-arrows>
                 <q-tab name="general" icon="mdi-cog-outline" :label="t('settings.general.label')" />
                 <q-tab name="api" icon="mdi-web" :label="t('settings.api.label')" />
                 <q-tab name="text" icon="mdi-tooltip-text" :label="t('settings.text.label')" />
                 <q-tab name="image" icon="mdi-tooltip-image" :label="t('settings.image.label')" />
+                <q-tab name="cloudSync" icon="mdi-cloud-sync" :label="t('settings.cloud.label')" />
             </q-tabs>
 
             <q-separator />
@@ -211,13 +212,18 @@
                 <q-tab-panel name="image">
                     <ImageGenerationSettings />
                 </q-tab-panel>
+
+                <!-- Cloud sync settings -->
+                <q-tab-panel name="cloudSync">
+                    <CloudSyncSettings />
+                </q-tab-panel>
             </q-tab-panels>
         </q-card-section>
     </q-card>
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
@@ -226,16 +232,25 @@ import { useQuasar } from 'quasar';
 import ProviderSettings from "./ProviderSettings.vue";
 import TextGenerationSettings from "./TextGenerationSettings.vue";
 import ImageGenerationSettings from "./ImageGenerationSettings.vue";
+import CloudSyncSettings from './CloudSyncSettings.vue';
 
 export default {
     name: "AppSettings",
     components: {
         ProviderSettings,
         TextGenerationSettings,
-        ImageGenerationSettings
+        ImageGenerationSettings,
+        CloudSyncSettings
     },
 
-    setup() {
+    props: {
+        initialTab: {
+            type: String,
+            default: 'general'
+        }
+    },
+
+    setup(props) {
         const $q = useQuasar();
         const { t, locale, availableLocales } = useI18n();
         const settingsStore = useSettingsStore();
@@ -249,6 +264,9 @@ export default {
             speechLanguage,
             userAvatar
         } = storeToRefs(settingsStore);
+
+        // Use the initialTab prop for the tab's initial value
+        const tab = ref(props.initialTab);
 
         // Avatar related
         const avatarImage = ref(null);
@@ -271,7 +289,7 @@ export default {
             t,
             locale,
             availableLocales,
-            tab: ref('general'),
+            tab,
             speechLanguage,
             appMode,
             darkMode,

@@ -36,5 +36,17 @@ export const useSettingsStore = defineStore('settings', () => {
 
         dBVersion: ref(0),
         isDBUpgraded: ref(false),
+
+        lastSync: ref(null),
+
+        // Cloud sync settings
+        cloudSync: ref(false),          // Enable/disable cloud sync
+        cloudProvider: ref('iCloud'),   // Current cloud provider
+        lastSync: ref(null),           // Last sync timestamp
+        syncOptions: ref({
+            settings: true,      // Sync app settings
+            personas: true,      // Sync personas
+            conversations: false // Sync conversation history
+        }),
     }
 });

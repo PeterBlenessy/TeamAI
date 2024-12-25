@@ -41,7 +41,10 @@
 
                 <!-- Settings, Information, Personas, and History dialogs -->
                 <q-dialog v-model="showSettings" position="top" transition-show="slide-down">
-                    <Settings />
+                    <Settings 
+                        v-model="showSettings" 
+                        :initial-tab="settingsTab"
+                    />
                 </q-dialog>
 
                 <q-dialog v-model="showInformation" position="top" transition-show="slide-down">
@@ -92,11 +95,11 @@ import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from './stores/settings-store.js';
 import { useTeamsStore } from './stores/teams-store.js';
-import { invoke } from '@tauri-apps/api/core';
 import { check } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process';
 import DatabaseUpgrader from './services/databaseUpgrader.js';
 import logger from './services/logger';
+import iCloudService from './services/iCloudService';
 
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
@@ -120,12 +123,13 @@ export default {
         const { appMode, darkMode, quickSettings, userLocale, chatDirection, isDBUpgraded } = storeToRefs(settingsStore);
 
         const teamsStore = useTeamsStore();
-        const { newConversation } = teamsStore;
+        const { newConversation, messages } = teamsStore;
 
         const showSettings = ref(false);
         const showInformation = ref(false);
         const showHistory = ref(false);
         const showPersonas = ref(false);
+        const settingsTab = ref('general');
 
         const dbUpgrader = DatabaseUpgrader();
 
@@ -179,6 +183,49 @@ export default {
                 icon: 'mdi-information-outline',
                 tooltip: 'toolbar.tooltip.info',
                 appMode: 'basic'
+            },
+            {
+                action: async () => {
+                    if (!iCloudService.isAvailable()) {
+                        $q.notify({
+                            position: 'top',
+                            icon: 'mdi-cloud-off',
+                            type: 'warning',
+                            message: t('icloud.sync.unavailable.message'),
+                            caption: t('icloud.sync.unavailable.caption'),
+                            timeout: 3000
+                        });
+                        return;
+                    }
+
+                    if (!settingsStore.cloudSync) {
+                        $q.dialog({
+                            title: t('settings.cloud.enableDialog.title'),
+                            message: t('settings.cloud.enableDialog.message'),
+                            cancel: true,
+                            color: 'primary',
+                            persistent: true,
+                            ok: {
+                                label: t('settings.cloud.enableDialog.ok'),
+                                color: 'primary'
+                            },
+                            cancel: {
+                                label: t('settings.cloud.enableDialog.cancel'),
+                                color: 'primary',
+                                flat: true
+                            }
+                        }).onOk(() => {
+                            settingsTab.value = 'cloudSync';
+                            showSettings.value = true;
+                        });
+                        return;
+                    }
+
+                    await cloudSync();
+                },
+                icon: 'mdi-cloud-sync',
+                tooltip: 'toolbar.tooltip.iCloudSync',
+                appMode: 'advanced'
             }
         ]);
 
@@ -205,7 +252,7 @@ export default {
 
         // Show the main window when all web content has loaded.
         // This fixes the issue of flickering when the app starts and is in darkMode.
-        onMounted(() => invoke('show_main_window'));
+        // onMounted(() => invoke('show_main_window'));
 
         // Watch runtime changes to dark mode
         watch(darkMode, () => $q.dark.set(darkMode.value));
@@ -288,6 +335,184 @@ export default {
             // unlisten();
         }
 
+        async function cloudSync() {
+            logger.log('[App] - iCloud sync requested');
+            
+            if (!iCloudService.isAvailable()) {
+                $q.notify({
+                    position: 'bottom-right',
+                    icon: 'mdi-cloud-off',
+                    type: 'warning',
+                    message: t('icloud.sync.unavailable.message'),
+                    caption: t('icloud.sync.unavailable.caption'),
+                    timeout: 3000
+                });
+                return;
+            }
+
+            try {
+                let notifyRef = $q.notify({
+                    position: 'bottom-right',
+                    timeout: 0,
+                    spinner: true,
+                    icon: 'mdi-cloud-sync',
+                    message: t('icloud.sync.checking.message')
+                });
+
+                // Define sync configurations
+                const syncConfigs = [
+                    {
+                        type: 'settings',
+                        enabled: settingsStore.syncOptions.settings,
+                        getLatest: () => iCloudService.getLatestSettings(),
+                        sync: (data) => iCloudService.syncSettings(data, settingsStore.syncOptions),
+                        cleanup: () => iCloudService.cleanupOldSettings(5),
+                        store: settingsStore,
+                        getData: () => settingsStore.$state,
+                        applyData: (data) => {
+                            const newSettings = data.settings;
+                            if (!settingsStore.syncOptions.personas) {
+                                delete newSettings.personas;
+                            }
+                            settingsStore.$patch(newSettings);
+                        }
+                    },
+                    {
+                        type: 'personas',
+                        enabled: settingsStore.syncOptions.personas,
+                        getLatest: () => iCloudService.getLatestPersonas(),
+                        sync: (data) => iCloudService.syncPersonas(data),
+                        cleanup: () => iCloudService.cleanupOldPersonas(5),
+                        store: teamsStore,
+                        getData: () => teamsStore.personas,
+                        applyData: (data) => teamsStore.personas = data.personas
+                    },
+                    {
+                        type: 'conversations',
+                        enabled: settingsStore.syncOptions.conversations,
+                        getLatest: () => iCloudService.getLatestConversations(),
+                        sync: () => iCloudService.syncConversations(teamsStore),
+                        cleanup: () => iCloudService.cleanupOldConversations(5),
+                        store: teamsStore,
+                        getData: () => teamsStore.$state,
+                        applyData: () => {}
+                    }
+                ];
+
+                // Handle sync for each enabled configuration
+                for (const config of syncConfigs) {
+                    if (!config.enabled) continue;
+
+                    try {
+                        const latestData = await config.getLatest();
+                        
+                        if (latestData && (!settingsStore.lastSync || new Date(latestData.timestamp) > new Date(settingsStore.lastSync))) {
+                            if (notifyRef) {
+                                notifyRef();  // Dismiss current notification
+                            }
+                            
+                            // Ask user to confirm sync
+                            await new Promise((resolve) => {
+                                $q.dialog({
+                                    title: t(`icloud.sync.${config.type}.found.title`),
+                                    message: t(`icloud.sync.${config.type}.found.message`),
+                                    cancel: true,
+                                    persistent: true,
+                                    ok: {
+                                        label: t(`icloud.sync.${config.type}.actions.sync`),
+                                        color: 'primary'
+                                    },
+                                    cancel: {
+                                        label: t(`icloud.sync.${config.type}.actions.skip`),
+                                        color: 'primary',
+                                        flat: true
+                                    }
+                                }).onOk(async () => {
+                                    config.applyData(latestData);
+                                    $q.notify({
+                                        position: 'bottom-right',
+                                        type: 'positive',
+                                        icon: 'mdi-cloud-check',
+                                        message: t(`icloud.sync.${config.type}.loaded.message`),
+                                        timeout: 2000
+                                    });
+                                    resolve();
+                                }).onCancel(() => resolve());
+                            });
+                        }
+
+                        // Show upload notification
+                        if (notifyRef) {
+                            notifyRef();  // Dismiss previous notification
+                        }
+                        notifyRef = $q.notify({
+                            position: 'bottom-right',
+                            timeout: 0,
+                            spinner: true,
+                            icon: 'mdi-cloud-upload',
+                            message: t('icloud.sync.inProgress.message')
+                        });
+
+                        // Sync current data
+                        const currentData = config.getData();
+                        if (currentData && (Array.isArray(currentData) ? currentData.length > 0 : true)) {
+                            await config.sync(currentData);
+                            await config.cleanup();
+                            
+                            if (notifyRef) {
+                                notifyRef();  // Dismiss upload notification
+                            }
+                            
+                            $q.notify({
+                                position: 'bottom-right',
+                                type: 'positive',
+                                icon: 'mdi-cloud-check',
+                                message: t(`icloud.sync.${config.type}.synced.message`),
+                                timeout: 2000
+                            });
+                        }
+                    } catch (error) {
+                        if (notifyRef) {
+                            notifyRef();  // Dismiss any pending notification
+                        }
+                        
+                        logger.error(`[App] - Error syncing ${config.type}: ${error}`);
+                        $q.notify({
+                            position: 'bottom-right',
+                            type: 'negative',
+                            icon: 'mdi-cloud-alert',
+                            message: t(`icloud.sync.${config.type}.error.message`),
+                            timeout: 2000
+                        });
+                    }
+                }
+
+                // Update last sync timestamp
+                settingsStore.lastSync = new Date().toISOString();
+
+                // Show final success notification
+                notifyRef();
+                $q.notify({
+                    position: 'bottom-right',
+                    type: 'positive',
+                    icon: 'mdi-cloud-check',
+                    message: t('icloud.sync.success.message'),
+                    timeout: 2000
+                });
+
+            } catch (error) {
+                logger.error(`[App] - iCloud sync error: ${error}`);
+                $q.notify({
+                    position: 'bottom-right',
+                    type: 'negative',
+                    icon: 'mdi-cloud-alert',
+                    message: t('icloud.sync.error.message'),
+                    caption: t('icloud.sync.error.caption'),
+                    timeout: 3000
+                });
+            }
+        }
+
         return {
             appMode,
             miniDrawer,
@@ -302,7 +527,9 @@ export default {
             newConversation,
             checkForUpdates,
             iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
-            isDBUpgraded
+            isDBUpgraded,
+            settingsTab,
+            messages
         }
     },
 }

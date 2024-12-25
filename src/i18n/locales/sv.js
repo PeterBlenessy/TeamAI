@@ -469,4 +469,78 @@ export default {
             action: 'Avfärda'
         }
     },
+    icloud: {
+        sync: {
+            checking: {
+                message: 'Kontrollerar uppdateringar...'
+            },
+            inProgress: {
+                message: 'Synkroniserar inställningar...'
+            },
+            success: {
+                message: 'Inställningar synkroniserade'
+            },
+            error: {
+                message: 'Synkronisering misslyckades',
+                caption: 'Kunde inte synkronisera med iCloud'
+            },
+            settings: {
+                found: {
+                    title: 'Nyare inställningar hittade',
+                    message: 'Nyare inställningar hittades i iCloud. Vill du synkronisera dem nu?'
+                },
+                loaded: {
+                    message: 'Inställningar uppdaterade från iCloud'
+                },
+                actions: {
+                    sync: 'Synkronisera nu',
+                    skip: 'Hoppa över'
+                },
+                synced: {
+                    message: 'Inställningar uppladdade till iCloud'
+                },
+                error: {
+                    message: 'Misslyckades med att synkronisera inställningar'
+                }
+            },
+            personas: {
+                found: {
+                    title: 'Nyare personas hittade',
+                    message: 'Nyare personas hittades i iCloud. Vill du synkronisera dem nu?'
+                },
+                loaded: {
+                    message: 'Personas uppdaterade från iCloud'
+                },
+                actions: {
+                    sync: 'Synkronisera nu',
+                    skip: 'Hoppa över'
+                },
+                synced: {
+                    message: 'Personas uppladdade till iCloud'
+                },
+                error: {
+                    message: 'Misslyckades med att synkronisera personas'
+                }
+            },
+            conversations: {
+                found: {
+                    title: 'Nyare konversationer hittade',
+                    message: 'Nyare konversationer hittades i iCloud. Vill du synkronisera dem nu?'
+                },
+                loaded: {
+                    message: 'Konversationer uppdaterade från iCloud'
+                },
+                actions: {
+                    sync: 'Synkronisera nu',
+                    skip: 'Hoppa över'
+                },
+                synced: {
+                    message: 'Konversationer uppladdade till iCloud'
+                },
+                error: {
+                    message: 'Misslyckades med att synkronisera konversationer'
+                }
+            }
+        }
+    }
 }

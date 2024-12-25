@@ -49,7 +49,16 @@ app.use(Quasar, {
         dark: 'auto',
         notify: {},
         brand: {
-            primary: '#ff6f00'
+            primary: '#ff6f00',
+            secondary: '#ff8000',
+            accent: '#9C27B0',    
+            // dark: '#333333',
+            // 'dark-page': '#191919',
+            positive: '#21BA45',
+            negative: '#f44336',
+            info: '#333333',
+            warning: '#f2c037'
+
         }
     },
     iconSet: quasarIconSet,

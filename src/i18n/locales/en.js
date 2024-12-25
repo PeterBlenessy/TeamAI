@@ -36,7 +36,8 @@ export default {
             info: 'Info',
             settings: 'Show settings',
             history: 'Show conversations',
-            checkForUpdates: 'Check for updates...'
+            checkForUpdates: 'Check for updates...',
+            iCloudSync: 'Sync with iCloud'
         },
     },
 
@@ -224,6 +225,45 @@ export default {
                 natural: 'Natural'
             }
         },
+
+        cloud: {
+            label: 'Cloud Sync',
+            tooltip: 'Cloud sync settings',
+            title: 'Cloud Sync',
+            sync: {
+                label: 'Enable Cloud Sync',
+                caption: 'Sync your settings across devices',
+                unavailable: 'Cloud sync is only available on macOS devices',
+                tooltip: 'Enable or disable cloud synchronization'
+            },
+            provider: {
+                label: 'Cloud Provider',
+                caption: 'Select your cloud storage provider',
+                hint: 'Select your cloud storage provider',
+                unavailable: 'Cloud providers are only available on macOS',
+                tooltip: 'Choose which cloud service to use for syncing'
+            },
+            lastSync: {
+                label: 'Last Sync',
+                caption: 'Last synced: {date}'
+            },
+            enableDialog: {
+                title: 'Cloud Sync Disabled',
+                message: 'Cloud sync is currently disabled. Would you like to enable it in settings?',
+                ok: 'Open Settings',
+                cancel: 'Cancel'
+            },
+            options: {
+                label: 'Sync Options',
+                caption: 'Choose what to sync',
+                settings: 'Application Settings',
+                settingsCaption: 'Sync application preferences and configuration',
+                personas: 'AI Personas',
+                personasCaption: 'Sync your custom AI personas across devices',
+                conversations: 'Chat History',
+                conversationsCaption: 'Sync conversation history and messages'
+            }
+        }
     },
 
     page: {},
@@ -464,6 +504,80 @@ export default {
         error: {
             message: 'Database upgrade error',
             action: 'Dismiss'
+        }
+    },
+    icloud: {
+        sync: {
+            checking: {
+                message: 'Checking for updates...'
+            },
+            inProgress: {
+                message: 'Syncing settings...'
+            },
+            success: {
+                message: 'Settings synced'
+            },
+            error: {
+                message: 'Sync failed',
+                caption: 'Unable to sync with iCloud'
+            },
+            settings: {
+                found: {
+                    title: 'Newer Settings Found',
+                    message: 'Newer settings were found in iCloud. Would you like to sync them now?'
+                },
+                loaded: {
+                    message: 'Settings updated from iCloud'
+                },
+                actions: {
+                    sync: 'Sync Now',
+                    skip: 'Skip'
+                },
+                synced: {
+                    message: 'Settings uploaded to iCloud'
+                },
+                error: {
+                    message: 'Failed to sync settings'
+                }
+            },
+            personas: {
+                found: {
+                    title: 'Newer Personas Found',
+                    message: 'Newer personas were found in iCloud. Would you like to sync them now?'
+                },
+                loaded: {
+                    message: 'Personas updated from iCloud'
+                },
+                actions: {
+                    sync: 'Sync Now',
+                    skip: 'Skip'
+                },
+                synced: {
+                    message: 'Personas uploaded to iCloud'
+                },
+                error: {
+                    message: 'Failed to sync personas'
+                }
+            },
+            conversations: {
+                found: {
+                    title: 'Newer Conversations Found',
+                    message: 'Newer conversations were found in iCloud. Would you like to sync them now?'
+                },
+                loaded: {
+                    message: 'Conversations updated from iCloud'
+                },
+                actions: {
+                    sync: 'Sync Now',
+                    skip: 'Skip'
+                },
+                synced: {
+                    message: 'Conversations uploaded to iCloud'
+                },
+                error: {
+                    message: 'Failed to sync conversations'
+                }
+            }
         }
     }
 }
