@@ -1,4 +1,3 @@
-
 # Changelog
 All notable changes to this project will be documented in this file.
 
@@ -28,6 +27,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
+## v2.1.1 - 2024-12-25
+- Enhanced iCloud sync with improved conflict detection and resolution.
+- Added client identification solution for better sync coordination.
+- Added sequence numbering for precise sync ordering.
+- Added monthly backup preservation system.
+- Added sync metadata tracking per client.
+- Improved file locking mechanism for safer concurrent operations.
+- Improved timestamp precision using milliseconds.
+- Implemented more robust cleanup strategy for old sync files.
+- Added `sync now`button to Cloud sync setting panel.
 
 ## v2.1.0 - 2024-12-25
 - Added support for cloud sync of application data such as settings, personas, and conversations. This is available for Mac users using iCloud.

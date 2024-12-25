@@ -237,6 +237,9 @@ export default {
                 vivid: 'Levande',
                 natural: 'Naturlig'
             }
+        },
+        cloud: {
+            syncNow: 'Synkronisera nu'
         }
     },
 

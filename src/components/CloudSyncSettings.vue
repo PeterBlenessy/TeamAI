@@ -59,7 +59,7 @@
         </q-item>
 
         <!-- Settings Sync Option -->
-        <q-item tag="label">
+        <q-item>
             <q-item-section avatar>
                 <q-icon name="mdi-cog-sync" :color="iconColor" />
             </q-item-section>
@@ -81,7 +81,7 @@
         </q-item>
 
         <!-- Personas Sync Option -->
-        <q-item tag="label">
+        <q-item>
             <q-item-section avatar>
                 <q-icon name="mdi-account-sync" :color="iconColor" />
             </q-item-section>
@@ -103,7 +103,7 @@
         </q-item>
 
         <!-- Conversations Sync Option -->
-        <q-item tag="label">
+        <q-item>
             <q-item-section avatar>
                 <q-icon name="mdi-message-text-clock" :color="iconColor" />
             </q-item-section>
@@ -124,6 +124,8 @@
             </q-item-section>
         </q-item>
 
+        <q-separator spaced />
+
         <!-- Last Sync Info -->
         <q-item v-if="cloudSync && lastSync">
             <q-item-section avatar>
@@ -135,17 +137,30 @@
                     {{ t('settings.cloud.lastSync.caption', { date: new Date(lastSync).toLocaleString() }) }}
                 </q-item-label>
             </q-item-section>
+            <q-item-section side>
+                <q-btn
+                    dense flat
+                    round
+                    :icon="syncing ? 'mdi-sync-alert' : 'mdi-sync'"
+                    :loading="syncing"
+                    :disable="!isMacOS || !cloudSync"
+                    @click="handleSync"
+                >
+                    <q-tooltip>{{ t('settings.cloud.syncNow') }}</q-tooltip>
+                </q-btn>
+            </q-item-section>
         </q-item>
     </q-list>
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from '../stores/settings-store';
 import { platform } from '@tauri-apps/plugin-os';
 import { useQuasar } from 'quasar';
+import { useCloudSync } from '../composables/useCloudSync';
 
 export default {
     name: 'CloudSync',
@@ -156,6 +171,7 @@ export default {
         const { cloudSync, cloudProvider, lastSync, syncOptions } = storeToRefs(settingsStore);
 
         const isMacOS = computed(() => platform() === 'macos');
+        const { syncing, syncToCloud } = useCloudSync();
 
         return {
             t,
@@ -164,8 +180,10 @@ export default {
             lastSync,
             syncOptions,
             isMacOS,
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
+            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
+            syncing,
+            handleSync: syncToCloud
         };
     }
 };
-</script> 
+</script>

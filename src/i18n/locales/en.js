@@ -262,7 +262,8 @@ export default {
                 personasCaption: 'Sync your custom AI personas across devices',
                 conversations: 'Chat History',
                 conversationsCaption: 'Sync conversation history and messages'
-            }
+            },
+            syncNow: 'Sync now'
         }
     },
 

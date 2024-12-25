@@ -236,6 +236,9 @@ export default {
                 natural: 'Természetes',
             }
         },
+        cloud: {
+            syncNow: 'Szinkronizálj most'
+        }
     },
 
     page: {},

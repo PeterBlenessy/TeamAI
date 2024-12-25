@@ -5,6 +5,12 @@ import { readFile, create, readDir, mkdir, remove } from '@tauri-apps/plugin-fs'
 import logger from './logger';
 
 const iCloudService = {
+    VERSION: '1.0',
+    _lockFiles: new Set(),
+    _clientId: null, // Unique client identifier
+    _sequenceNumber: 0, // Sync sequence counter
+    _lastSyncMetadata: null,
+
     // Internal state
     _isAvailable: false,
     _container: null,
@@ -21,7 +27,6 @@ const iCloudService = {
                 const iCloudDocsPath = await join(iCloudPath, 'com~apple~CloudDocs');
                 this._container = await join(iCloudDocsPath, 'TeamAI');
 
-
                 // Create main and messages directories
                 try {
                     await mkdir(this._container, { recursive: true });
@@ -30,6 +35,10 @@ const iCloudService = {
                     logger.error(`[iCloudService] - Error creating directories: ${dirError}`);
                     throw dirError;
                 }
+
+                // Initialize client ID and load sync metadata
+                await this._initializeClientId();
+                await this._loadSyncMetadata();
 
                 this._isAvailable = true;
                 this._initialized = true;
@@ -42,6 +51,61 @@ const iCloudService = {
             logger.error(`[iCloudService] - Initialization failed: ${error}`);
             this._isAvailable = false;
         }
+    },
+
+    async _initializeClientId() {
+        try {
+            const metadataPath = await join(this._container, 'client-metadata.json');
+            let metadata;
+            try {
+                const contents = await readFile(metadataPath);
+                metadata = JSON.parse(new TextDecoder().decode(contents));
+            } catch (e) {
+                // Generate new client ID if file doesn't exist
+                metadata = {
+                    clientId: `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    firstSeen: new Date().toISOString()
+                };
+                const file = await create(metadataPath);
+                await file.write(new TextEncoder().encode(JSON.stringify(metadata, null, 2)));
+                await file.close();
+            }
+            this._clientId = metadata.clientId;
+        } catch (error) {
+            logger.error(`[iCloudService] - Error initializing client ID: ${error}`);
+            throw error;
+        }
+    },
+
+    async _loadSyncMetadata() {
+        try {
+            const syncMetadataPath = await join(this._container, 'sync-metadata.json');
+            try {
+                const contents = await readFile(syncMetadataPath);
+                this._lastSyncMetadata = JSON.parse(new TextDecoder().decode(contents));
+            } catch (e) {
+                this._lastSyncMetadata = { clients: {} };
+            }
+        } catch (error) {
+            logger.error(`[iCloudService] - Error loading sync metadata: ${error}`);
+            throw error;
+        }
+    },
+
+    async _updateSyncMetadata(fileType, syncTimestamp) {
+        const syncMetadataPath = await join(this._container, 'sync-metadata.json');
+        this._lastSyncMetadata.clients[this._clientId] = {
+            ...this._lastSyncMetadata.clients[this._clientId],
+            lastSync: syncTimestamp,
+            [fileType]: {
+                lastSync: syncTimestamp,
+                sequence: this._sequenceNumber
+            }
+        };
+
+        const file = await create(syncMetadataPath);
+        await file.write(new TextEncoder().encode(JSON.stringify(this._lastSyncMetadata, null, 2)));
+        await file.close();
     },
 
     /**
@@ -70,6 +134,28 @@ const iCloudService = {
     },
 
     /**
+     * Acquire a lock for a file
+     * @param {string} fileName - Name of file to lock
+     */
+    async _acquireLock(fileName) {
+        if (this._lockFiles.has(fileName)) {
+            throw new Error(`File ${fileName} is locked`);
+        }
+        this._lockFiles.add(fileName);
+        return () => this._lockFiles.delete(fileName);
+    },
+
+    /**
+     * Validate data before saving
+     * @param {any} data - Data to validate
+     */
+    _validateData(data) {
+        if (!data || typeof data !== 'object') {
+            throw new Error('Invalid data format');
+        }
+    },
+
+    /**
      * Save data to iCloud
      * @param {string} fileName - Name of file to save
      * @param {any} data - Data to store
@@ -80,13 +166,24 @@ const iCloudService = {
             throw new Error('iCloud is not available');
         }
 
-        // Use the main container for all files, including conversations
-        const filePath = await join(this._container, fileName); // Save directly in the TeamAI folder
+        this._validateData(data);
+        const releaseLock = await this._acquireLock(fileName);
+
         try {
+            const filePath = await join(this._container, fileName);
             const file = await create(filePath);
-            const contents = JSON.stringify(data, null, 2);
-            
-            // logger.info(`[iCloudService] - Writing contents to ${filePath}: ${contents}`);
+
+            this._sequenceNumber++;
+            const contentToSave = {
+                version: this.VERSION,
+                clientId: this._clientId,
+                sequence: this._sequenceNumber,
+                timestamp: new Date().toISOString(),
+                timestampMs: Date.now(),
+                data: data
+            };
+
+            const contents = JSON.stringify(contentToSave, null, 2);
             await file.write(new TextEncoder().encode(contents));
             await file.close();
             logger.info(`[iCloudService] - Saved file: ${fileName}`);
@@ -94,6 +191,8 @@ const iCloudService = {
         } catch (error) {
             logger.error(`[iCloudService] - Error saving file ${fileName}: ${error}`);
             throw error;
+        } finally {
+            releaseLock();
         }
     },
 
@@ -112,7 +211,7 @@ const iCloudService = {
             const contents = await readFile(filePath);
             const text = new TextDecoder().decode(contents);
             logger.info(`[iCloudService] - Read file contents from: ${fileName}`);
-            
+
             try {
                 return JSON.parse(text);
             } catch (parseError) {
@@ -227,18 +326,70 @@ const iCloudService = {
 
         switch (action) {
             case 'getLatest':
-                filteredFiles.sort((a, b) => b.name.localeCompare(a.name)); // Sort descending
-                if (filteredFiles.length === 0) {
-                    return null;
+                const latestFiles = await Promise.all(filteredFiles.map(async f => ({
+                    file: f,
+                    metadata: await this.readFile(f.name)
+                })));
+
+                const validFiles = latestFiles.filter(f => f.metadata); // Remove any failed reads
+                validFiles.sort((a, b) => {
+                    // First compare by timestamp in milliseconds
+                    const timeCompare = (b.metadata.timestampMs || 0) - (a.metadata.timestampMs || 0);
+                    if (timeCompare !== 0) return timeCompare;
+
+                    // If timestamps are equal, use sequence number
+                    return (b.metadata.sequence || 0) - (a.metadata.sequence || 0);
+                });
+
+                if (validFiles.length === 0) return null;
+
+                // Check for conflicts (multiple recent changes)
+                const mostRecent = validFiles[0];
+                const conflicts = validFiles.filter(f =>
+                    Math.abs((f.metadata.timestampMs || 0) - (mostRecent.metadata.timestampMs || 0)) < 60000 // Within 1 minute
+                    && f.metadata.clientId !== mostRecent.metadata.clientId
+                );
+
+                if (conflicts.length > 0) {
+                    logger.warn(`[iCloudService] - Detected ${conflicts.length} potential conflicts for ${fileType}`);
+                    // You could implement different conflict resolution strategies here
+                    // For now, we'll use the most recent by timestamp + sequence number
                 }
-                return await this.readFile(filteredFiles[0].name);
+
+                return mostRecent.metadata;
 
             case 'cleanupOld':
-                filteredFiles.sort((a, b) => b.name.localeCompare(a.name)); // Sort descending
+                // Improved cleanup strategy
+                filteredFiles.sort((a, b) => b.name.localeCompare(a.name));
                 if (filteredFiles.length <= keepCount) {
                     return;
                 }
-                const filesToDelete = filteredFiles.slice(keepCount);
+
+                // Keep at least one file per month for the last 3 months
+                const monthlyFiles = new Map();
+                const threeMonthsAgo = new Date();
+                threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+                filteredFiles.forEach(file => {
+                    const dateMatch = file.name.match(/\d{4}-\d{2}-\d{2}/);
+                    if (dateMatch) {
+                        const fileDate = new Date(dateMatch[0]);
+                        const monthKey = `${fileDate.getFullYear()}-${fileDate.getMonth()}`;
+
+                        if (fileDate >= threeMonthsAgo && !monthlyFiles.has(monthKey)) {
+                            monthlyFiles.set(monthKey, file);
+                        }
+                    }
+                });
+
+                // Files to preserve
+                const preserveFiles = new Set([...monthlyFiles.values()].map(f => f.name));
+
+                // Delete excess files while keeping monthly backups
+                const filesToDelete = filteredFiles
+                    .filter(f => !preserveFiles.has(f.name))
+                    .slice(keepCount);
+
                 for (const file of filesToDelete) {
                     await remove(await join(this._container, file.name));
                     logger.info(`[iCloudService] - Deleted old ${fileType} file: ${file.name}`);
@@ -246,13 +397,14 @@ const iCloudService = {
                 break;
 
             case 'sync':
-                const timestamp = new Date().toISOString().split('T')[0];
-                const fileName = `${filePrefix}${timestamp}.json`;
+                const syncTimestamp = new Date().toISOString();
+                const fileName = `${filePrefix}${Date.now()}_${this._clientId}.json`;
                 await this.saveFile(fileName, {
-                    timestamp: new Date().toISOString(),
-                    [fileType]: data // Use the fileType to set the correct property
-                }, false);
-                logger.info(`[iCloudService] - All ${fileType} synced to: ${fileName}`);
+                    timestamp: syncTimestamp,
+                    [fileType]: data
+                });
+
+                await this._updateSyncMetadata(fileType, syncTimestamp);
                 return { success: true };
 
             default:
@@ -264,4 +416,4 @@ const iCloudService = {
 // Initialize the service when imported
 iCloudService.init();
 
-export default iCloudService; 
+export default iCloudService;
