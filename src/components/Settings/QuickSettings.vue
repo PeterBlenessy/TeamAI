@@ -208,15 +208,14 @@
 <script>
 
 import { computed, ref, watch } from 'vue';
-import { useSettingsStore } from '../stores/settings-store.js';
-import { useTeamsStore } from '../stores/teams-store.js';
+import { useSettingsStore } from '../../stores/settings-store.js';
+import { useTeamsStore } from '../../stores/teams-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
-import openaiConfig from '../services/openai.config.json';
-import providersConfig from '../services/providers.config.json';
-import { exportConversation } from '../services/helpers.js';
-import logger from '../services/logger';
+import openaiConfig from '../../services/openai.config.json';
+import { exportConversation } from '../../services/helpers.js';
+import logger from '../../services/logger.js';
 
 export default {
     name: "QuickSettings",

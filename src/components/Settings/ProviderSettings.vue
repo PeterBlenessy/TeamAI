@@ -113,10 +113,10 @@
 
 import { computed, ref } from 'vue';
 import { storeToRefs } from "pinia";
-import { useSettingsStore } from '../stores/settings-store.js';
+import { useSettingsStore } from '../../stores/settings-store.js';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import defaultProviders from '../services/providers.config.json';
+import defaultProviders from '../../services/providers.config.json';
 
 export default {
     setup() {

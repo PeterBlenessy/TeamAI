@@ -224,7 +224,7 @@
 
 <script>
 import { computed, ref } from 'vue';
-import { useSettingsStore } from '../stores/settings-store.js';
+import { useSettingsStore } from '../../stores/settings-store.js';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';

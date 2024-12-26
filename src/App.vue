@@ -82,8 +82,8 @@
 
 <script>
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
-import Settings from "./components/Settings.vue";
-import QuickSettings from "./components/QuickSettings.vue";
+import SettingsDialog from "./components/Settings/SettingsDialog.vue";
+import QuickSettings from "./components/Settings/QuickSettings.vue";
 import UserInput from "./components/UserInput.vue";
 import Messages from "./components/Messages.vue";
 import OpenAI from './components/OpenAI.vue';
@@ -106,7 +106,7 @@ import iCloudService from './services/iCloudService';
 export default {
 
     components: {
-        Settings,
+        Settings: SettingsDialog,  // Update component name mapping
         QuickSettings,
         UserInput,
         Messages,
