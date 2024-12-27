@@ -17,11 +17,12 @@
                                 :loading="restartingOllama"
                                 @click.stop.prevent="configureAndRestartOllama"
                             >
-                                <q-tooltip>Configure & Restart Ollama</q-tooltip>
+                            <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                                {{ t('settings.provider.ollama.tooltip') }}
+                            </q-tooltip>
                             </q-btn>
                         </template>
                     </q-select>
-                    <!-- <q-item-label caption>{{ t('settings.provider.caption') }}</q-item-label> -->
                     <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                         {{ t('settings.provider.tooltip') }}
                     </q-tooltip>

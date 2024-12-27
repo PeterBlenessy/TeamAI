@@ -159,6 +159,9 @@ export default {
                 label: 'API-nyckel',
                 placeholder: 'Hemlig API-nyckel',
                 tooltip: 'Din hemliga API-nyckel.'
+            },
+            ollama: {
+                tooltip: 'Konfigurera & starta om Ollama'
             }
         },
         
@@ -180,9 +183,9 @@ export default {
             },
 
             apiKey: {
-                label: 'OpenAI API-nyckel',
-                placeholder: 'Din OpenAI API-nyckel',
-                tooltip: 'Din OpenAI API-nyckel. Du kan hitta den på din OpenAI-dashboard.'
+                label: 'AI API-nyckel',
+                placeholder: 'Din AI API-nyckel',
+                tooltip: 'Din AI API-nyckel. Du kan hitta den på din AI-dashboard.'
             }
         },
 
@@ -191,8 +194,8 @@ export default {
             tooltip: 'Inställningar för textgenerering',
 
             model: {
-                label: 'OpenAI-modell',
-                tooltip: 'OpenAI-modell som ska användas för att generera svaret.'
+                label: 'AI-modell',
+                tooltip: 'AI-modell som ska användas för att generera svaret.'
             },
             maxTokens: {
                 label: 'Maximalt antal tokens',
@@ -265,21 +268,21 @@ export default {
 
     info: {
         title: 'Applikationsbeskrivning',
-        description: 'TeamAI-applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa uppgiften som efterfrågas av användaren som en teaminsats, där varje bot bidrar med sina respektive förmågor.',
+        description: 'TeamAI-applikationen gör det möjligt för användaren att skapa ett team av AI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa uppgiften som efterfrågas av användaren som en teaminsats, där varje bot bidrar med sina respektive förmågor.',
         features: {
             title: 'Funktioner',
-            description: 'Applikationen gör det möjligt för användaren att skapa ett team av OpenAI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa den uppgift som användaren begär som ett team, där varje bot bidrar med sina respektive förmågor.',
+            description: 'Applikationen gör det möjligt för användaren att skapa ett team av AI-drivna botar med individuella förmågor och personligheter. Botarna kommer att lösa den uppgift som användaren begär som ett team, där varje bot bidrar med sina respektive förmågor.',
             basic: {
                 label: 'Grundläge',
-                caption: 'I sitt grundläge fungerar applikationen som en chattapplikation, där användaren kan chatta med en enda AI-bot. Botten drivs av OpenAI och kan konfigureras av användaren för att ha specifika förmågor och beteenden.'
+                caption: 'I sitt grundläge fungerar applikationen som en chattapplikation, där användaren kan chatta med en enda AI-bot. Botten drivs av AI och kan konfigureras av användaren för att ha specifika förmågor och beteenden.'
             },
             advanced: {
                 label: 'Avancerat läge',
-                caption: 'I avancerat läge kan användaren skapa team av flera AI-bots, där varje bot har en specifik roll, kompetens, beteende och mål i teamet. Användaren kan tilldela en uppgift till teamet som kommer att lösas i samarbete mellan AI-botsen. Varje bot drivs av OpenAI och kan konfigureras av användaren för att ha specifika förmågor och beteenden.'
+                caption: 'I avancerat läge kan användaren skapa team av flera AI-bots, där varje bot har en specifik roll, kompetens, beteende och mål i teamet. Användaren kan tilldela en uppgift till teamet som kommer att lösas i samarbete mellan AI-botsen. Varje bot drivs av AI och kan konfigureras av användaren för att ha specifika förmågor och beteenden.'
             },
             settings: {
                 label: 'Inställningar',
-                caption: 'Användaren kan konfigurera applikationsalternativ som språk, mörkt eller ljust läge och konversationsläge. För närvarande tillgängliga språk är: Engelska, Svenska och Ungerska. Användaren kan också konfigurera OpenAI API-relaterade parametrar, som API-nyckel, modell, max antal tecken, val och temperatur. OpenAI-alternativen förklaras ytterligare i inställningsdialogen.'
+                caption: 'Användaren kan konfigurera applikationsalternativ som språk, mörkt eller ljust läge och konversationsläge. För närvarande tillgängliga språk är: Engelska, Svenska och Ungerska. Användaren kan också konfigurera AI relaterade parametrar, som API-nyckel, modell, max antal tecken, val och temperatur. AI-alternativen förklaras ytterligare i inställningsdialogen.'
             },
             history: {
                 label: 'Konversationshistorik',
@@ -296,7 +299,7 @@ export default {
         },
         privacy: {
             title: 'Integritet',
-            description: 'Alla inställningar som användaren gör och all information som anges lagras lokalt i applikationens interna databas. Applikationen använder inte cookies. Applikationen använder inte några spårningstjänster. Applikationen använder OpenAI API:er. Lär dig mer om OpenAI API här: https://platform.openai.com/docs/api-reference, och om dess datahanteringspolicy här: https://openai.com/policies/api-data-usage-policies. Applikationen erbjuder text-till-tal och tal-till-text funktionalitet genom Web Speech API. Lär dig mer om Web Speech API här: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API. Om standardwebbvisningen på värdoperativsystemet är Chome, kommer den att använda Chomes implementering av Web Speech API och kommer att använda Googles servrar för att utföra tal-till-text konvertering. Läs mer om detta i Googles förtydligande om sekretess: https://www.google.com/chrome/privacy/whitepaper.html#speech.'
+            description: 'Alla inställningar som användaren gör och all information som anges lagras lokalt i applikationens interna databas. Applikationen använder inte cookies. Applikationen använder inte några spårningstjänster. Applikationen kan konfigureras att använda OpenAI API:er. Lär dig mer om OpenAI API här: https://platform.openai.com/docs/api-reference, och om dess datahanteringspolicy här: https://openai.com/policies/api-data-usage-policies. Applikationen erbjuder text-till-tal och tal-till-text funktionalitet genom Web Speech API. Lär dig mer om Web Speech API här: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API. Om standardwebbvisningen på värdoperativsystemet är Chome, kommer den att använda Chomes implementering av Web Speech API och kommer att använda Googles servrar för att utföra tal-till-text konvertering. Läs mer om detta i Googles förtydligande om sekretess: https://www.google.com/chrome/privacy/whitepaper.html#speech.'
         },
         license: {
             title: 'Licens',
@@ -392,7 +395,7 @@ export default {
         },
         '401': {
             message: 'Ogiltig autentisering.',
-            caption: 'Se till att OpenAI API-nyckeln som används är korrekt.'
+            caption: 'Se till att AI API-nyckeln som används är korrekt.'
         },
         '404': {
             message: 'Anropet verkar ogiltig.',

@@ -157,6 +157,9 @@ export default {
                 label: 'API key',
                 placeholder: 'Secret API key',
                 tooltip: 'Your secret API key.'
+            },
+            ollama: {
+                tooltip: 'Configure & Restart Ollama'
             }
         },
 
@@ -177,8 +180,8 @@ export default {
             tooltip: 'Text generation settings',
 
             model: {
-                label: 'OpenAI model',
-                tooltip: 'The OpenAI model to use for generating the response.'
+                label: 'AI model',
+                tooltip: 'The AI model to use for generating the response.'
             },
             maxTokens: {
                 label: 'Max tokens',
@@ -289,21 +292,21 @@ export default {
 
     info: {
         title: 'Application description',
-        description: 'The TeamAI application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.',
+        description: 'The TeamAI application allows the user to create a team of AI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.',
         features: {
             title: 'Features',
-            description: 'The application allows the user to create a team of OpenAI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.',
+            description: 'The application allows the user to create a team of AI powered bots with individual capabilities, personas. The bots will solve the task requested by the user as a team effort, each bot contributing with its respective capabilities.',
             basic: {
                 label: 'Basic mode',
-                caption: 'In its basic mode, the application serves as a chat application, with the user being able to chat with a single AI bot. The bot is powered by OpenAI and can be configured by the user to have specific capabilities and behaviour.'
+                caption: 'In its basic mode, the application serves as a chat application, with the user being able to chat with a single AI bot. The bot is powered by AI and can be configured by the user to have specific capabilities and behaviour.'
             },
             advanced: {
                 label: 'Advanced mode',
-                caption: 'In advanced mode, the user can create teams of several AI bots, each bot with a specific role, competences, behaviour and objective in the team. The user can assign a task to the team which will be solved in collaboration between the AI bots. Each bot is powered by OpenAI and can be configured by the user to have specific capabilities and behaviour.'
+                caption: 'In advanced mode, the user can create teams of several AI bots, each bot with a specific role, competences, behaviour and objective in the team. The user can assign a task to the team which will be solved in collaboration between the AI bots. Each bot is powered by AI and can be configured by the user to have specific capabilities and behaviour.'
             },
             settings: {
                 label: 'Settings',
-                caption: 'The user can configure application options such as language, dark or light mode, and conversation mode. Currently available languages are: English, Swedish, and Hungarian. The user can also configure OpenAI API related parameters, such as API Key, model, max tokens, choices, and temperature. The OpenAI options are further explained in the settings dialog.'
+                caption: 'The user can configure application options such as language, dark or light mode, and conversation mode. Currently available languages are: English, Swedish, and Hungarian. The user can also configure AI Provider related parameters, such as API Key, model, max tokens, choices, and temperature. The AI Provider options are further explained in the settings dialog.'
             },
             history: {
                 label: 'Conversation history',
@@ -320,7 +323,7 @@ export default {
         },
         privacy: {
             title: 'Privacy',
-            description: 'All user settings and provided information are stored locally in the application’s internal database. The application does not use cookies. The application does not use any tracking services. The application uses OpenAI APIs. Learn more about the OpenAI API here: https://platform.openai.com/docs/api-reference, and about it’s data usage policies here: https://openai.com/policies/api-data-usage-policies. The application offers text-to-speech and speech-to-text functionality through the Web Speech API. Learn more about the Web Speech API here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API. If the default webview on the host operating system is Chome, it will use Chome´s implementation of the Web Speech API and will use Google´s servers to perform speech-to-text conversion. Read more about this in Google´s privacy whitepaper: https://www.google.com/chrome/privacy/whitepaper.html#speech.'
+            description: 'All user settings and provided information are stored locally in the application’s internal database. The application does not use cookies. The application does not use any tracking services. When configured so, the application uses OpenAI APIs. Learn more about the OpenAI API here: https://platform.openai.com/docs/api-reference, and about it’s data usage policies here: https://openai.com/policies/api-data-usage-policies. The application offers text-to-speech and speech-to-text functionality through the Web Speech API. Learn more about the Web Speech API here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API. If the default webview on the host operating system is Chome, it will use Chome´s implementation of the Web Speech API and will use Google´s servers to perform speech-to-text conversion. Read more about this in Google´s privacy whitepaper: https://www.google.com/chrome/privacy/whitepaper.html#speech.'
         },
         license: {
             title: 'License',
@@ -422,7 +425,7 @@ export default {
         },
         '401': {
             message: 'Invalid Authentication.',
-            caption: 'Please ensure that the OpenAI API key used is correct.'
+            caption: 'Please ensure that the AI Provider API key used is correct.'
         },
         '404': {
             message: 'The request seams invalid.',

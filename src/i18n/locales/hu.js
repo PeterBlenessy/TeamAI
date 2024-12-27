@@ -158,6 +158,9 @@ export default {
                 placeholder: 'Az API kulcs',
                 tooltip: 'Az API kulcs'
             },
+            ollama: {
+                tooltip: 'Ollama konfigurálása és újraindítása'
+            },
         },
     
         api: {
@@ -177,9 +180,9 @@ export default {
             },
 
             apiKey: {
-                label: 'OpenAI API kulcs',
-                placeholder: 'Az OpenAI API kulcs',
-                tooltip: 'Az OpenAI API kulcs. Az OpenAI dashboard-on található.'
+                label: 'AI API kulcs',
+                placeholder: 'Az AI API kulcs',
+                tooltip: 'Az AI API kulcs. Az AI dashboard-on található.'
             }
         },
     
@@ -189,8 +192,8 @@ export default {
 
 
             model: {
-                label: 'OpenAI modell',
-                tooltip: 'Az OpenAI modell, amelyet a válasz generálásához használunk.'
+                label: 'AI modell',
+                tooltip: 'Az AI modell, amelyet a válasz generálásához használunk.'
             },
             maxTokens: {
                 label: 'Maximális tokenek száma',
@@ -264,21 +267,21 @@ export default {
 
     info: {
         title: 'Alkalmazás leírása',
-        description: 'A TeamAI alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által vezérelt botokból álló csapatot hozzon létre, amelyeknek egyedi képességei és személyiségei vannak. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, így minden bot hozzájárul a saját képességeivel.',
+        description: 'A TeamAI alkalmazás lehetővé teszi a felhasználó számára, hogy egy AI által vezérelt botokból álló csapatot hozzon létre, amelyeknek egyedi képességei és személyiségei vannak. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, így minden bot hozzájárul a saját képességeivel.',
         features: {
             title: 'Funkciók',
-            description: 'A alkalmazás lehetővé teszi a felhasználó számára, hogy egy OpenAI által meghajtott botokból álló csapatot hozzon létre egyedi képességekkel és személyiséggel. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, minden bot hozzájárulva a saját képességeivel.',
+            description: 'A alkalmazás lehetővé teszi a felhasználó számára, hogy egy AI által meghajtott botokból álló csapatot hozzon létre egyedi képességekkel és személyiséggel. A botok csapatmunkában oldják meg a felhasználó által kért feladatot, minden bot hozzájárulva a saját képességeivel.',
             basic: {
                 label: 'Alap mód',
-                caption: 'Az alap módjában az alkalmazás chat alkalmazásként szolgál, a felhasználó pedig egyetlen AI bottal tud beszélgetni. A botot az OpenAI hajtja, és a felhasználó konfigurálhatja őket, hogy konkrét képességekkel és viselkedéssel rendelkezzenek.'
+                caption: 'Az alap módjában az alkalmazás chat alkalmazásként szolgál, a felhasználó pedig egyetlen AI bottal tud beszélgetni. A botot az AI hajtja, és a felhasználó konfigurálhatja őket, hogy konkrét képességekkel és viselkedéssel rendelkezzenek.'
             },
             advanced: {
                 label: 'Haladó mód',
-                caption: 'A haladó módban a felhasználó létrehozhat csapatokat több mesterséges intelligencia botból, minden botnak saját szerepe, képességei, viselkedése és célja van a csapatban. A felhasználó hozzárendelhet egy feladatot a csapatnak, amelyet az AI botok közös együttműködésével oldanak meg. Minden botot az OpenAI hajtja, és a felhasználó konfigurálhatja őket, hogy konkrét képességekkel és viselkedéssel rendelkezzenek.'
+                caption: 'A haladó módban a felhasználó létrehozhat csapatokat több mesterséges intelligencia botból, minden botnak saját szerepe, képességei, viselkedése és célja van a csapatban. A felhasználó hozzárendelhet egy feladatot a csapatnak, amelyet az AI botok közös együttműködésével oldanak meg. Minden botot az AI hajtja, és a felhasználó konfigurálhatja őket, hogy konkrét képességekkel és viselkedéssel rendelkezzenek.'
             },
             settings: {
                 label: 'Beállítások',
-                caption: 'A felhasználó beállíthatja az alkalmazás opcióit, például a nyelvet, a sötét vagy világos módot és a beszélgetési módot. Jelenleg elérhető nyelvek: angol, svéd és magyar. A felhasználó beállíthatja az OpenAI API-val kapcsolatos paramétereket is, például az API-kulcsot, a modellt, a maximális tokeneket, a választási lehetőségeket és a hőmérsékletet. Az OpenAI opciók további magyarázata megtalálható a beállítások párbeszédablakban.'
+                caption: 'A felhasználó beállíthatja az alkalmazás opcióit, például a nyelvet, a sötét vagy világos módot és a beszélgetési módot. Jelenleg elérhető nyelvek: angol, svéd és magyar. A felhasználó beállíthatja az AI API-val kapcsolatos paramétereket is, például az API-kulcsot, a modellt, a maximális tokeneket, a választási lehetőségeket és a hőmérsékletet. Az AI opciók további magyarázata megtalálható a beállítások párbeszédablakban.'
             },
             history: {
                 label: 'Beszélgetési előzmények',
@@ -393,7 +396,7 @@ export default {
         },
         '401': {
             message: 'Érvénytelen hitelesítés.',
-            caption: 'Győződjön meg arról, hogy az OpenAI API kulcsa helyes.'
+            caption: 'Győződjön meg arról, hogy az AI API kulcsa helyes.'
         },
         '404': {
             message: 'A kérés érvénytelennek tűnik.',
