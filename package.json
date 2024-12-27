@@ -27,6 +27,7 @@
     "@tauri-apps/plugin-log": "^2.2.0",
     "@tauri-apps/plugin-os": "~2",
     "@tauri-apps/plugin-process": "~2",
+    "@tauri-apps/plugin-shell": "~2",
     "@tauri-apps/plugin-updater": "^2.3.0",
     "@tauri-apps/plugin-window-state": "~2",
     "clipboard": "^2.0.11",

@@ -8,7 +8,19 @@
                 <q-item-section>
                     <!-- <q-item-label>{{ t('settings.provider.label') }}</q-item-label> -->
                     <q-select v-model="defaultProvider" :options="apiProviderOptions" dense options-dense
-                        :disable="showProviderForm" />
+                        :disable="showProviderForm">
+                        <!-- Add Ollama restart button in the append slot -->
+                        <template v-slot:append>
+                            <q-btn v-if="isOllamaProvider(defaultProvider)"
+                                flat dense size="sm" 
+                                icon="mdi-restart"
+                                :loading="restartingOllama"
+                                @click.stop.prevent="configureAndRestartOllama"
+                            >
+                                <q-tooltip>Configure & Restart Ollama</q-tooltip>
+                            </q-btn>
+                        </template>
+                    </q-select>
                     <!-- <q-item-label caption>{{ t('settings.provider.caption') }}</q-item-label> -->
                     <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                         {{ t('settings.provider.tooltip') }}
@@ -110,8 +122,9 @@
 </template>
 
 <script>
-
-import { computed, ref } from 'vue';
+import { ref, computed } from 'vue';
+import { Command } from '@tauri-apps/plugin-shell';
+import { platform } from '@tauri-apps/plugin-os';
 import { storeToRefs } from "pinia";
 import { useSettingsStore } from '../../stores/settings-store.js';
 import { useQuasar } from 'quasar';
@@ -139,6 +152,80 @@ export default {
         // Which action is being performed
         const editProvider = ref(false);
         const addProvider = ref(false);
+
+        const restartingOllama = ref(false);
+
+        const isOllamaProvider = (providerName) => {
+            const provider = apiProviders.value.find(p => p.name === providerName);
+            return provider && (
+                provider.name.toLowerCase().includes('ollama') || 
+                provider.baseUrl.toLowerCase().includes('ollama')
+            );
+        };
+
+        async function configureAndRestartOllama() {
+            restartingOllama.value = true;
+            try {
+                const os = platform();
+                
+                // Set environment variable
+                switch (os) {
+                    case 'macos':
+                        await new Command('launchctl')
+                            .execute(['setenv', 'OLLAMA_ORIGINS', '*']);
+                        break;
+                    case 'windows':
+                        await new Command('setx')
+                            .execute(['OLLAMA_ORIGINS', '*']);
+                        break;
+                    case 'linux':
+                        await new Command('export')
+                            .execute(['OLLAMA_ORIGINS=*']);
+                        break;
+                }
+
+                // Kill Ollama
+                switch (os) {
+                    case 'macos':
+                        await new Command('killall')
+                            .execute(['Ollama']);
+                        break;
+                    case 'windows':
+                        await new Command('taskkill')
+                            .execute(['/IM', 'ollama.exe', '/F']);
+                        break;
+                    case 'linux':
+                        await new Command('pkill')
+                            .execute(['ollama']);
+                        break;
+                }
+
+                // Wait for process to terminate
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Start Ollama
+                switch (os) {
+                    case 'macos':
+                        await new Command('open')
+                            .execute(['-a', 'Ollama']);
+                        break;
+                    case 'windows':
+                        await new Command('cmd')
+                            .execute(['/C', 'start', '', 'ollama']);
+                        break;
+                    case 'linux':
+                        await new Command('ollama')
+                            .execute(['serve']);
+                        break;
+                }
+
+                console.log('Successfully configured and restarted Ollama');
+            } catch (error) {
+                console.error('Failed to configure and restart Ollama:', error);
+            } finally {
+                restartingOllama.value = false;
+            }
+        }
 
         return {
             t,
@@ -219,7 +306,11 @@ export default {
                 tmpProvider.value = {};
             },
 
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
+            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
+
+            restartingOllama,
+            isOllamaProvider,
+            configureAndRestartOllama,
         }
     }
 }

@@ -1,0 +1,35 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "linux-capabilities",
+  "description": "Linux specific permissions",
+  "platforms": ["linux"],
+  "windows": ["main"],
+  "permissions": [
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "export",
+          "cmd": "export",
+          "args": [
+            "OLLAMA_ORIGINS=*"
+          ]
+        },
+        {
+          "name": "pkill",
+          "cmd": "pkill",
+          "args": [
+            "ollama"
+          ]
+        },
+        {
+          "name": "ollama",
+          "cmd": "ollama",
+          "args": [
+            "serve"
+          ]
+        }
+      ]
+    }
+  ]
+}

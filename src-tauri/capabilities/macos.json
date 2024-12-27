@@ -1,0 +1,56 @@
+{
+    "$schema": "../gen/schemas/desktop-schema.json",
+    "identifier": "macos-capabilities",
+    "description": "macOS specific permissions",
+    "platforms": [
+        "macOS"
+    ],
+    "windows": [
+        "main"
+    ],
+    "permissions": [
+        "fs:allow-home-write-recursive",
+        {
+            "identifier": "fs:scope",
+            "allow": [
+                {
+                    "path": "$HOME/Library/Mobile Documents/com~apple~CloudDocs/TeamAI",
+                    "recursive": true
+                },
+                {
+                    "path": "$HOME/Library/Mobile Documents/com~apple~CloudDocs/TeamAI/*",
+                    "recursive": true
+                }
+            ]
+        },
+        {
+            "identifier": "shell:allow-execute",
+            "allow": [
+                {
+                    "name": "launchctl",
+                    "cmd": "launchctl",
+                    "args": [
+                        "setenv",
+                        "OLLAMA_ORIGINS",
+                        "*"
+                    ]
+                },
+                {
+                    "name": "killall",
+                    "cmd": "killall",
+                    "args": [
+                        "Ollama"
+                    ]
+                },
+                {
+                    "name": "open",
+                    "cmd": "open",
+                    "args": [
+                        "-a",
+                        "Ollama"
+                    ]
+                }
+            ]
+        }
+    ]
+}

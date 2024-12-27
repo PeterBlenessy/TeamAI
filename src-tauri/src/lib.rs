@@ -1,4 +1,3 @@
-
 // use log::LevelFilter;
 use tauri_plugin_log::{Target, TargetKind};
 
@@ -19,6 +18,7 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_shell::init())  // Add this line
         .plugin(tauri_plugin_updater::Builder::new().build())
         .run(tauri::generate_context!())
         .expect("Some error occured while running application");

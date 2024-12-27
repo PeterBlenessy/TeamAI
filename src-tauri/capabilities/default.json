@@ -16,20 +16,6 @@
     "fs:allow-write-file",
     "fs:write-files",
     "fs:allow-home-write",
-    "fs:allow-home-write-recursive",
-    {
-      "identifier": "fs:scope",
-      "allow": [
-        {
-          "path": "$HOME/Library/Mobile Documents/com~apple~CloudDocs/TeamAI",
-          "recursive": true
-        },
-        {
-          "path": "$HOME/Library/Mobile Documents/com~apple~CloudDocs/TeamAI/*",
-          "recursive": true
-        }
-      ]
-    },
     "core:default",
     "http:default",
     {
@@ -51,6 +37,8 @@
     "updater:allow-install",
     "updater:allow-download-and-install",
     "process:default",
-    "window-state:default"
+    "window-state:default",
+    "shell:allow-open",
+    "shell:default"
   ]
 }
