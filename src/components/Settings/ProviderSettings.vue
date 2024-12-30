@@ -159,7 +159,7 @@
                             <template v-if="isOllamaProvider(defaultProvider)" 
                                 v-slot:option="scope"
                             >
-                                <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                <q-item v-bind="scope.itemProps" v-on="scope.itemEvents || {}">
                                     <q-item-section>
                                         <q-item-label>{{ formatModelName(scope.opt.value) }}</q-item-label>
                                     </q-item-section>
@@ -439,7 +439,7 @@ export default {
             }
 
             if (isOllamaProvider(defaultProvider.value)) {
-                setTimeout(checkOllamaStatus, 60000);
+                setTimeout(checkOllamaStatus, 300000);
             }
         }
 

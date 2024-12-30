@@ -4,6 +4,7 @@
   "version": "2.2.0",
   "type": "module",
   "license": "MIT",
+  "author": "Péter Blénessy <peter.blenessy@gmail.com>",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

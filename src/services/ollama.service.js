@@ -1,4 +1,4 @@
-import { Ollama } from 'ollama';
+import { Ollama } from 'ollama/browser';
 import { Command, open } from '@tauri-apps/plugin-shell';
 import { platform } from '@tauri-apps/plugin-os';
 import logger from './logger';
