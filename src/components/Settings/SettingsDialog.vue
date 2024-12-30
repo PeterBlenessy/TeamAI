@@ -1,5 +1,5 @@
 <template>
-    <q-card style="min-width: 30%; max-width: 90%;">
+    <q-card style="min-width: 750px; max-width: 90%;">
         <q-card-section>
             <UserAvatarSettings />
         </q-card-section>

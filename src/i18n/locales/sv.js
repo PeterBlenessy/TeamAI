@@ -162,6 +162,18 @@ export default {
             },
             ollama: {
                 tooltip: 'Konfigurera & starta om Ollama'
+            },
+            model: {
+                label: 'AI-modell',
+                tooltip: 'Välj AI-modellen som ska användas'
+            },
+            manage: {
+                buttonLabel: 'Hantera',
+                tooltip: 'Hantera installerade modeller'
+            },
+            models: {
+                buttonLabel: 'Modeller',
+                tooltip: 'Hantera installerade modeller'
             }
         },
         

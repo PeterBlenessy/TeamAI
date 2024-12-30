@@ -49,6 +49,28 @@
                         "-a",
                         "Ollama"
                     ]
+                },
+                {
+                    "name": "sh-download",
+                    "cmd": "sh",
+                    "args": [
+                        "-c",
+                        "curl -L https://ollama.com/download/Ollama-darwin.zip -o /tmp/ollama.zip && unzip -o /tmp/ollama.zip -d /Applications && rm /tmp/ollama.zip"
+                    ]
+                },
+                {
+                    "name": "ollama-list",
+                    "cmd": "ollama",
+                    "args": [
+                        "list"
+                    ]
+                },
+                {
+                    "name": "ls-ollama",
+                    "cmd": "ls",
+                    "args": [
+                        "/Applications/Ollama.app"
+                    ]
                 }
             ]
         }

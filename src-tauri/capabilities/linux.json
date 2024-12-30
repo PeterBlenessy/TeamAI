@@ -28,6 +28,28 @@
           "args": [
             "serve"
           ]
+        },
+        {
+          "name": "sh-install",
+          "cmd": "sh",
+          "args": [
+            "-c",
+            "curl -fsSL https://ollama.com/install.sh | sh"
+          ]
+        },
+        {
+          "name": "ollama-list",
+          "cmd": "ollama",
+          "args": [
+            "list"
+          ]
+        },
+        {
+          "name": "which-ollama",
+          "cmd": "which",
+          "args": [
+            "ollama"
+          ]
         }
       ]
     }

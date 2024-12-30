@@ -191,8 +191,8 @@ export default {
                             position: 'top',
                             icon: 'mdi-cloud-off',
                             type: 'warning',
-                            message: t('icloud.sync.unavailable.message'),
-                            caption: t('icloud.sync.unavailable.caption'),
+                            message: t('cloud.sync.unavailable.message'),
+                            caption: t('cloud.sync.unavailable.caption'),
                             timeout: 3000
                         });
                         return;
@@ -237,22 +237,10 @@ export default {
                 dbUpgrader.upgrade();
             }
             isDBUpgraded.value = true;
-
-        });
-
-        onMounted(async () => {
-            // if (await dbUpgrader.isUpgradeNeed()) {
-            //     dbUpgrader.upgrade();
-            // }
-            // isDBUpgraded.value = true;
         });
 
         // Set application locale to the one selected by the user and stored in the settings store.
         onMounted(() => locale.value = userLocale.value);
-
-        // Show the main window when all web content has loaded.
-        // This fixes the issue of flickering when the app starts and is in darkMode.
-        // onMounted(() => invoke('show_main_window'));
 
         // Watch runtime changes to dark mode
         watch(darkMode, () => $q.dark.set(darkMode.value));

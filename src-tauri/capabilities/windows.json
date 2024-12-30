@@ -34,6 +34,30 @@
             "",
             "ollama"
           ]
+        },
+        {
+          "name": "powershell",
+          "cmd": "powershell",
+          "args": [
+            "-Command",
+            "Invoke-WebRequest -Uri https://ollama.com/download/OllamaSetup.exe -OutFile $env:TEMP\\OllamaSetup.exe; Start-Process -FilePath $env:TEMP\\OllamaSetup.exe -Wait; Remove-Item $env:TEMP\\OllamaSetup.exe"
+          ]
+        },
+        {
+          "name": "ollama-list",
+          "cmd": "ollama.exe",
+          "args": [
+            "list"
+          ]
+        },
+        {
+          "name": "where-ollama",
+          "cmd": "cmd",
+          "args": [
+            "/C",
+            "where",
+            "ollama.exe"
+          ]
         }
       ]
     }

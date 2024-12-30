@@ -268,16 +268,6 @@ export default {
             }).flat()
         });
 
-        const modelOptions2 = computed(() => {
-            return apiProviders.value.map(provider => {
-                return provider.models.map(model => ({
-                    "label": model,
-                    "provider": provider.name,
-                    "value": model
-                }));
-            }).flat()
-        });
-
         // Load OpenAI API format parameters
         const imageSizeOptions = openaiConfig.imageSizeOptions;
         const imageQualityOptions = openaiConfig.imageQualityOptions;
@@ -338,7 +328,6 @@ export default {
             appMode,
             model,
             modelOptions,
-            modelOptions2,
             maxTokens,
             temperature,
             choices,

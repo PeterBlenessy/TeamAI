@@ -39,6 +39,14 @@
     "process:default",
     "window-state:default",
     "shell:allow-open",
-    "shell:default"
+    "shell:default",
+    {
+      "identifier": "shell:allow-open",
+      "allow": [
+        {
+          "url": "https://ollama.com/download"
+        }
+      ]
+    }
   ]
 }

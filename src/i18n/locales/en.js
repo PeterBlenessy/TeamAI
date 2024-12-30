@@ -160,6 +160,18 @@ export default {
             },
             ollama: {
                 tooltip: 'Configure & Restart Ollama'
+            },
+            model: {
+                label: 'AI model',
+                tooltip: 'Select the AI model to use'
+            },
+            manage: {
+                buttonLabel: 'Manage',
+                tooltip: 'Manage installed models'
+            },
+            models: {
+                buttonLabel: 'Models',
+                tooltip: 'Manage installed models'
             }
         },
 

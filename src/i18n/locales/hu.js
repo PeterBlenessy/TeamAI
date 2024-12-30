@@ -161,6 +161,18 @@ export default {
             ollama: {
                 tooltip: 'Ollama konfigurálása és újraindítása'
             },
+            model: {
+                label: 'AI modell',
+                tooltip: 'Válassza ki a használni kívánt AI modellt'
+            },
+            manage: {
+                buttonLabel: 'Kezelés',
+                tooltip: 'Telepített modellek kezelése'
+            },
+            models: {
+                buttonLabel: 'Modellek',
+                tooltip: 'Telepített modellek kezelése'
+            }
         },
     
         api: {
