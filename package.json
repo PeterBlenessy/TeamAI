@@ -1,7 +1,7 @@
 {
   "name": "team-ai",
   "private": true,
-  "version": "2.1.2",
+  "version": "2.2.0",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -34,6 +34,7 @@
     "highlight.js": "^11.9.0",
     "localforage": "^1.10.0",
     "markdown-it": "^14.0.0",
+    "ollama": "^0.4.4",
     "pinia": "^2.1.7",
     "quasar": "^2.14.3",
     "vue": "^3.4.15",

@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
+## v2.2.0 - 2024-12-29
+- Fixed issue where i18n text for `Cloud sync not available` was not referenced correctly.
+- Added support for in-app management of Ollama models.
+
 ## v2.1.2 - 2024-12-26
 - Refactored settings related components to be located in Settings folder.
 - Created a GeneralSettings component for the general application settings tab panel.
