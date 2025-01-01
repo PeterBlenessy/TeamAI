@@ -211,13 +211,14 @@
                                         <!-- Move the input here -->
                         <div class="row q-col-gutter-md items-center q-mt-md">
                             <q-input
-                            dense filled
-                            class="col"
-                            v-model="newModelName"
-                            label="Download new model"
-                            @keyup.enter="handleAddCustomModel"
+                                dense filled
+                                class="col"
+                                v-model="newModelName"
+                                label="Download new model"
+                                placeholder="Enter the name of the model to download"
+                                @keyup.enter="handleAddCustomModel"
                             >
-                            <template v-slot:append>
+                            <template v-slot:append v-if="newModelName">
                                 <q-circular-progress v-if="newModelLoading"
                                     show-value
                                     :value="pullProgress"
