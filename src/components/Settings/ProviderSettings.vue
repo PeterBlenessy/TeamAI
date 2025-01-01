@@ -202,122 +202,9 @@
                 </q-item>
             </div>
 
-            <!-- Model Manager Section -->
+            <!-- Replace the entire Model Manager Section with: -->
             <template v-if="showModelManager && isOllamaConfigured">
-
-                <q-card flat bordered class="q-mt-md">
-                    <q-card-section>
-                        <div class="text-h6">Ollama Model Manager</div>
-                                        <!-- Move the input here -->
-                        <div class="row q-col-gutter-md items-center q-mt-md">
-                            <q-input
-                                dense filled
-                                class="col"
-                                v-model="newModelName"
-                                label="Download new model"
-                                placeholder="Enter the name of the model to download"
-                                @keyup.enter="handleAddCustomModel"
-                            >
-                            <template v-slot:append v-if="newModelName">
-                                <q-circular-progress v-if="newModelLoading"
-                                    show-value
-                                    :value="pullProgress"
-                                    color="primary"
-                                    size="md"
-                                    :thickness="0.4"
-                                />
-                                <q-btn v-else
-                                    flat round size="sm" icon="mdi-download"
-                                    @click="handleAddCustomModel"
-                                />
-                            </template>
-                            </q-input>
-                        </div>
-
-                    </q-card-section>
-                    <q-card-section>
-                        <q-table
-                            :rows="availableModels"
-                            :columns="modelColumns"
-                            row-key="name"
-                            dense
-                            flat
-                            :loading="tableLoading"
-                            :rows-per-page-options="[0]"
-                        >
-                            <template v-slot:body="props">
-                                <q-tr :props="props">
-                                    <q-td key="name">
-                                        {{ formatModelName(props.row) }}
-                                    </q-td>
-                                    <q-td key="architecture">
-                                        {{ modelDetails[props.row]?.model_info["general.architecture"] || '-' }}
-                                    </q-td>
-                                    <q-td key="size">
-                                        {{ modelDetails[props.row]?.details?.parameter_size || '-' }}
-                                    </q-td>
-                                    <q-td key="quantization">
-                                        {{ modelDetails[props.row]?.details?.quantization_level || '-' }}
-                                    </q-td>
-                                    <q-td key="modified">
-                                        {{ modelDetails[props.row]?.modified_at ? 
-                                            new Date(modelDetails[props.row].modified_at).toLocaleString() : '-' }}
-                                    </q-td>
-                                    <q-td key="actions">
-                                        <q-btn v-if="modelDetails[props.row]"
-                                            flat dense size="sm"
-                                            icon="mdi-file-document-outline"
-                                            @click="showLicenseInfo(props.row)"
-                                        >
-                                            <q-tooltip>Show license info</q-tooltip>
-                                        </q-btn>
-                                        <q-btn
-                                            flat dense size="sm"
-                                            icon="mdi-delete"
-                                            @click="deleteModel(props.row)"
-                                        >
-                                            <q-tooltip>Delete model</q-tooltip>
-                                        </q-btn>
-                                        <q-btn
-                                            flat dense size="sm"
-                                            icon="mdi-reload"
-                                            :color="runningModels[props.row] ? 'positive' : ''"
-                                            @click="loadModel(props.row)"
-                                        >
-                                            <q-tooltip>
-                                                {{ runningModels[props.row] ? 'Model is running' : 'Model is stopped' }}
-                                            </q-tooltip>
-                                        </q-btn>
-                                    </q-td>
-                                </q-tr>
-                            </template>
-                        </q-table>
-                    </q-card-section>
-                </q-card>
-
-                <!-- Model Details Dialog -->
-                <q-dialog v-model="showLicenseDialog">
-                    <q-card style="min-width: 600px; max-width: 90%;" class="q-pa-md">
-                        <q-card-section>
-                            <div class="text-h6">{{ formatModelName(selectedLicenseModelName) }}</div>
-                        </q-card-section>
-                        <q-separator />
-                        <q-card-section v-if="selectedLicenseData">
-                            <div class="text-subtitle2">License</div>
-                            <q-list dense>
-                                <q-item>
-                                    <q-item-section>
-                                        <pre class="text-caption">{{ selectedLicenseData.license }}</pre>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-card-section>
-
-                        <q-card-actions align="right">
-                            <q-btn flat label="Close" color="primary" v-close-popup />
-                        </q-card-actions>
-                    </q-card>
-                </q-dialog>
+                <OllamaModelManager />
             </template>
 
         </q-list>
@@ -326,7 +213,6 @@
 
 <script>
 import { ref, computed, onMounted, watch } from 'vue';
-// Remove imports for Command and platform as they're now in useOllama
 import { storeToRefs } from "pinia";
 import { useSettingsStore } from '../../stores/settings-store.js';
 import { useQuasar } from 'quasar';
@@ -336,8 +222,12 @@ import { ollamaService } from '../../services/ollama.service';
 import ollamaLogo from '../../assets/ollama-logo.png';
 import openaiLogo from '../../assets/openai-logo.png';
 import { useOllama } from '../../composables/useOllama';
+import OllamaModelManager from './OllamaModelManager.vue';
 
 export default {
+    components: {
+        OllamaModelManager
+    },
     setup() {
         const $q = useQuasar();
         const { t } = useI18n();
@@ -375,17 +265,10 @@ export default {
             availableModels,
             modelDownloading,
             pullProgress,
-            modelDetails,
-            runningModels,
-            getBaseName,
             formatModelName,
             getModelStatus,
             pullSpecificModel,
             deleteModel,
-            loadModelDetails,
-            loadAvailableModels,
-            loadModel,
-            displayModelStatus,
             getAllModelOptions,
             isOllamaConnected,
             isOllamaConfigured,
@@ -473,6 +356,29 @@ export default {
             }
         }
 
+        function handleAddNewProvider() {
+            tmpProvider.value = { name: '', baseUrl: '', apiKey: '' };
+            addProvider.value = true;
+            showModelManager.value = false;
+        }
+
+        function handleDeleteProvider() {
+            const index = apiProviders.value.findIndex(provider => provider.name === defaultProvider.value);
+            if (index !== -1 && apiProviders.value[index].deletable !== false) {
+                apiProviders.value.splice(index, 1);
+                defaultProvider.value = apiProviders.value[0].name;
+            }
+        }
+
+        function handleCancel() {
+            addProvider.value = false;
+            editProvider.value = false;
+            tmpProvider.value = {};
+        }
+
+        const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
+        const showProviderForm = computed(() => editProvider.value || addProvider.value);
+
         onMounted(() => {
             if (isOllamaProvider(defaultProvider.value)) {
                 checkOllamaStatusWithInterval();
@@ -490,156 +396,41 @@ export default {
             }
         });
 
-        const showLicenseDialog = ref(false);
-        const selectedLicenseModelName = ref('');
-        const selectedLicenseData = computed(() => 
-            selectedLicenseModelName.value ? modelDetails.value[selectedLicenseModelName.value] : null
-        );
-
-        function showLicenseInfo(modelName) {
-            selectedLicenseModelName.value = modelName;
-            showLicenseDialog.value = true;
-        }
-
-        // Add new refs and computed properties for the table
         const showModelManager = ref(false);
-        const tableLoading = ref(false);
-        
-        const modelColumns = [
-            { name: 'name', label: 'Model', field: row => formatModelName(row), align: 'left' },
-            { name: 'architecture', label: 'Architecture', field: row => modelDetails.value[row]?.model_info["general.architecture"] || '-', align: 'left' },
-            { name: 'size', label: 'Size', field: row => modelDetails.value[row]?.details?.parameter_size || '-', align: 'left' },
-            { name: 'quantization', label: 'Quantization', field: row => modelDetails.value[row]?.details?.quantization_level || '-', align: 'left' },
-            { name: 'modified', label: 'Modified', field: row => modelDetails.value[row]?.modified_at || '-', align: 'left' },
-            { name: 'actions', label: 'Actions', field: 'actions', align: 'center' }
-        ];
-
-        const newModelName = ref('');
-        const newModelLoading = ref(false);
-        function handleAddCustomModel() {
-            if (!newModelName.value) return;
-            newModelLoading.value = true;
-            pullSpecificModel(newModelName.value)
-                .finally(() => {
-                    newModelLoading.value = false;
-                    newModelName.value = '';
-                });
-        }
 
         return {
             t,
-
             defaultProvider,
             apiProviderOptions,
             tmpProvider,
-
             addProvider,
             editProvider,
-            showProviderForm: computed(() => editProvider.value || addProvider.value),
-
-            // Show/hide password
+            showProviderForm,
             isPwd: ref(true),
-
             handleEditProvider,
-
-            handleAddNewProvider: () => {
-                tmpProvider.value = { name: '', baseUrl: '', apiKey: '' };
-                addProvider.value = true;
-                showModelManager.value = false;
-            },
-
-            handleDeleteProvider: () => {
-                const index = apiProviders.value.findIndex(provider => provider.name === defaultProvider.value);
-                if (index !== -1 && apiProviders.value[index].deletable !== false) {
-                    apiProviders.value.splice(index, 1);
-                    defaultProvider.value = apiProviders.value[0].name;
-                }
-            },
-
-            handleSaveProvider: () => {
-                // Check for '' values
-                if (tmpProvider.value.name === '' || tmpProvider.value.baseUrl === '' || tmpProvider.value.apiKey === '') {
-                    console.error('Empty values');
-                    return;
-                }
-
-                if (editProvider.value == true) {
-                    const index = apiProviders.value.findIndex(provider => provider.name === defaultProvider.value);
-
-                    if (index !== -1) { // Provider found
-                        apiProviders.value[index] = { ...tmpProvider.value };
-                        // If the provider name is changed, re-select it
-                        defaultProvider.value = tmpProvider.value.name;
-                        editProvider.value = false;
-                    } else {
-                        console.error('Provider not found');
-                    }
-                } else if (addProvider.value == true) {
-                    const index = apiProviders.value.findIndex(provider => provider.name === tmpProvider.value.name);
-
-                    if (index === -1) { // Provider does not exist
-                        apiProviders.value.push({ ...tmpProvider.value });
-                        // We leave selecting the new provider to the user
-                        addProvider.value = false;
-                    } else { // Provider already exists
-                        // Notify the user
-                        console.error('Provider already exists');
-                        return;                    }
-                }
-
-                tmpProvider.value = {};
-            },
-
-            handleCancel: () => {
-                addProvider.value = false;
-                editProvider.value = false;
-                tmpProvider.value = {};
-            },
-
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
-
+            handleAddNewProvider,
+            handleDeleteProvider,
+            handleCancel,
+            iconColor,
             restartingOllama,
             isOllamaProvider,
             configureAndRestartOllama,
-
             isOllamaConfigured,
             isOllamaConnected,
             isDownloadingOllama,
             handleDownloadOllama,
-
             availableModels,
             allModelOptions,
             getModelStatus,
             formatModelName,
-            getBaseName,
-
             pullSpecificModel,
             modelDownloading,
             pullProgress,
             deleteModel,
             handleModelSelection,
-
-            modelDetails,
-            loadModelDetails,
-
-            showLicenseDialog,
-            selectedLicenseModelName,
-            selectedLicenseData,
-            showLicenseInfo,
-
             showModelManager,
-            tableLoading,
-            modelColumns,
-
-            runningModels,
-            loadModel,
-            displayModelStatus,
-
-            newModelName,
-            handleAddCustomModel,
-            newModelLoading,
             selectedProviderLogo,
-        }
+        };
     }
 }
 </script>
