@@ -6,11 +6,16 @@
                     <q-icon name="mdi-api" :color="iconColor" />
                 </q-item-section>
                 <q-item-section>
-                    <q-select dense options-dense
+                    <q-select
                         v-model="defaultProvider"
                         :options="apiProviderOptions" 
                         :disable="showProviderForm"
                     >
+                        <template v-slot:prepend>
+                            <q-avatar rounded>
+                                <img :src="selectedProviderLogo" alt="Logo" width="24" height="24" />
+                            </q-avatar>
+                        </template>
                         <template v-slot:append>
                             <div class="row items-center full-width">
                                 <template v-if="isOllamaProvider(defaultProvider)">
@@ -45,6 +50,16 @@
                                     </q-icon>
                                 </template>
                             </div>
+                        </template>
+                        <template v-slot:option="scope">
+                            <q-item v-bind="scope.itemProps">
+                                <q-item-section avatar>
+                                    <img :src="scope.opt.logo" alt="Logo" width="24" height="24" />
+                                </q-item-section>
+                                <q-item-section>
+                                    {{ scope.opt.label }}
+                                </q-item-section>
+                            </q-item>
                         </template>
                     </q-select>
                     <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
@@ -318,6 +333,8 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import defaultProviders from '../../services/providers.config.json';
 import { ollamaService } from '../../services/ollama.service';
+import ollamaLogo from '../../assets/ollama-logo.png';
+import openaiLogo from '../../assets/openai-logo.png';
 
 export default {
     setup() {
@@ -332,7 +349,19 @@ export default {
         }
 
         // Array of api providers to be used in select options
-        const apiProviderOptions = computed(() => apiProviders.value.map(provider => provider.name));
+        const apiProviderOptions = computed(() => 
+            apiProviders.value.map(provider => ({
+                label: provider.name,
+                value: provider.name,
+                logo: provider.name.toLowerCase().includes('ollama') ? ollamaLogo : openaiLogo
+            }))
+        );
+
+        // Computed property to get the logo of the selected provider
+        const selectedProviderLogo = computed(() => {
+            const selected = apiProviderOptions.value.find(option => option.value === defaultProvider.value);
+            return selected ? selected.logo : null;
+        });
 
         // Temporary provider object to store changes temporarilly and avoid changing the original values
         const tmpProvider = ref({});
@@ -915,6 +944,7 @@ export default {
             newModelName,
             handleAddCustomModel,
             newModelLoading,
+            selectedProviderLogo,
         }
     }
 }
