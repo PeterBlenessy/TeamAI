@@ -27,6 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
+## NEXT
+- Fix error where model status is not correct, i.e. running. Debug `ollama.ps()`
+- Fix error where selected models in ollama model dropdown are the hard coded ones, not the ones available. Flow should be this: list hard coded models that are not downloaded, show download icon.
+
+## v2.2.1 - 2025-01-01
+- Added support for displaying provider logos in ProviderSettings.
+- Changed download button in Ollama Model Manager to be hidden until user enters model name.
+- Changed Settings dialog to be fixed width to improve UX when editing a provider with many models.
+- Refactored and simplified ProviderSettings by breaking out Ollama-related functions to a new composable useOllama.js.
+- Refactored ProviderSettings by breaking out Ollama model management to a separate component.
+
 ## v2.2.0 - 2024-12-30
 - Added support for in-app management of Ollama models.
 - Fixed issue where i18n text for `Cloud sync not available` was not referenced correctly.
