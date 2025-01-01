@@ -326,8 +326,7 @@
 
 <script>
 import { ref, computed, onMounted, watch } from 'vue';
-import { Command } from '@tauri-apps/plugin-shell';
-import { platform } from '@tauri-apps/plugin-os';
+// Remove imports for Command and platform as they're now in useOllama
 import { storeToRefs } from "pinia";
 import { useSettingsStore } from '../../stores/settings-store.js';
 import { useQuasar } from 'quasar';
@@ -336,6 +335,7 @@ import defaultProviders from '../../services/providers.config.json';
 import { ollamaService } from '../../services/ollama.service';
 import ollamaLogo from '../../assets/ollama-logo.png';
 import openaiLogo from '../../assets/openai-logo.png';
+import { useOllama } from '../../composables/useOllama';
 
 export default {
     setup() {
@@ -371,7 +371,28 @@ export default {
         const editProvider = ref(false);
         const addProvider = ref(false);
 
-        const restartingOllama = ref(false);
+        const {
+            availableModels,
+            modelDownloading,
+            pullProgress,
+            modelDetails,
+            runningModels,
+            getBaseName,
+            formatModelName,
+            getModelStatus,
+            pullSpecificModel,
+            deleteModel,
+            loadModelDetails,
+            loadAvailableModels,
+            loadModel,
+            displayModelStatus,
+            getAllModelOptions,
+            isOllamaConnected,
+            isOllamaConfigured,
+            restartingOllama,
+            configureAndRestartOllama,
+            checkOllamaStatus
+        } = useOllama();
 
         const isOllamaProvider = (providerName) => {
             const provider = apiProviders.value.find(p => p.name === providerName);
@@ -381,75 +402,8 @@ export default {
             );
         };
 
-        async function configureAndRestartOllama() {
-            restartingOllama.value = true;
-            try {
-                const os = platform();
-                
-                // Set environment variable
-                switch (os) {
-                    case 'macos':
-                        await new Command('launchctl')
-                            .execute(['setenv', 'OLLAMA_ORIGINS', '*']);
-                        break;
-                    case 'windows':
-                        await new Command('setx')
-                            .execute(['OLLAMA_ORIGINS', '*']);
-                        break;
-                    case 'linux':
-                        await new Command('export')
-                            .execute(['OLLAMA_ORIGINS=*']);
-                        break;
-                }
-
-                // Kill Ollama
-                switch (os) {
-                    case 'macos':
-                        await new Command('killall')
-                            .execute(['Ollama']);
-                        break;
-                    case 'windows':
-                        await new Command('taskkill')
-                            .execute(['/IM', 'ollama.exe', '/F']);
-                        break;
-                    case 'linux':
-                        await new Command('pkill')
-                            .execute(['ollama']);
-                        break;
-                }
-
-                // Wait for process to terminate
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                // Start Ollama
-                switch (os) {
-                    case 'macos':
-                        await new Command('open')
-                            .execute(['-a', 'Ollama']);
-                        break;
-                    case 'windows':
-                        await new Command('cmd')
-                            .execute(['/C', 'start', '', 'ollama']);
-                        break;
-                    case 'linux':
-                        await new Command('ollama')
-                            .execute(['serve']);
-                        break;
-                }
-
-                console.log('Successfully configured and restarted Ollama');
-            } catch (error) {
-                console.error('Failed to configure and restart Ollama:', error);
-            } finally {
-                restartingOllama.value = false;
-            }
-        }
-
-        const isOllamaConnected = ref(false);
-        const isOllamaConfigured = ref(false);
-
-        // Check if Ollama is running and configured correctly
-        async function checkOllamaStatus() {
+        // Check if Ollama is running and configured correctly with interval
+        async function checkOllamaStatusWithInterval() {
             if (!isOllamaProvider(defaultProvider.value)) {
                 return;
             }
@@ -457,112 +411,17 @@ export default {
             const provider = apiProviders.value.find(p => p.name === defaultProvider.value);
             if (!provider) return;
 
-            ollamaService.setHost(provider.baseUrl);
-
-            isOllamaConnected.value = await ollamaService.checkConnection();
-            console.log('Ollama connected:', isOllamaConnected.value);
-            if (isOllamaConnected.value) {
-                isOllamaConfigured.value = await ollamaService.isConfiguredCorrectly();
-                if (isOllamaConfigured.value) {
-                    loadAvailableModels();
-                }
-            }
+            await checkOllamaStatus(provider);
 
             if (isOllamaProvider(defaultProvider.value)) {
-                setTimeout(checkOllamaStatus, 300000);
+                setTimeout(checkOllamaStatusWithInterval, 300000);
             }
         }
 
-        const availableModels = ref([]);
-
-        async function loadAvailableModels() {
-            try {
-                availableModels.value = await ollamaService.listModels();
-            } catch (error) {
-                console.error('Failed to load models:', error);
-            }
-        }
-
-        // Helper to get base name and version
-        function getBaseName(name) {
-            if (!name || typeof name !== 'string') return { base: '', version: '' };
-            const [base, version] = name.split(':');
-            return {
-                base: base.trim().toLowerCase(),
-                version: version ? version.trim().toLowerCase() : ''
-            };
-        }
-
-        // Helper function to format model name
-        function formatModelName(name) {
-            if (!name || typeof name !== 'string') return '';
-            const { base, version } = getBaseName(name);
-            return version ? `${base}:${version}` : base;
-        }
-
-        const modelDownloading = ref({});
-        const pullProgress = ref(0);
-
-        // Modified pull specific model function
-        async function pullSpecificModel(modelName) {
-            if (!modelName) return;
-            
-            const baseName = getBaseName(modelName);
-            if (!baseName) {
-                $q.notify({
-                    type: 'negative',
-                    message: 'Invalid model name'
-                });
-                return;
-            }
-            
-            modelDownloading.value[modelName] = true;
-            pullProgress.value = 0;
-            
-            try {
-                await ollamaService.pullModel(modelName, (progress) => {
-                    if (progress > pullProgress.value) {  // Only update if progress increases
-                        pullProgress.value = progress;
-                    }
-                });
-                await loadAvailableModels();
-                
-                // Ensure the model is in the provider's model list
-                if (!tmpProvider.value.models) {
-                    tmpProvider.value.models = [];
-                }
-                if (!tmpProvider.value.models.includes(modelName)) {
-                    tmpProvider.value.models.push(modelName);
-                }
-
-                // Add new model to Ollama provider in apiProviders
-                const ollamaProvider = apiProviders.value.find(
-                    p => p.name.toLowerCase() === 'ollama'
-                );
-                if (ollamaProvider) {
-                    if (!ollamaProvider.models) {
-                        ollamaProvider.models = [];
-                    }
-                    if (!ollamaProvider.models.includes(modelName)) {
-                        ollamaProvider.models.push(modelName);
-                    }
-                }
-
-                $q.notify({
-                    type: 'positive',
-                    message: `Model ${modelName} downloaded successfully`
-                });
-            } catch (error) {
-                console.error(`Failed to pull model ${modelName}:`, error);
-                $q.notify({
-                    type: 'negative',
-                    message: `Failed to pull model ${modelName}: ${error.message}`
-                });
-            } finally {
-                modelDownloading.value[modelName] = false;
-                pullProgress.value = 0;
-            }
-        }
+        // Replace allModelOptions computed with getAllModelOptions from composable
+        const allModelOptions = computed(() => 
+            getAllModelOptions(tmpProvider.value, availableModels.value)
+        );
 
         const isDownloadingOllama = ref(false);
 
@@ -585,114 +444,6 @@ export default {
                 });
             } finally {
                 isDownloadingOllama.value = false;
-            }
-        }
-
-        // Modified computed property for all models
-        const allModelOptions = computed(() => {
-            if (!isOllamaProvider(tmpProvider.value?.name)) {
-                return tmpProvider.value?.models || [];
-            }
-
-            // Get built-in models from the provider config
-            const preConfiguredModels = tmpProvider.value?.models || [];
-            
-            // Get all available models
-            const downloadedModels = availableModels.value || [];
-            
-            // Create a map to store the best version for each base model
-            const modelMap = new Map();
-
-            // Process downloaded models first (they take precedence)
-            downloadedModels.forEach(model => {
-                const { base } = getBaseName(model);
-                modelMap.set(base, model);
-            });
-
-            // Process preconfigured models
-            preConfiguredModels.forEach(model => {
-                const { base } = getBaseName(model);
-                // Only add if there isn't already a downloaded version
-                if (!modelMap.has(base)) {
-                    modelMap.set(base, model);
-                }
-            });
-
-            // Convert map to array and create option objects
-            return Array.from(modelMap.values())
-                .filter(model => model) // Filter out empty/invalid models
-                .map(model => ({
-                    label: formatModelName(model),
-                    value: model,
-                    downloaded: getModelStatus(model).downloaded
-                }));
-        });
-
-        // Helper function to get model status
-        function getModelStatus(modelName) {
-            if (!modelName) return { downloaded: false, downloading: false };
-            const { base } = getBaseName(modelName);
-            return {
-                downloaded: availableModels.value.some(m => getBaseName(m).base === base),
-                downloading: !!modelDownloading.value[modelName]
-            };
-        }
-
-        // Function to delete a model
-        async function deleteModel(modelName) {
-            console.log('Attempting to delete model:', modelName);
-            if (!modelName) {
-                console.error('No model name provided for deletion');
-                return;
-            }
-            
-            try {
-                // Get the base name of the model we want to delete
-                const { base } = getBaseName(modelName);
-                console.log('Looking for model with base:', base);
-                
-                // Find all instances of this model in availableModels
-                const modelInstances = availableModels.value.filter(m => {
-                    const { base: downloadedBase } = getBaseName(m);
-                    return downloadedBase === base;
-                });
-
-                console.log('Found model instances:', modelInstances);
-
-                if (modelInstances.length === 0) {
-                    throw new Error('Model not found in downloaded models');
-                }
-
-                // Delete all versions of the model
-                for (const modelInstance of modelInstances) {
-                    await ollamaService.deleteModel(modelInstance);
-                }
-
-                await loadAvailableModels();
-                
-                // Remove from provider's models list if it exists
-                if (tmpProvider.value.models) {
-                    tmpProvider.value.models = tmpProvider.value.models.filter(m => {
-                        const { base: modelBase } = getBaseName(m);
-                        return modelBase !== base;
-                    });
-                }
-                
-                // If this was the selected model, clear it
-                if (tmpProvider.value.selectedModel && getBaseName(tmpProvider.value.selectedModel).base === base) {
-                    tmpProvider.value.selectedModel = null;
-                }
-
-                $q.notify({
-                    type: 'positive',
-                    message: `Model ${base} and all its versions deleted successfully`
-                });
-            } catch (error) {
-                console.error(`Failed to delete model ${modelName}:`, error);
-                $q.notify({
-                    type: 'negative',
-                    message: `Failed to delete model ${modelName}: ${error.message}`
-                });
             }
         }
 
@@ -724,47 +475,19 @@ export default {
 
         onMounted(() => {
             if (isOllamaProvider(defaultProvider.value)) {
-                checkOllamaStatus();
+                checkOllamaStatusWithInterval();
             }
         });
 
         // Add watcher for defaultProvider changes
         watch(defaultProvider, async (newProvider) => {
             if (isOllamaProvider(newProvider)) {
-                await checkOllamaStatus();
+                const provider = apiProviders.value.find(p => p.name === newProvider);
+                await checkOllamaStatus(provider);
             } else {
                 isOllamaConfigured.value = false;
                 isOllamaConnected.value = false;
             }
-        });
-
-        // Add new refs for model details
-        const modelDetails = ref({});
-        const loadingDetails = ref({});
-
-        // Function to load model details
-        async function loadModelDetails(modelName) {
-            if (loadingDetails.value[modelName]) return;
-            
-            loadingDetails.value[modelName] = true;
-            try {
-                const details = await ollamaService.showModel(modelName);
-                modelDetails.value[modelName] = details;
-            } catch (error) {
-                console.error(`Failed to load details for model ${modelName}:`, error);
-                $q.notify({
-                    type: 'negative',
-                    message: `Failed to load model details: ${error.message}`
-                });
-            } finally {
-                loadingDetails.value[modelName] = false;
-            }
-        }
-
-        // Clean up model details when changing providers
-        watch(defaultProvider, () => {
-            modelDetails.value = {};
-            loadingDetails.value = {};
         });
 
         const showLicenseDialog = ref(false);
@@ -790,35 +513,6 @@ export default {
             { name: 'modified', label: 'Modified', field: row => modelDetails.value[row]?.modified_at || '-', align: 'left' },
             { name: 'actions', label: 'Actions', field: 'actions', align: 'center' }
         ];
-
-        // Modify loadAvailableModels to load details automatically
-        async function loadAvailableModels() {
-            tableLoading.value = true;
-            try {
-                const models = await ollamaService.listModels();
-                availableModels.value = models;
-                // Load details for all models
-                for (const model of models) {
-                    await loadModelDetails(model);
-                }
-            } catch (error) {
-                console.error('Failed to load models:', error);
-            } finally {
-                tableLoading.value = false;
-            }
-        }
-
-        const runningModels = ref({});
-
-        async function loadModel(modelName) {
-            if (await ollamaService.loadModel(modelName)) {
-                runningModels.value[modelName] = true;
-            }
-        }
-
-        function displayModelStatus(modelName) {
-            return runningModels.value[modelName] ? 'Model is loaded' : 'Model is not loaded';
-        }
 
         const newModelName = ref('');
         const newModelLoading = ref(false);
@@ -926,7 +620,6 @@ export default {
             handleModelSelection,
 
             modelDetails,
-            loadingDetails,
             loadModelDetails,
 
             showLicenseDialog,
