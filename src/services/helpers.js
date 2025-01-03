@@ -1,4 +1,4 @@
-import { useTeamsStore } from '../stores/teams-store.js';
+import { useTeamsStore } from '@/stores/teams-store.js';
 
 // Converts an epoch timestamp to a localized date and time string.
 const epochStringToDate = (timestamp) => {

@@ -1,8 +1,8 @@
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useQuasar } from 'quasar';
-import { ollamaService } from '../services/ollama.service';
 import { Command } from '@tauri-apps/plugin-shell';
 import { platform } from '@tauri-apps/plugin-os';
+import { ollamaService } from '@/services/ollama.service';
 
 export function useOllama() {
     const $q = useQuasar();

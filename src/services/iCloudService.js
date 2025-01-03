@@ -2,7 +2,7 @@ import { join } from '@tauri-apps/api/path';
 import { homeDir } from '@tauri-apps/api/path';
 import { platform } from '@tauri-apps/plugin-os';
 import { readFile, create, readDir, mkdir, remove } from '@tauri-apps/plugin-fs';
-import logger from './logger';
+import logger from '@/services/logger';
 
 const iCloudService = {
     VERSION: '1.0',

@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import App from "@/App.vue";
 
 // Quasar stuff
 import { Quasar, Dark, Dialog, Notify } from 'quasar';
@@ -13,11 +13,11 @@ import "./styles.css";
 
 // Pinia stuff
 import { createPinia } from 'pinia';
-import { localForagePlugin } from './services/localforage';
+import { localForagePlugin } from '@/services/localforage';
 
 // i18n stuff
 import { createI18n } from 'vue-i18n';
-import messages from './i18n';
+import messages from '@/i18n';
 
 // ---------------------------------------------------------------------------------------------
 // Create the app

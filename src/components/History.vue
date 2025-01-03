@@ -81,12 +81,12 @@
 
 <script>
 
-import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { exportConversation } from '../services/helpers.js';
+import { useTeamsStore } from '@/stores/teams-store.js';
+import { exportConversation } from '@/services/helpers.js';
 
 export default {
     name: 'History',

@@ -156,17 +156,17 @@
 </template>
 
 <script>
-import { useTeamsStore } from "../stores/teams-store.js";
-import { useSettingsStore } from "../stores/settings-store.js";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
 import { computed, ref, watch } from "vue";
 import { scroll } from "quasar";
 import { useI18n } from 'vue-i18n';
-import { imageDB } from "../services/localforage";
-import openaiConfig from '../services/openai.config.json';
-import logger from '../services/logger.js';
-import { useMarkdown } from '../composables/markdown.js'
+import { useTeamsStore } from "@/stores/teams-store.js";
+import { useSettingsStore } from "@/stores/settings-store.js";
+import { imageDB } from "@/services/localforage";
+import openaiConfig from '@/services/openai.config.json';
+import logger from '@/services/logger.js';
+import { useMarkdown } from '@/composables/markdown.js'
 
 export default {
     name: "Messages",

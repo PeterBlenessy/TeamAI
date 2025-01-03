@@ -109,11 +109,11 @@
 
 <script>
 import { computed, ref, watch } from 'vue';
-import { storeToRefs } from "pinia";
-import { useSettingsStore } from '../../stores/settings-store.js';
-import { useTeamsStore } from '../../stores/teams-store.js';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
+import { storeToRefs } from "pinia";
+import { useSettingsStore } from '@/stores/settings-store.js';
+import { useTeamsStore } from '@/stores/teams-store.js';
 
 export default {
     setup() {

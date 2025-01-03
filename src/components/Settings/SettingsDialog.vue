@@ -54,12 +54,12 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 
-import UserAvatarSettings from './UserAvatarSettings.vue';
-import GeneralSettings from './GeneralSettings.vue';
-import ProviderSettings from "./ProviderSettings.vue";
-import TextGenerationSettings from "./TextGenerationSettings.vue";
-import ImageGenerationSettings from "./ImageGenerationSettings.vue";
-import CloudSyncSettings from './CloudSyncSettings.vue';
+import UserAvatarSettings from '@/components/Settings/UserAvatarSettings.vue';
+import GeneralSettings from '@/components/Settings/GeneralSettings.vue';
+import ProviderSettings from "@/components/Settings/ProviderSettings.vue";
+import TextGenerationSettings from "@/components/Settings/TextGenerationSettings.vue";
+import ImageGenerationSettings from "@/components/Settings/ImageGenerationSettings.vue";
+import CloudSyncSettings from '@/components/Settings/CloudSyncSettings.vue';
 
 export default {
     name: "AppSettings",

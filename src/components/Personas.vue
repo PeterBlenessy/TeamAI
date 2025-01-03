@@ -227,9 +227,9 @@
 import { computed, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import { useTeamsStore } from '../stores/teams-store.js';
 import { storeToRefs } from 'pinia';
-import logger from '../services/logger.js';
+import { useTeamsStore } from '@/stores/teams-store.js';
+import logger from '@/services/logger.js';
 
 export default {
     name: 'Personas',

@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin';
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -11,6 +12,13 @@ export default defineConfig(async () => ({
         VueI18nPlugin({ /* options */ })
     ],
 
+    // Configuration of the @ alias for better readability and maintainability. 
+    // Cleaner imports: @/components/Foo.vue instead of ../../components/Foo.vue.
+    resolve: {
+        alias: {
+          '@': path.resolve(__dirname, './src'),
+        },
+    },
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     // prevent vite from obscuring rust errors
     clearScreen: false,

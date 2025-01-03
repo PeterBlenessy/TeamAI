@@ -156,11 +156,11 @@
 <script>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { storeToRefs } from 'pinia';
-import { useSettingsStore } from '../../stores/settings-store';
 import { platform } from '@tauri-apps/plugin-os';
 import { useQuasar } from 'quasar';
-import { useCloudSync } from '../../composables/useCloudSync';
+import { storeToRefs } from 'pinia';
+import { useSettingsStore } from '@/stores/settings-store';
+import { useCloudSync } from '@/composables/useCloudSync';
 
 export default {
     name: 'CloudSync',

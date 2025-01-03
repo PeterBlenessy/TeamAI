@@ -3,15 +3,14 @@
 <script>
 
 import { watch, nextTick } from 'vue';
-import { useTeamsStore } from '../stores/teams-store.js';
-import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
-import OpenAI from '../services/openai.js';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import { useMarkdown } from '../composables/markdown.js'
-
-import logger from '../services/logger.js';
+import { useTeamsStore } from '@/stores/teams-store.js';
+import { useSettingsStore } from '@/stores/settings-store.js';
+import { useMarkdown } from '@/composables/markdown.js'
+import OpenAI from '@/services/openai.js';
+import logger from '@/services/logger.js';
 
 export default {
     name: 'OpenAI',

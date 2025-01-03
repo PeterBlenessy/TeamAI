@@ -1,8 +1,8 @@
-import { useSettingsStore } from '../stores/settings-store.js';
 import { storeToRefs } from 'pinia';
-import { imageDB } from './localforage.js';
-import logger from './logger.js';
-import providersConfig from '../services/providers.config.json';
+import { useSettingsStore } from '@/stores/settings-store.js';
+import { imageDB } from '@/services/localforage.js';
+import logger from '@/services/logger.js';
+import providersConfig from '@/services/providers.config.json';
 
 const openAI = () => {
     const settingsStore = useSettingsStore()

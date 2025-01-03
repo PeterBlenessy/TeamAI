@@ -60,12 +60,12 @@
 
 <script>
 import { ref, computed, onMounted, watch } from 'vue';
-import { useTeamsStore } from '../stores/teams-store.js';
-import { useSettingsStore } from "../stores/settings-store.js";
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
-import logger from '../services/logger';
+import logger from '@/services/logger';
+import { useTeamsStore } from '@/stores/teams-store.js';
+import { useSettingsStore } from "@/stores/settings-store.js";
 
 export default {
     name: 'UserInput',

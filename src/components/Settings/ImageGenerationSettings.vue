@@ -67,10 +67,10 @@
 <script>
 import { computed, ref, watch } from 'vue';
 import { storeToRefs } from "pinia";
-import { useSettingsStore } from '../../stores/settings-store.js';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import openaiConfig from '../../services/openai.config.json';
+import { useSettingsStore } from '@/stores/settings-store.js';
+import openaiConfig from '@/services/openai.config.json';
 
 export default {
     setup() {

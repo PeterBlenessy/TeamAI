@@ -1,5 +1,5 @@
 import localforage from 'localforage';
-import logger from './logger.js';
+import logger from '@/services/logger.js';
 
 const dbName = 'TeamAI';
 

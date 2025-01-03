@@ -115,8 +115,8 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
-import { useOllama } from '../../composables/useOllama';
 import { useQuasar } from 'quasar';
+import { useOllama } from '@/composables/useOllama';
 
 export default {
     name: 'OllamaModelManager',

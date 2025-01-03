@@ -1,11 +1,10 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
-import { storeToRefs } from 'pinia';
-import { useSettingsStore } from '../stores/settings-store';
-import { useTeamsStore } from '../stores/teams-store';
-import iCloudService from '../services/iCloudService';
-import logger from '../services/logger';
+import { useSettingsStore } from '@/stores/settings-store';
+import { useTeamsStore } from '@/stores/teams-store';
+import iCloudService from '@/services/iCloudService';
+import logger from '@/services/logger';
 
 export function useCloudSync() {
     const { t } = useI18n();

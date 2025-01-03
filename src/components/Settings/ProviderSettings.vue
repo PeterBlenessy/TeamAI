@@ -213,16 +213,16 @@
 
 <script>
 import { ref, computed, onMounted, watch } from 'vue';
-import { storeToRefs } from "pinia";
-import { useSettingsStore } from '../../stores/settings-store.js';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import defaultProviders from '../../services/providers.config.json';
-import { ollamaService } from '../../services/ollama.service';
-import ollamaLogo from '../../assets/ollama-logo.png';
-import openaiLogo from '../../assets/openai-logo.png';
-import { useOllama } from '../../composables/useOllama';
-import OllamaModelManager from './OllamaModelManager.vue';
+import { storeToRefs } from "pinia";
+import { useSettingsStore } from '@/stores/settings-store.js';
+import defaultProviders from '@/services/providers.config.json';
+import { ollamaService } from '@/services/ollama.service';
+import ollamaLogo from '@/assets/ollama-logo.png';
+import openaiLogo from '@/assets/openai-logo.png';
+import { useOllama } from '@/composables/useOllama';
+import OllamaModelManager from '@/components/Settings/OllamaModelManager.vue';
 
 export default {
     components: {
