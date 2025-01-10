@@ -168,8 +168,14 @@ export function useOllama() {
         return false;
     }
 
-    function displayModelStatus(modelName) {
-        return runningModels.value[modelName] ? 'Model is loaded' : 'Model is not loaded';
+    async function isModelLoaded(modelName) {
+        try {
+            const runningModels = await ollamaService.ps();
+            return runningModels.includes(modelName);
+        } catch (error) {
+            console.error('Failed to check model status:', error);
+            return false;
+        }
     }
 
     // Generate model options
@@ -286,7 +292,7 @@ export function useOllama() {
         loadModelDetails,
         loadAvailableModels,
         loadModel,
-        displayModelStatus,
+        isModelLoaded,  // rename from displayModelStatus
         getAllModelOptions,
         isOllamaConnected,
         isOllamaConfigured,

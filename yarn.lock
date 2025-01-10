@@ -867,10 +867,10 @@ nanoid@^3.3.7:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.8.tgz#b1be3030bee36aaff18bacb375e5cce521684baf"
   integrity sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==
 
-ollama@^0.4.4:
-  version "0.4.9"
-  resolved "https://registry.yarnpkg.com/ollama/-/ollama-0.4.9.tgz#f0f2f6999eb9dfeefed4e2f5176ea4b523a2941b"
-  integrity sha512-hVf5xix5zwswfMN6ydt3K2TS886aOk9RT9xksajXxdIHhi2yokEsdzJYE7IGg+1bjQSPZ6JHzHbESYjNB0pTCg==
+ollama@^0.5.11:
+  version "0.5.11"
+  resolved "https://registry.yarnpkg.com/ollama/-/ollama-0.5.11.tgz#208e4476a6f010c20d24c83896223bfa660ec236"
+  integrity sha512-lDAKcpmBU3VAOGF05NcQipHNKTdpKfAHpZ7bjCsElkUkmX7SNZImi6lwIxz/l1zQtLq0S3wuLneRuiXxX2KIew==
   dependencies:
     whatwg-fetch "^3.6.20"
 

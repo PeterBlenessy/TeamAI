@@ -35,7 +35,7 @@
     "highlight.js": "^11.9.0",
     "localforage": "^1.10.0",
     "markdown-it": "^14.0.0",
-    "ollama": "^0.4.4",
+    "ollama": "^0.5.11",
     "pinia": "^2.1.7",
     "quasar": "^2.14.3",
     "vue": "^3.4.15",

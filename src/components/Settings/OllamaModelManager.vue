@@ -74,12 +74,12 @@
                             <q-btn
                                 flat dense size="sm"
                                 icon="mdi-reload"
-                                :color="runningModels[props.row] ? 'positive' : ''"
+                                :color="modelLoaded[props.row] ? 'positive' : ''"
                                 :loading="modelOperations[props.row]"
                                 @click="handleLoadModel(props.row)"
                             >
                                 <q-tooltip>
-                                    {{ runningModels[props.row] ? 'Model is running' : 'Model is stopped' }}
+                                    {{ modelLoaded[props.row] ? 'Model is loaded' : 'Model is not loaded' }}
                                 </q-tooltip>
                             </q-btn>
                         </q-td>
@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { useOllama } from '@/composables/useOllama';
 
@@ -127,12 +127,12 @@ export default {
             modelDownloading,
             pullProgress,
             modelDetails,
-            runningModels,
             formatModelName,
             pullSpecificModel,
             deleteModel,
             loadModel,
-            loadAvailableModels  // Add this
+            loadAvailableModels,
+            getRunningModels,
         } = useOllama();
 
         const tableLoading = ref(false);
@@ -171,18 +171,51 @@ export default {
             tableLoading.value = true;
             try {
                 await loadAvailableModels();
+                await updateModelStatuses();
+                // Start polling every 5 seconds
+                statusCheckInterval = setInterval(updateModelStatuses, 5000);
             } finally {
                 tableLoading.value = false;
+            }
+        });
+
+        onUnmounted(() => {
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
             }
         });
 
         // Add loading states for model operations
         const modelOperations = ref({});
 
+        // Rename modelStatus to modelLoaded and initialize as empty object
+        const modelLoaded = ref({});
+        let statusCheckInterval;
+
+        // Update the function to use getRunningModels from useOllama
+        async function updateModelStatuses() {
+            try {
+                const loadedModels = await getRunningModels();
+                // Reset all models to false first
+                modelLoaded.value = Object.fromEntries(
+                    availableModels.value.map(model => [model, false])
+                );
+                // Then set the loaded ones to true
+                loadedModels.forEach(model => {
+                    if (modelLoaded.value.hasOwnProperty(model)) {
+                        modelLoaded.value[model] = true;
+                    }
+                });
+            } catch (error) {
+                console.error('Failed to update model statuses:', error);
+            }
+        }
+
         async function handleLoadModel(modelName) {
             modelOperations.value[modelName] = true;
             try {
                 await loadModel(modelName);
+                await updateModelStatuses();  // Update all statuses at once
                 $q.notify({
                     type: 'positive',
                     message: `Model ${formatModelName(modelName)} loaded successfully`
@@ -234,7 +267,6 @@ export default {
             modelDownloading,
             pullProgress,
             modelDetails,
-            runningModels,
             formatModelName,
             deleteModel,
             loadModel,
@@ -253,7 +285,8 @@ export default {
             modelOperations,
             handleLoadModel,
             handleDeleteModel,
-            handleModelSearch
+            handleModelSearch,
+            modelLoaded // Replace modelStatus with modelLoaded
         };
     }
 }

@@ -154,10 +154,25 @@ class OllamaService {
         await open('https://ollama.com/download');
     }
 
+    async ps() {
+        try {
+            const response = await this.ollama.ps();
+            return response.models.map(model => model.name);
+        } catch (error) {
+            logger.error('[OllamaService] - Failed to get running models:', error);
+            throw error;
+        }
+    }
+
     async loadModel(modelName) {
         if (!modelName) return false;
         try {
-            // Attempt a short generation to verify if model is actually loaded
+            // Check if model is already loaded using ps()
+            const runningModels = await this.ps();
+            if (runningModels.includes(modelName)) {
+                return true;
+            }
+            // If not loaded, attempt to load it
             await this.ollama.generate({
                 model: modelName,
                 prompt: '', 
