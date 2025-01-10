@@ -28,8 +28,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
 ## NEXT
-- Fix error where model status is not correct, i.e. running. Debug `ollama.ps()`
 - Fix error where selected models in ollama model dropdown are the hard coded ones, not the ones available. Flow should be this: list hard coded models that are not downloaded, show download icon.
+
+## v2.2.2 - 2025-01-10
+- Added support for the `@` alias in `vite.config.js` and updated import paths.
+- Updated ollama to latest version (0.5.11) where `ollama ps` API is implemented.
+- Fixed error where model status was not correct, i.e. running.
+- Fixed error where all model actions were set in loading state, when any of the was triggered.
+- Fixed error where model was deleted before user confirmed deletion in delete model flow.
+- Added support for downloading multiple models by moving download handling to the model table.
+- Added support for resuming model downloads after application restart.
+- Added support for aborting model downloads.
+- Updated package dependences.
 
 ## v2.2.1 - 2025-01-01
 - Added support for displaying provider logos in ProviderSettings.
