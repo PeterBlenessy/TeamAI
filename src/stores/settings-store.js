@@ -3,6 +3,9 @@ import { defineStore } from 'pinia';
 
 export const useSettingsStore = defineStore('settings', () => {
 
+    // Add downloading models state
+    const downloadingModels = ref([]);
+
     return {
         // Application settings
         appMode: ref('basic'),          // basic | advanced
@@ -48,5 +51,7 @@ export const useSettingsStore = defineStore('settings', () => {
             personas: true,      // Sync personas
             conversations: false // Sync conversation history
         }),
+
+        downloadingModels,    // Add to store exports
     }
 });

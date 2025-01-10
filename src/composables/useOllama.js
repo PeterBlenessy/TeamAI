@@ -1,11 +1,15 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import { Command } from '@tauri-apps/plugin-shell';
 import { platform } from '@tauri-apps/plugin-os';
 import { ollamaService } from '@/services/ollama.service';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export function useOllama() {
     const $q = useQuasar();
+    const settingsStore = useSettingsStore();
+
+    // Initialize refs
     const availableModels = ref([]);
     const modelDownloading = ref({});
     const pullProgress = ref(0);
@@ -15,6 +19,31 @@ export function useOllama() {
     const isOllamaConnected = ref(false);
     const isOllamaConfigured = ref(false);
     const restartingOllama = ref(false);
+
+    // Replace downloadingModels ref with store reference
+    const downloadingModels = computed(() => settingsStore.downloadingModels);
+
+    const addDownloadingModel = (modelName) => {
+        settingsStore.downloadingModels.push({
+            name: modelName,
+            progress: 0
+        });
+    };
+
+    const updateDownloadProgress = (modelName, progress) => {
+        const model = settingsStore.downloadingModels.find(m => m.name === modelName);
+        if (model) {
+            model.progress = progress;
+        }
+    };
+
+    const removeDownloadingModel = (modelName) => {
+        settingsStore.downloadingModels = settingsStore.downloadingModels.filter(
+            m => m.name !== modelName
+        );
+    };
+
+    // Remove window.addEventListener('beforeunload') handler as it's no longer needed
 
     // Helper to get base name and version
     function getBaseName(name) {
@@ -43,8 +72,16 @@ export function useOllama() {
         };
     }
 
+    async function resumeDownloads() {
+        console.log('Resuming downloads:', settingsStore.downloadingModels);
+        for (const model of settingsStore.downloadingModels) {
+            // Re-trigger pull for each downloading model
+            pullSpecificModel(model.name, true); // Add isResume parameter
+        }
+    }
+
     // Pull specific model
-    async function pullSpecificModel(modelName) {
+    async function pullSpecificModel(modelName, isResume = false) {
         if (!modelName) return;
         
         const baseName = getBaseName(modelName);
@@ -56,16 +93,24 @@ export function useOllama() {
             return;
         }
         
-        modelDownloading.value[modelName] = true;
-        pullProgress.value = 0;
+        // Only add to downloading models if not resuming
+        if (!isResume) {
+            modelDownloading.value[modelName] = true;
+            pullProgress.value = 0;
+            addDownloadingModel(modelName);
+        }
         
         try {
             await ollamaService.pullModel(modelName, (progress) => {
                 if (progress > pullProgress.value) {
                     pullProgress.value = progress;
                 }
+                updateDownloadProgress(modelName, progress);
             });
             await loadAvailableModels();
+            
+            // Only remove this specific model from storage, not all
+            removeDownloadingModel(modelName);
             
             $q.notify({
                 type: 'positive',
@@ -79,6 +124,7 @@ export function useOllama() {
                 type: 'negative',
                 message: `Failed to pull model ${modelName}: ${error.message}`
             });
+            removeDownloadingModel(modelName); // Remove from storage on error
             return false;
         } finally {
             modelDownloading.value[modelName] = false;
@@ -310,5 +356,7 @@ export function useOllama() {
         configureAndRestartOllama,
         checkOllamaStatus,
         getRunningModels,  // Add the new function to exports
+        downloadingModels,
+        resumeDownloads,  // Add the new function to exports
     };
 }

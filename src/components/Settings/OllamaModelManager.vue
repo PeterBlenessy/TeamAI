@@ -7,22 +7,14 @@
                     dense filled
                     class="col"
                     v-model="newModelName"
-                    @input="handleModelSearch"
                     label="Download new model"
                     placeholder="Enter the name of the model to download"
-                    @keyup.enter="handleAddCustomModel"
+                    @keyup.enter="handleDownloadModel(newModelName)"
                 >
                     <template v-slot:append v-if="newModelName">
-                        <q-circular-progress v-if="newModelLoading"
-                            show-value
-                            :value="pullProgress"
-                            color="primary"
-                            size="md"
-                            :thickness="0.4"
-                        />
-                        <q-btn v-else
+                        <q-btn
                             flat round size="sm" icon="mdi-download"
-                            @click="handleAddCustomModel"
+                            @click="handleDownloadModel(newModelName)"
                         />
                     </template>
                 </q-input>
@@ -30,7 +22,7 @@
         </q-card-section>
         <q-card-section>
             <q-table
-                :rows="availableModels"
+                :rows="combinedModels"
                 :columns="modelColumns"
                 row-key="name"
                 dense
@@ -40,48 +32,59 @@
             >
                 <template v-slot:body="props">
                     <q-tr :props="props">
-                        <q-td key="name">{{ formatModelName(props.row) }}</q-td>
+                        <q-td key="name">{{ formatModelName(props.row.name) }}</q-td>
                         <q-td key="architecture">
-                            {{ modelDetails[props.row]?.model_info["general.architecture"] || '-' }}
+                            {{ modelDetails[props.row.name]?.model_info["general.architecture"] || '' }}
                         </q-td>
                         <q-td key="size">
-                            {{ modelDetails[props.row]?.details?.parameter_size || '-' }}
+                            {{ modelDetails[props.row.name]?.details?.parameter_size || '' }}
                         </q-td>
                         <q-td key="quantization">
-                            {{ modelDetails[props.row]?.details?.quantization_level || '-' }}
+                            {{ modelDetails[props.row.name]?.details?.quantization_level || '' }}
                         </q-td>
                         <q-td key="modified">
-                            {{ modelDetails[props.row]?.modified_at ? 
-                                new Date(modelDetails[props.row].modified_at).toLocaleString() : '-' }}
+                            {{ modelDetails[props.row.name]?.modified_at ? 
+                                new Date(modelDetails[props.row.name].modified_at).toLocaleString() : '' }}
                         </q-td>
                         <q-td key="actions">
-                            <q-btn v-if="modelDetails[props.row]"
-                                flat dense size="sm"
-                                icon="mdi-file-document-outline"
-                                :loading="isOperationLoading(props.row, 'info')"
-                                @click="showLicenseInfo(props.row)"
-                            >
-                                <q-tooltip>Show license info</q-tooltip>
-                            </q-btn>
-                            <q-btn
-                                flat dense size="sm"
-                                icon="mdi-delete"
-                                :loading="isOperationLoading(props.row, 'delete')"
-                                @click="handleDeleteModel(props.row)"
-                            >
-                                <q-tooltip>Delete model</q-tooltip>
-                            </q-btn>
-                            <q-btn
-                                flat dense size="sm"
-                                icon="mdi-reload"
-                                :color="modelLoaded[props.row] ? 'positive' : ''"
-                                :loading="isOperationLoading(props.row, 'load')"
-                                @click="handleLoadModel(props.row)"
-                            >
-                                <q-tooltip>
-                                    {{ modelLoaded[props.row] ? 'Model is loaded' : 'Model is not loaded' }}
-                                </q-tooltip>
-                            </q-btn>
+                            <template v-if="props.row.downloading">
+                                <q-circular-progress
+                                    show-value
+                                    :value="props.row.progress"
+                                    color="primary"
+                                    size="md"
+                                    :thickness="0.4"
+                                />
+                            </template>
+                            <template v-else>
+                                <q-btn v-if="modelDetails[props.row.name]"
+                                    flat dense size="sm"
+                                    icon="mdi-file-document-outline"
+                                    :loading="isOperationLoading(props.row.name, 'info')"
+                                    @click="showLicenseInfo(props.row.name)"
+                                >
+                                    <q-tooltip>Show license info</q-tooltip>
+                                </q-btn>
+                                <q-btn
+                                    flat dense size="sm"
+                                    icon="mdi-delete"
+                                    :loading="isOperationLoading(props.row.name, 'delete')"
+                                    @click="handleDeleteModel(props.row.name)"
+                                >
+                                    <q-tooltip>Delete model</q-tooltip>
+                                </q-btn>
+                                <q-btn
+                                    flat dense size="sm"
+                                    icon="mdi-reload"
+                                    :color="modelLoaded[props.row.name] ? 'positive' : ''"
+                                    :loading="isOperationLoading(props.row.name, 'load')"
+                                    @click="handleLoadModel(props.row.name)"
+                                >
+                                    <q-tooltip>
+                                        {{ modelLoaded[props.row.name] ? 'Model is loaded' : 'Model is not loaded' }}
+                                    </q-tooltip>
+                                </q-btn>
+                            </template>
                         </q-td>
                     </q-tr>
                 </template>
@@ -114,7 +117,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { useOllama } from '@/composables/useOllama';
 
@@ -124,20 +127,22 @@ export default {
         const $q = useQuasar();
         const {
             availableModels,
-            modelDownloading,
-            pullProgress,
-            modelDetails,
-            formatModelName,
-            pullSpecificModel,
             deleteModel,
-            loadModel,
-            loadAvailableModels,
+            downloadingModels,
+            modelDownloading,
+            formatModelName,
+            getBaseName, 
             getRunningModels,
+            loadAvailableModels,
+            loadModel,
+            modelDetails,
+            pullSpecificModel,
+            pullProgress,
+            resumeDownloads,
         } = useOllama();
 
         const tableLoading = ref(false);
         const newModelName = ref('');
-        const newModelLoading = ref(false);
         
         const modelColumns = [
             { name: 'name', label: 'Model', field: row => formatModelName(row), align: 'left' },
@@ -164,12 +169,63 @@ export default {
             }
         }
 
-        async function handleAddCustomModel() {
-            if (!newModelName.value) return;
-            newModelLoading.value = true;
-            await pullSpecificModel(newModelName.value);
-            newModelLoading.value = false;
-            newModelName.value = '';
+        // Combine available and downloading models
+        const combinedModels = computed(() => {
+            const availableModelObjects = availableModels.value.map(name => ({
+                name,
+                downloading: false,
+                progress: 0
+            }));
+            
+            const downloadingModelObjects = downloadingModels.value.map(model => ({
+                name: model.name,
+                downloading: true,
+                progress: model.progress
+            }));
+            
+            // Put downloading models first, then sort available models alphabetically
+            return [
+                ...downloadingModelObjects,
+                ...availableModelObjects.sort((a, b) => a.name.localeCompare(b.name))
+            ];
+        });
+
+        async function handleDownloadModel(modelName) {
+            if (!modelName) return;
+
+            // Check if model is already downloading (exact match)
+            if (downloadingModels.value.some(m => m.name === modelName)) {
+                $q.notify({
+                    type: 'warning',
+                    message: `Model ${formatModelName(modelName)} is already downloading`
+                });
+                return;
+            }
+
+            // Check if model already exists (base name match)
+            const { base: newModelBase } = getBaseName(modelName);
+            const existingModel = availableModels.value.find(m => {
+                const { base: existingBase } = getBaseName(m);
+                return existingBase === newModelBase;
+            });
+
+            if (existingModel) {
+                $q.notify({
+                    type: 'warning',
+                    message: `Model ${formatModelName(existingModel)} is already installed`
+                });
+                return;
+            }
+
+            try {
+                newModelName.value = '';
+                await pullSpecificModel(modelName);
+            } catch (error) {
+                $q.notify({
+                    type: 'negative',
+                    message: `Failed to download model: ${error.message}`
+                });
+            }
         }
 
         onMounted(async () => {
@@ -177,8 +233,9 @@ export default {
             try {
                 await loadAvailableModels();
                 await updateModelStatuses();
-                // Start polling every 5 seconds
-                statusCheckInterval = setInterval(updateModelStatuses, 5000);
+                await resumeDownloads();
+                // Start polling every 60 seconds
+                statusCheckInterval = setInterval(updateModelStatuses, 60000);
             } finally {
                 tableLoading.value = false;
             }
@@ -273,15 +330,6 @@ export default {
             }
         }
 
-        // Debounce model search input
-        let searchTimeout;
-        function handleModelSearch(val) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                newModelName.value = val;
-            }, 300);
-        }
-
         return {
             availableModels,
             modelDownloading,
@@ -295,8 +343,7 @@ export default {
             modelColumns,
             
             newModelName,
-            newModelLoading,
-            handleAddCustomModel,
+            handleDownloadModel,
             
             showLicenseDialog,
             selectedLicenseModelName,
@@ -305,9 +352,9 @@ export default {
             modelOperations,
             handleLoadModel,
             handleDeleteModel,
-            handleModelSearch,
-            modelLoaded, // Replace modelStatus with modelLoaded
-            isOperationLoading
+            modelLoaded,
+            isOperationLoading,
+            combinedModels
         };
     }
 }
