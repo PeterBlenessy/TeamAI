@@ -278,6 +278,16 @@ export function useOllama() {
         }
     }
 
+    // Add new function to get running models
+    async function getRunningModels() {
+        try {
+            return await ollamaService.ps();
+        } catch (error) {
+            console.error('Failed to get running models:', error);
+            return [];
+        }
+    }
+
     return {
         availableModels,
         modelDownloading,
@@ -298,6 +308,7 @@ export function useOllama() {
         isOllamaConfigured,
         restartingOllama,
         configureAndRestartOllama,
-        checkOllamaStatus
+        checkOllamaStatus,
+        getRunningModels,  // Add the new function to exports
     };
 }

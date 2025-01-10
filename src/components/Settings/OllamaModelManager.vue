@@ -58,7 +58,7 @@
                             <q-btn v-if="modelDetails[props.row]"
                                 flat dense size="sm"
                                 icon="mdi-file-document-outline"
-                                :loading="modelOperations[props.row]"
+                                :loading="isOperationLoading(props.row, 'info')"
                                 @click="showLicenseInfo(props.row)"
                             >
                                 <q-tooltip>Show license info</q-tooltip>
@@ -66,7 +66,7 @@
                             <q-btn
                                 flat dense size="sm"
                                 icon="mdi-delete"
-                                :loading="modelOperations[props.row]"
+                                :loading="isOperationLoading(props.row, 'delete')"
                                 @click="handleDeleteModel(props.row)"
                             >
                                 <q-tooltip>Delete model</q-tooltip>
@@ -75,7 +75,7 @@
                                 flat dense size="sm"
                                 icon="mdi-reload"
                                 :color="modelLoaded[props.row] ? 'positive' : ''"
-                                :loading="modelOperations[props.row]"
+                                :loading="isOperationLoading(props.row, 'load')"
                                 @click="handleLoadModel(props.row)"
                             >
                                 <q-tooltip>
@@ -155,8 +155,13 @@ export default {
         );
 
         function showLicenseInfo(modelName) {
-            selectedLicenseModelName.value = modelName;
-            showLicenseDialog.value = true;
+            setOperationLoading(modelName, 'info', true);
+            try {
+                selectedLicenseModelName.value = modelName;
+                showLicenseDialog.value = true;
+            } finally {
+                setOperationLoading(modelName, 'info', false);
+            }
         }
 
         async function handleAddCustomModel() {
@@ -188,6 +193,17 @@ export default {
         // Add loading states for model operations
         const modelOperations = ref({});
 
+        function isOperationLoading(modelName, operation) {
+            return modelOperations.value[modelName]?.[operation] || false;
+        }
+
+        function setOperationLoading(modelName, operation, loading) {
+            if (!modelOperations.value[modelName]) {
+                modelOperations.value[modelName] = {};
+            }
+            modelOperations.value[modelName][operation] = loading;
+        }
+
         // Rename modelStatus to modelLoaded and initialize as empty object
         const modelLoaded = ref({});
         let statusCheckInterval;
@@ -212,7 +228,7 @@ export default {
         }
 
         async function handleLoadModel(modelName) {
-            modelOperations.value[modelName] = true;
+            setOperationLoading(modelName, 'load', true);
             try {
                 await loadModel(modelName);
                 await updateModelStatuses();  // Update all statuses at once
@@ -226,7 +242,7 @@ export default {
                     message: `Failed to load model: ${error.message}`
                 });
             } finally {
-                modelOperations.value[modelName] = false;
+                setOperationLoading(modelName, 'load', false);
             }
         }
 
@@ -239,7 +255,7 @@ export default {
                     persistent: true
                 });
 
-                modelOperations.value[modelName] = true;
+                setOperationLoading(modelName, 'delete', true);
                 await deleteModel(modelName);
             } catch (error) {
                 if (error) { // Not canceled
@@ -249,7 +265,7 @@ export default {
                     });
                 }
             } finally {
-                modelOperations.value[modelName] = false;
+                setOperationLoading(modelName, 'delete', false);
             }
         }
 
@@ -286,7 +302,8 @@ export default {
             handleLoadModel,
             handleDeleteModel,
             handleModelSearch,
-            modelLoaded // Replace modelStatus with modelLoaded
+            modelLoaded, // Replace modelStatus with modelLoaded
+            isOperationLoading
         };
     }
 }
