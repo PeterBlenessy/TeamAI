@@ -247,18 +247,22 @@ export default {
         }
 
         async function handleDeleteModel(modelName) {
+            setOperationLoading(modelName, 'delete', true);
             try {
-                await $q.dialog({
-                    title: 'Confirm Deletion',
+                $q.dialog({
                     message: `Are you sure you want to delete ${formatModelName(modelName)}?`,
+                    color: 'primary',
                     cancel: true,
                     persistent: true
+                }).onOk(async () => {
+                    await deleteModel(modelName);
+                    $q.notify({
+                        type: 'positive',
+                        message: `Model ${formatModelName(modelName)} deleted successfully`
+                    });
                 });
-
-                setOperationLoading(modelName, 'delete', true);
-                await deleteModel(modelName);
             } catch (error) {
-                if (error) { // Not canceled
+                if (error) { // Not cancelled
                     $q.notify({
                         type: 'negative',
                         message: `Failed to delete model: ${error.message}`
