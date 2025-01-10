@@ -28,7 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
 ## NEXT
-- Fix error where selected models in ollama model dropdown are the hard coded ones, not the ones available. Flow should be this: list hard coded models that are not downloaded, show download icon.
+- Fix error where selected models in ollama model dropdown are the hard coded ones, not the ones available. Flow should be this: list hard coded models that are not downloaded, show download icon. Fix in both settings and quick settings.
+- Change icons to use SVG instead of webfonts.
 
 ## v2.2.2 - 2025-01-10
 - Added support for the `@` alias in `vite.config.js` and updated import paths.
@@ -40,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for resuming model downloads after application restart.
 - Added support for aborting model downloads.
 - Updated package dependences.
+- Fixed build error caused by `@intlify/unplugin-vue-i18n` with `jitCompilation` enabled as default from version `5.0.0` and introducing dev dependency to `typescript`.
 
 ## v2.2.1 - 2025-01-01
 - Added support for displaying provider logos in ProviderSettings.
