@@ -46,15 +46,18 @@
                             {{ modelDetails[props.row.name]?.modified_at ? 
                                 new Date(modelDetails[props.row.name].modified_at).toLocaleString() : '' }}
                         </q-td>
-                        <q-td key="actions">
+                        <q-td key="actions" class="text-right">
                             <template v-if="props.row.downloading">
-                                <q-circular-progress
-                                    show-value
-                                    :value="props.row.progress"
-                                    color="primary"
-                                    size="md"
-                                    :thickness="0.4"
-                                />
+                                    <q-circular-progress
+                                        show-value
+                                        :value="props.row.progress"
+                                        color="primary"
+                                        size="md"
+                                        :thickness="0.4"
+                                    />
+                                    <q-btn flat dense size="sm" icon="mdi-cancel" @click="handleCancelDownload(props.row.name)">
+                                        <q-tooltip>Cancel download</q-tooltip>
+                                    </q-btn>
                             </template>
                             <template v-else>
                                 <q-btn v-if="modelDetails[props.row.name]"
@@ -117,9 +120,10 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { useOllama } from '@/composables/useOllama';
+import logger from '@/services/logger';
 
 export default {
     name: 'OllamaModelManager',
@@ -139,6 +143,7 @@ export default {
             pullSpecificModel,
             pullProgress,
             resumeDownloads,
+            cancelModelDownload,
         } = useOllama();
 
         const tableLoading = ref(false);
@@ -150,7 +155,7 @@ export default {
             { name: 'size', label: 'Size', field: row => modelDetails.value[row]?.details?.parameter_size || '-', align: 'left' },
             { name: 'quantization', label: 'Quantization', field: row => modelDetails.value[row]?.details?.quantization_level || '-', align: 'left' },
             { name: 'modified', label: 'Modified', field: row => modelDetails.value[row]?.modified_at || '-', align: 'left' },
-            { name: 'actions', label: 'Actions', field: 'actions', align: 'center' }
+            { name: 'actions', label: 'Actions', field: 'actions', align: 'right' }
         ];
 
         const showLicenseDialog = ref(false);
@@ -280,7 +285,7 @@ export default {
                     }
                 });
             } catch (error) {
-                console.error('Failed to update model statuses:', error);
+                logger.error(`Failed to update model statuses: ${error}`);
             }
         }
 
@@ -330,6 +335,30 @@ export default {
             }
         }
 
+        async function handleCancelDownload(modelName) {
+            try {
+                $q.dialog({
+                    message: `Are you sure you want to cancel downloading ${formatModelName(modelName)}?`,
+                    color: 'primary',
+                    cancel: true,
+                    persistent: true
+                }).onOk(async () => {
+                    await cancelModelDownload(modelName);
+                    $q.notify({
+                        type: 'info',
+                        message: `Download cancelled for ${formatModelName(modelName)}`
+                    });
+                });
+            } catch (error) {
+                if (error) { // Not cancelled
+                    $q.notify({
+                        type: 'negative',
+                        message: `Failed to cancel download: ${error.message}`
+                    });
+                }
+            }
+        }
+
         return {
             availableModels,
             modelDownloading,
@@ -344,6 +373,7 @@ export default {
             
             newModelName,
             handleDownloadModel,
+            handleCancelDownload,
             
             showLicenseDialog,
             selectedLicenseModelName,

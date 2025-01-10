@@ -4,6 +4,7 @@ import { Command } from '@tauri-apps/plugin-shell';
 import { platform } from '@tauri-apps/plugin-os';
 import { ollamaService } from '@/services/ollama.service';
 import { useSettingsStore } from '@/stores/settings-store';
+import logger from '@/services/logger';
 
 export function useOllama() {
     const $q = useQuasar();
@@ -73,19 +74,20 @@ export function useOllama() {
     }
 
     async function resumeDownloads() {
-        console.log('Resuming downloads:', settingsStore.downloadingModels);
+        logger.info(`Resuming downloads: ${JSON.stringify(settingsStore.downloadingModels)}`);
         for (const model of settingsStore.downloadingModels) {
             // Re-trigger pull for each downloading model
-            pullSpecificModel(model.name, true); // Add isResume parameter
+            pullSpecificModel(model.name, true);
         }
     }
 
-    // Pull specific model
+    // Remove the downloadIterators map and modify pullSpecificModel to only handle progress
     async function pullSpecificModel(modelName, isResume = false) {
         if (!modelName) return;
         
         const baseName = getBaseName(modelName);
         if (!baseName) {
+            logger.error(`Invalid model name: ${modelName}`);
             $q.notify({
                 type: 'negative',
                 message: 'Invalid model name'
@@ -93,49 +95,52 @@ export function useOllama() {
             return;
         }
         
-        // Only add to downloading models if not resuming
-        if (!isResume) {
-            modelDownloading.value[modelName] = true;
-            pullProgress.value = 0;
-            addDownloadingModel(modelName);
-        }
-        
         try {
+            if (!isResume) {
+                modelDownloading.value[modelName] = true;
+                pullProgress.value = 0;
+                addDownloadingModel(modelName);
+            }
+
             await ollamaService.pullModel(modelName, (progress) => {
                 if (progress > pullProgress.value) {
                     pullProgress.value = progress;
+                    updateDownloadProgress(modelName, progress);
                 }
-                updateDownloadProgress(modelName, progress);
-            });
-            await loadAvailableModels();
-            
-            // Only remove this specific model from storage, not all
-            removeDownloadingModel(modelName);
-            
-            $q.notify({
-                type: 'positive',
-                message: `Model ${modelName} downloaded successfully`
             });
 
+            await loadAvailableModels();
+            removeDownloadingModel(modelName);
             return true;
         } catch (error) {
-            console.error(`Failed to pull model ${modelName}:`, error);
-            $q.notify({
-                type: 'negative',
-                message: `Failed to pull model ${modelName}: ${error.message}`
-            });
-            removeDownloadingModel(modelName); // Remove from storage on error
-            return false;
+            logger.error(`Failed to pull model ${modelName}: ${error}`);
+            removeDownloadingModel(modelName);
+            throw error;
         } finally {
             modelDownloading.value[modelName] = false;
             pullProgress.value = 0;
         }
     }
 
+    async function cancelModelDownload(modelName) {
+        try {
+            if (ollamaService.cancelModelDownload(modelName)) {
+                removeDownloadingModel(modelName);
+                modelDownloading.value[modelName] = false;
+                pullProgress.value = 0;
+                return true;
+            }
+            return false;
+        } catch (error) {
+            logger.error(`Failed to cancel download: ${error}`);
+            throw error;
+        }
+    }
+
     // Delete model
     async function deleteModel(modelName) {
         if (!modelName) {
-            console.error('No model name provided for deletion');
+            logger.error('No model name provided for deletion');
             return false;
         }
         
@@ -156,19 +161,11 @@ export function useOllama() {
             }
 
             await loadAvailableModels();
-            
-            $q.notify({
-                type: 'positive',
-                message: `Model ${base} and all its versions deleted successfully`
-            });
+
             return true;
         } catch (error) {
-            console.error(`Failed to delete model ${modelName}:`, error);
-            $q.notify({
-                type: 'negative',
-                message: `Failed to delete model ${modelName}: ${error.message}`
-            });
-            return false;
+            logger.error(`Failed to delete model ${modelName}: ${error}`);
+            throw new Error(`Failed to delete model ${modelName}: ${error.message}`);
         }
     }
 
@@ -181,11 +178,8 @@ export function useOllama() {
             const details = await ollamaService.showModel(modelName);
             modelDetails.value[modelName] = details;
         } catch (error) {
-            console.error(`Failed to load details for model ${modelName}:`, error);
-            $q.notify({
-                type: 'negative',
-                message: `Failed to load model details: ${error.message}`
-            });
+            logger.error(`Failed to load details for model ${modelName}: ${error}`);
+            throw new Error(`Failed to load details for model ${modelName}: ${error.message}`);
         } finally {
             loadingDetails.value[modelName] = false;
         }
@@ -201,7 +195,7 @@ export function useOllama() {
                 await loadModelDetails(model);
             }
         } catch (error) {
-            console.error('Failed to load models:', error);
+            logger.error('Failed to load models:', error);
         }
     }
 
@@ -219,7 +213,7 @@ export function useOllama() {
             const runningModels = await ollamaService.ps();
             return runningModels.includes(modelName);
         } catch (error) {
-            console.error('Failed to check model status:', error);
+            logger.error('Failed to check model status:', error);
             return false;
         }
     }
@@ -301,9 +295,9 @@ export function useOllama() {
                     break;
             }
 
-            console.log('Successfully configured and restarted Ollama');
+            logger.info('Successfully configured and restarted Ollama');
         } catch (error) {
-            console.error('Failed to configure and restart Ollama:', error);
+            logger.error(`Failed to configure and restart Ollama: ${error}`);
         } finally {
             restartingOllama.value = false;
         }
@@ -315,7 +309,7 @@ export function useOllama() {
         ollamaService.setHost(provider.baseUrl);
 
         isOllamaConnected.value = await ollamaService.checkConnection();
-        console.log('Ollama connected:', isOllamaConnected.value);
+        logger.info(`Ollama connected: ${isOllamaConnected.value}`);
         if (isOllamaConnected.value) {
             isOllamaConfigured.value = await ollamaService.isConfiguredCorrectly();
             if (isOllamaConfigured.value) {
@@ -329,7 +323,7 @@ export function useOllama() {
         try {
             return await ollamaService.ps();
         } catch (error) {
-            console.error('Failed to get running models:', error);
+            logger.error(`Failed to get running models: ${error}`);
             return [];
         }
     }
@@ -358,5 +352,6 @@ export function useOllama() {
         getRunningModels,  // Add the new function to exports
         downloadingModels,
         resumeDownloads,  // Add the new function to exports
+        cancelModelDownload,  // Add the new function to exports
     };
 }

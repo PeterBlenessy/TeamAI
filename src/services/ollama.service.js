@@ -8,6 +8,7 @@ class OllamaService {
         this.host = null;
         this.ollama = null;
         this.platformName = platform();
+        this.downloadStreams = new Map();
         logger.info(`[OllamaService] - Initialized for platform: ${this.platformName}`);
     }
 
@@ -88,27 +89,42 @@ class OllamaService {
 
     async pullModel(modelName, onProgress) {
         try {
-            let lastProgress = 0;
             const stream = await this.ollama.pull({ 
                 model: modelName, 
                 stream: true 
             });
 
+            // Store the steams to be able to cancel them
+            this.downloadStreams.set(modelName, stream);
+
             for await (const part of stream) {
                 if (part.digest) {
                     if (part.completed && part.total) {
                         const progress = Math.round((part.completed / part.total) * 100);
-                        if (progress !== lastProgress) {  // Only update if changed
-                            lastProgress = progress;
-                            onProgress(progress);
-                        }
+                        onProgress(progress);
                     }
                 }
             }
         } catch (error) {
-            logger.error('[OllamaService] - Failed to pull model:', error);
-            throw error;
+            if (error?.name === 'AbortError') {
+                logger.info(`[OllamaService] - Download cancelled for model: ${modelName}`);
+            } else {
+                logger.error(`[OllamaService] - Failed to pull model: ${error}`);
+                throw error;
+            }
+        } finally {
+            this.downloadStreams.delete(modelName);
         }
+    }
+
+    cancelModelDownload(modelName) {
+        const stream = this.downloadStreams.get(modelName);
+        if (stream) {
+            stream.abort();
+            this.downloadStreams.delete(modelName);
+            return true;
+        }
+        return false;
     }
 
     async deleteModel(modelName) {
@@ -125,7 +141,7 @@ class OllamaService {
             
             logger.info(`[OllamaService] - Model ${modelName} deleted successfully`);
         } catch (error) {
-            logger.error(`[OllamaService] - Failed to delete model:`, error);
+            logger.error(`[OllamaService] - Failed to delete model: ${error}`);
             throw error;
         }
     }
@@ -144,7 +160,7 @@ class OllamaService {
             logger.info(`[OllamaService] - Got details for model ${modelName}`);
             return response;
         } catch (error) {
-            logger.error(`[OllamaService] - Failed to get model details:`, error);
+            logger.error(`[OllamaService] - Failed to get model details: ${error}`);
             throw error;
         }
     }
@@ -159,7 +175,7 @@ class OllamaService {
             const response = await this.ollama.ps();
             return response.models.map(model => model.name);
         } catch (error) {
-            logger.error('[OllamaService] - Failed to get running models:', error);
+            logger.error(`[OllamaService] - Failed to get running models: ${error}`);
             throw error;
         }
     }
