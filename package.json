@@ -19,7 +19,7 @@
     "cicd": "yarn git:push:all && yarn release:draft && yarn release:publish"
   },
   "dependencies": {
-    "@intlify/unplugin-vue-i18n": "^2.0.0",
+    "@intlify/unplugin-vue-i18n": "^6.0.3",
     "@quasar/extras": "^1.16.9",
     "@tauri-apps/api": "^2.1.1",
     "@tauri-apps/cli": "^2.1.0",
@@ -39,11 +39,11 @@
     "pinia": "^2.1.7",
     "quasar": "^2.14.3",
     "vue": "^3.4.15",
-    "vue-i18n": "^9.9.0"
+    "vue-i18n": "^11.0.1"
   },
   "devDependencies": {
     "@quasar/vite-plugin": "^1.6.0",
     "@vitejs/plugin-vue": "^5.0.3",
-    "vite": "^5.2.14"
+    "vite": "^6.0.7"
   }
 }
