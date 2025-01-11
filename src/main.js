@@ -18,6 +18,34 @@ import { createI18n } from 'vue-i18n';
 import messages from '@/i18n';
 
 // ---------------------------------------------------------------------------------------------
+// Add before creating the app
+const resizeHandler = () => {
+  // Suppress specific ResizeObserver errors
+  const originalError = window.console.error;
+  window.console.error = (...args) => {
+    if (args.length > 0 && typeof args[0] === 'string') {
+      if (args[0].includes('ResizeObserver') || 
+          args[0].includes('ResizeObserver loop completed with undelivered notifications.') ||
+          args[0].includes('ResizeObserver loop limit exceeded')) {
+        return;
+      }
+    }
+    originalError.apply(console, args);
+  };
+
+  window.addEventListener('error', (e) => {
+    if (e.message.includes('ResizeObserver')) {
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+      e.preventDefault();
+      return false;
+    }
+  }, true);
+};
+
+resizeHandler();
+
+// ---------------------------------------------------------------------------------------------
 // Create the app
 const app = createApp(App);
 
