@@ -4,10 +4,11 @@
             :placeholder="isCreateImageSelected ? t('userInput.placeholder.image') : t('userInput.placeholder.text')"
             :label="isCreateImageSelected ? t('userInput.label') : t('userInput.label')"
             @keydown.enter.exact.prevent="handleUserInput" 
-            @keydown.up.prevent="getPreviousUserMessage"
-            @keydown.down.prevent="getNextUserMessage"
-            v-model="question" type="textarea">
-
+            @keydown.up="handleUpKey"
+            @keydown.down="handleDownKey"
+            v-model="question" type="textarea" 
+            ref="userInputRef"
+        >
             <template v-slot:prepend>
                 <q-btn dense flat :icon="!isCreateImageSelected ? mdiTooltipText : mdiTooltipTextOutline"
                     :color="!isCreateImageSelected ? 'primary' : iconColor"
@@ -77,7 +78,7 @@ const { speechLanguage, streamResponse } = storeToRefs(settingsStore);
 const question = ref('');
 const { t } = useI18n();
 const $q = useQuasar();
-
+const userInputRef = ref(null);
 const messageHistoryIndex = ref(-1);
 
 function handleUserInput() {
@@ -179,4 +180,57 @@ const getNextUserMessage = () => {
 }
 
 const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
+
+const getCursorPosition = () => {
+    const textarea = userInputRef.value.$el.getElementsByTagName('textarea')[0];
+    if (!textarea) {
+        logger.warn('[UserInput] - Textarea element not found');
+        return null;
+    }
+
+    const text = textarea.value;
+    const cursorPos = textarea.selectionStart;
+    
+    // Get current line by counting newlines before cursor
+    const beforeCursor = text.substring(0, cursorPos);
+    const afterCursor = text.substring(cursorPos);
+    
+    const currentLine = (beforeCursor.match(/\n/g) || []).length;
+    const linesAfterCursor = (afterCursor.match(/\n/g) || []).length;
+    const totalLines = currentLine + linesAfterCursor;
+
+    const isFirstLine = currentLine === 0 && cursorPos === beforeCursor.length;
+    const isLastLine = currentLine === totalLines && cursorPos === text.length;
+
+    // logger.debug(`[UserInput] - Cursor: line ${currentLine}/${totalLines}, first=${isFirstLine}, last=${isLastLine}`);
+    
+    return {
+        isFirstLine,
+        isLastLine,
+        cursorPos,
+        textLength: text.length
+    };
+}
+
+const handleUpKey = (event) => {
+    const cursorInfo = getCursorPosition();
+    if (!cursorInfo) return;
+    
+    // Navigate history only when cursor is at the start of first line
+    if (cursorInfo.isFirstLine && cursorInfo.cursorPos === 0) {
+        event.preventDefault(); // Only prevent default when navigating history
+        getPreviousUserMessage();
+    }
+}
+
+const handleDownKey = (event) => {
+    const cursorInfo = getCursorPosition();
+    if (!cursorInfo) return;
+    
+    // Navigate history only when cursor is at the end of last line
+    if (cursorInfo.isLastLine && cursorInfo.cursorPos === cursorInfo.textLength) {
+        event.preventDefault(); // Only prevent default when navigating history
+        getNextUserMessage();
+    }
+}
 </script>
