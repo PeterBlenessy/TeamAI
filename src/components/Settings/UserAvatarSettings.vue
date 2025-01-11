@@ -27,15 +27,15 @@
     </q-item>
 </template>
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
-import { useQuasar } from 'quasar';
+import { useHelpers } from '@/composables/useHelpers';
 import { mdiAccountCircle, mdiSwapHorizontal, mdiPlusCircle } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 
-const $q = useQuasar();
 const { t } = useI18n();
+const { iconColor } = useHelpers();
 const settingsStore = useSettingsStore();
 const { userAvatar } = storeToRefs(settingsStore);
 
@@ -54,6 +54,4 @@ const handleAvatarSelected = () => {
         reader.readAsDataURL(avatarImage.value);
     }
 };
-
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 </script>

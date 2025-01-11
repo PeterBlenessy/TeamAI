@@ -64,13 +64,11 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { mdiAccountOutline, mdiAccountGroupOutline, mdiTune, mdiHistory, mdiCardAccountDetailsOutline, mdiAccountArrowDownOutline } from '@quasar/extras/mdi-v7';
+import { useHelpers } from '@/composables/useHelpers';
 
 const { t } = useI18n();
-const $q = useQuasar();
 
 const features = [
     {
@@ -105,7 +103,7 @@ const features = [
     }
 ];
 
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
+const { iconColor } = useHelpers();
 </script>
 
 <style></style>

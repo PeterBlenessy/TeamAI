@@ -208,9 +208,10 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue';
+import { useQuasar } from 'quasar';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
-import { useQuasar } from 'quasar';
+import { useHelpers } from '@/composables/useHelpers';
 import { mdiCreation, mdiTextShort, mdiText, mdiTextLong, mdiThermometer, mdiImageMultipleOutline, 
     mdiImageSizeSelectLarge, mdiHighDefinition, mdiStandardDefinition, mdiPaletteOutline,
     mdiAccountCircle, mdiAccount, mdiAccountGroup, mdiAccountGroupOutline, mdiMessageOutline, mdiForumOutline, 
@@ -328,5 +329,5 @@ const shareConversation = (id) => navigator.share({ text: exportConversation(id)
     .then(logger.log("[QuickSettings] - Shared conversation"))
     .catch(e => logger.error(`[QuickSettings] - ${e}`));
 
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
+const { iconColor } = useHelpers();
 </script>

@@ -108,14 +108,15 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue';
-import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from "pinia";
+import { useHelpers } from '@/composables/useHelpers';
 import { mdiCreation, mdiTextShort, mdiText, mdiTextLong, mdiThermometer, mdiAccountCircle, mdiCardAccountDetailsOutline } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 import { useTeamsStore } from '@/stores/teams-store.js';
 
-const $q = useQuasar();
+const { iconColor } = useHelpers();
+
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
 const {
@@ -156,8 +157,6 @@ const modelOptions = computed(() => {
         }));
     }).flat()
 });
-
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 </script>
 
 <style scoped>

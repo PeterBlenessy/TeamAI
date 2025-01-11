@@ -50,9 +50,10 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import { useHelpers } from '@/composables/useHelpers';
 import { mdiCogOutline, mdiWeb, mdiTooltipText, mdiTooltipImage, mdiCloudSync } from '@quasar/extras/mdi-v7';
 import UserAvatarSettings from '@/components/Settings/UserAvatarSettings.vue';
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue';
@@ -72,5 +73,5 @@ const $q = useQuasar();
 const { t } = useI18n();
 const tab = ref(props.initialTab);
 
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
+const { iconColor } = useHelpers();
 </script>

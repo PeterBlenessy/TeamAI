@@ -223,9 +223,9 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import { useQuasar } from 'quasar';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useHelpers } from '@/composables/useHelpers';
 import { storeToRefs } from 'pinia';
 import { useTeamsStore } from '@/stores/teams-store.js';
 import logger from '@/services/logger.js';
@@ -241,7 +241,8 @@ import {
 } from '@quasar/extras/mdi-v7';
 
 const { t } = useI18n();
-const $q = useQuasar();
+
+const { iconColor } = useHelpers();
 
 const teamsStore = useTeamsStore();
 const { personas } = storeToRefs(teamsStore);
@@ -264,8 +265,6 @@ const avatarImage = ref(null);
 const awesomePromptsfilter = ref('');
 const personasFilter = ref('');
 let selectedPersonaId = '';
-
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
 const fetchAwesomePrompts = (source = "AwesomeChatGPTPrompts") => {
     const awesomeSources = {

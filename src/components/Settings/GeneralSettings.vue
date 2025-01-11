@@ -133,16 +133,14 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
-import { useQuasar } from 'quasar';
 import { mdiCompare, mdiTranslate, mdiMicrophoneMessage, mdiTransferUp, mdiTransferDown, mdiForum, 
     mdiMessageOutline, mdiAccount, mdiAccountGroup, mdiCogs, mdiCogOff, mdiSetSplit 
 } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
+import { useHelpers } from '@/composables/useHelpers';
 
-const $q = useQuasar();
 const { t, locale, availableLocales } = useI18n();
 const settingsStore = useSettingsStore();
 const {
@@ -155,5 +153,5 @@ const {
     speechLanguage,
 } = storeToRefs(settingsStore);
 
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
+const { iconColor } = useHelpers();
 </script>

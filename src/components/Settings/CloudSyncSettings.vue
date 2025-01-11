@@ -156,8 +156,8 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useHelpers } from '@/composables/useHelpers';
 import { platform } from '@tauri-apps/plugin-os';
-import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useCloudSync } from '@/composables/useCloudSync';
@@ -173,13 +173,12 @@ import {
 } from '@quasar/extras/mdi-v7';
 
 const { t } = useI18n();
-const $q = useQuasar();
 const settingsStore = useSettingsStore();
 const { cloudSync, cloudProvider, lastSync, syncOptions } = storeToRefs(settingsStore);
 const { syncing, syncToCloud } = useCloudSync();
 
 const isMacOS = computed(() => platform() === 'macos');
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
+const { iconColor } = useHelpers();
 
 const handleSync = () => syncToCloud();
 

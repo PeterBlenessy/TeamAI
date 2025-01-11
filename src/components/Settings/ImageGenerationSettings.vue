@@ -65,15 +65,16 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { storeToRefs } from "pinia";
-import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { mdiImageMultipleOutline, mdiImageSizeSelectLarge, mdiHighDefinition, mdiStandardDefinition, mdiPalette } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 import openaiConfig from '@/services/openai.config.json';
+import { useHelpers } from '@/composables/useHelpers';
 
-const $q = useQuasar();
+const { iconColor } = useHelpers();
+
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
 const { appMode, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
@@ -98,8 +99,6 @@ watch(imageQualityValue, () => {
 watch(imageStyleValue, () => {
     imageStyle.value = imageStyleOptions[imageStyleValue.value];
 });
-
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 </script>
 
 <style scoped>

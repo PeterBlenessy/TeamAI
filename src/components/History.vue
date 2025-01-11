@@ -81,17 +81,17 @@
 
 <script setup>
 import { storeToRefs } from 'pinia';
-import { useQuasar } from 'quasar';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { mdiChat, mdiChatOutline, mdiPencilOutline, mdiContentSaveOutline, mdiContentCopy, mdiExportVariant, mdiDeleteOutline } from '@quasar/extras/mdi-v7';
 import { useTeamsStore } from '@/stores/teams-store.js';
 import { exportConversation } from '@/services/helpers.js';
+import { useHelpers } from '@/composables/useHelpers';
 
 const teamsStore = useTeamsStore();
 const { history, conversationId } = storeToRefs(teamsStore);
-const $q = useQuasar();
 const { t } = useI18n();
+const { iconColor } = useHelpers();
 
 function getDateGroup(timestamp) {
     const now = new Date();
@@ -154,8 +154,6 @@ const groupedHistory = computed(() => {
 
     return grouped;
 });
-
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
 const showConversation = (id) => conversationId.value = id;
 const copyConversation = (id) => navigator.clipboard.writeText(exportConversation(id));

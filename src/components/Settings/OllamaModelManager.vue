@@ -10,7 +10,6 @@ const {
     availableModels,
     deleteModel,
     downloadingModels,
-    modelDownloading,
     formatModelName,
     getBaseName, 
     getRunningModels,
@@ -18,7 +17,6 @@ const {
     loadModel,
     modelDetails,
     pullSpecificModel,
-    pullProgress,
     resumeDownloads,
     cancelModelDownload,
 } = useOllama();

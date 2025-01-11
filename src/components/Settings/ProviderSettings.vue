@@ -226,6 +226,7 @@ import ollamaLogo from '@/assets/ollama-logo.png';
 import openaiLogo from '@/assets/openai-logo.png';
 import { useOllama } from '@/composables/useOllama';
 import OllamaModelManager from '@/components/Settings/OllamaModelManager.vue';
+import { useHelpers } from '@/composables/useHelpers';
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -404,7 +405,7 @@ function handleSaveProvider() {
 
     tmpProvider.value = {};
 }
-const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
+const { iconColor } = useHelpers();
 const showProviderForm = computed(() => editProvider.value || addProvider.value);
 
 onMounted(() => {

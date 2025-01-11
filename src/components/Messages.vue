@@ -167,6 +167,7 @@ import { imageDB } from "@/services/localforage";
 import openaiConfig from '@/services/openai.config.json';
 import logger from '@/services/logger.js';
 import { useMarkdown } from '@/composables/markdown.js';
+import { useHelpers } from '@/composables/useHelpers';
 import { 
     mdiAccountCircle,
     mdiContentCopy,
@@ -179,11 +180,12 @@ import {
 const $q = useQuasar();
 const { t } = useI18n();
 const teamsStore = useTeamsStore();
-const { loading, conversationId, messages } = storeToRefs(teamsStore);
+const { conversationId, messages } = storeToRefs(teamsStore);
 const settingsStore = useSettingsStore();
 const { chatDirection, speechLanguage, userAvatar } = storeToRefs(settingsStore);
 
 const markdown = useMarkdown();
+const { iconColor } = useHelpers();
 
 // Page should scroll to end (latest message), only when new messages are added.
 let shouldScroll = true;
@@ -202,8 +204,6 @@ const getBgColor = (role) => {
             ? "bg-grey-9"
             : "bg-grey-3";
 };
-
-const iconColor = computed(() => ($q.dark.isActive ? "grey-4" : "grey-8"));
 
 // Filter messages for specified conversationId
 const filteredMessages = computed(() => {
