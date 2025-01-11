@@ -107,15 +107,19 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from "pinia";
 import { useHelpers } from '@/composables/useHelpers';
 import { mdiCreation, mdiTextShort, mdiText, mdiTextLong, mdiThermometer, mdiAccountCircle, mdiCardAccountDetailsOutline } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 import { useTeamsStore } from '@/stores/teams-store.js';
+import { useOllama } from '@/composables/useOllama';
+import { useQuasar } from 'quasar';
 
 const { iconColor } = useHelpers();
+const { availableModels, loadAvailableModels, isOllamaProvider, loadModel } = useOllama();
+const $q = useQuasar();
 
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
@@ -149,13 +153,50 @@ function personaFilterFn(val, update) {
 
 // Computed array of { providers, models } to use in select options
 const modelOptions = computed(() => {
-    return apiProviders.value.map(provider => {
-        return provider.models.map(model => ({
+    // First create array with all models
+    const allModels = apiProviders.value.map(provider => {
+        const models = isOllamaProvider(provider.name)
+            ? [...provider.models, ...availableModels.value]
+            : provider.models;
+
+        return models.map(model => ({
             "label": model,
             "provider": provider.name,
             "value": model
         }));
-    }).flat()
+    }).flat();
+
+    // Remove duplicates using JSON stringify/parse technique and sort
+    return Array.from(new Set(allModels.map(obj => JSON.stringify(obj))))
+        .map(str => JSON.parse(str))
+        .sort((a, b) => a.label.localeCompare(b.label));
+});
+
+onMounted(async () => {
+    await loadAvailableModels();
+});
+
+// Watch model changes to load Ollama models when selected
+watch(model, async (newModel) => {
+    // Check if the selected model belongs to an Ollama provider
+    const ollamaProvider = apiProviders.value.find(p => 
+        isOllamaProvider(p.name) && p.models.includes(newModel) || availableModels.value.includes(newModel)
+    );
+
+    if (ollamaProvider) {
+        try {
+            await loadModel(newModel);
+            $q.notify({
+                type: 'info',
+                message: `Model ${newModel} loaded successfully`
+            });
+        } catch (error) {
+            $q.notify({
+                type: 'negative',
+                message: `Failed to load model: ${error.message}`
+            });
+        }
+    }
 });
 </script>
 

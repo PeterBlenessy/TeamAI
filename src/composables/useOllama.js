@@ -328,6 +328,10 @@ export function useOllama() {
         }
     }
 
+    function isOllamaProvider(providerName) {
+        return providerName?.toLowerCase().includes('ollama');
+    }
+
     return {
         availableModels,
         modelDownloading,
@@ -353,5 +357,6 @@ export function useOllama() {
         downloadingModels,
         resumeDownloads,  // Add the new function to exports
         cancelModelDownload,  // Add the new function to exports
+        isOllamaProvider,
     };
 }
