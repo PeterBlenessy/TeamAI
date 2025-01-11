@@ -15,7 +15,7 @@ export default {
             text: 'Ask your question',
             image: 'Describe the image to generate'
         },
-        label: "Ctrl+↵ sends",
+        label: "Press Shift (⇧) + Enter (↵) for new line",
         tooltip: {
             send: 'Send',
             stop: 'Stop',

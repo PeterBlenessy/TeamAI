@@ -3,9 +3,7 @@ import App from "@/App.vue";
 
 // Quasar stuff
 import { Quasar, Dark, Dialog, Notify } from 'quasar';
-//import quasarIconSet from 'quasar/icon-set/svg-material-icons';  // default icon set
-import quasarIconSet from 'quasar/icon-set/svg-mdi-v7';
-import '@quasar/extras/mdi-v7/mdi-v7.css'
+import iconSet from 'quasar/icon-set/svg-mdi-v7';
 import 'quasar/dist/quasar.css';
 
 // Custom styles
@@ -58,14 +56,10 @@ app.use(Quasar, {
             negative: '#f44336',
             info: '#333333',
             warning: '#f2c037'
-
         }
     },
-    iconSet: quasarIconSet,
-    extras: [
-        'material-icons',
-        'mdi-v7'
-    ],
+    iconSet: iconSet,
+
     /*
     config: {
       brand: {

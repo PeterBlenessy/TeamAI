@@ -204,10 +204,12 @@ export const useTeamsStore = defineStore('teams', () => {
 
         // Find latest user message
         for (let i = conversation.length - 1; i >= 0; i--) {
-            if (conversation[i].role == "user") {
+            if (conversation[i].role === "user") {
                 return conversation[i];
             }
         }
+        
+        return undefined;
     }
 
     function getPersona(id) {

@@ -13,7 +13,7 @@
             <q-list>
                 <q-item class="no-padding">
                     <q-expansion-item style="width: 100%;" v-model="newPersona.expanded"
-                        expand-icon="mdi-account-plus-outline" expanded-icon="mdi-account-plus-outline"
+                        :expand-icon="mdiAccountPlusOutline" :expanded-icon="mdiAccountPlusOutline"
                         :label="t('personas.actions.create.label')" :caption="t('personas.actions.create.caption')">
                         <q-card>
                             <q-card-section>
@@ -25,7 +25,7 @@
 
                                     <template v-slot:append>
                                         <q-btn size="sm" flat dense :color="newPersona.readonly ? iconColor : 'primary'"
-                                            icon="mdi-content-save-outline" @click="saveNewPersona()">
+                                            :icon="mdiContentSaveOutline" @click="saveNewPersona">
 
                                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                                 {{ $t('personas.actions.save.tooltip') }}
@@ -47,7 +47,7 @@
                     <q-item-section side>
                         <q-btn dense flat :color="awesomePrompts.length == 0 ? iconColor : 'primary'"
                             @click="awesomePrompts.length == 0 ? fetchAwesomePrompts('AwesomeChatGPTPrompts') : deleteAwesomePrompts()"
-                            :icon="awesomePrompts.length == 0 ? 'mdi-account-arrow-down-outline' : 'mdi-account-cancel-outline'">
+                            :icon="awesomePrompts.length == 0 ? mdiAccountArrowDownOutline : mdiAccountCancelOutline">
 
                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                 {{ awesomePrompts.length == 0 ? t('personas.actions.import.tooltip') :
@@ -63,7 +63,7 @@
                     <q-item-section side>
                         <q-btn dense flat :color="awesomePrompts.length == 0 ? iconColor : 'primary'"
                             @click="awesomePrompts.length == 0 ? fetchAwesomePrompts('ExamplePersonas') : deleteAwesomePrompts()"
-                            :icon="awesomePrompts.length == 0 ? 'mdi-account-arrow-down-outline' : 'mdi-account-cancel-outline'">
+                            :icon="awesomePrompts.length == 0 ? mdiAccountArrowDownOutline : mdiAccountCancelOutline">
 
                             <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                 {{ awesomePrompts.length == 0 ? t('personas.actions.example.tooltip') :
@@ -90,7 +90,7 @@
                         <q-input filled dense debounce="300" v-model="awesomePromptsfilter"
                             :placeholder="t('personas.actions.search.placeholder')">
                             <template v-slot:append>
-                                <q-icon name="mdi-magnify" />
+                                <q-icon :name="mdiMagnify" />
                             </template>
                         </q-input>
                     </template>
@@ -100,7 +100,7 @@
                             <div class="row">
                                 <div class="col">{{ props.row.prompt }}</div>
                                 <div class="col-auto">
-                                    <q-btn size="sm" dense flat icon="mdi-account-plus-outline" :color="iconColor"
+                                    <q-btn size="sm" dense flat :icon="mdiAccountPlusOutline" :color="iconColor"
                                         @click="addAwesomePrompt(props.row)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('personas.actions.add.tooltip') }}
@@ -133,7 +133,7 @@
                     <q-input filled dense debounce="300" v-model="personasFilter"
                         :label="t('personas.actions.search.placeholder')">
                         <template v-slot:append>
-                            <q-icon name="mdi-magnify" />
+                            <q-icon :name="mdiMagnify" />
                         </template>
                     </q-input>
                 </template>
@@ -143,7 +143,7 @@
                         <q-item-section avatar>
                             <q-avatar size="xl" @click="handleAvatarPicker(props.row.id)">
                                 <img v-if="'avatar' in props.row" :src="props.row.avatar" />
-                                <q-icon v-else name="mdi-account" />
+                                <q-icon v-else :name="mdiAccount" />
                                 <q-tooltip :delay="1000" max-width="300px" transition-show="scale" transition-hide="scale">
                                     {{ t('personas.actions.avatar.tooltip') }}
                                 </q-tooltip>
@@ -174,7 +174,7 @@
                                         input-style="{ cursor: 'text' }" focus v-model="props.row.prompt">
 
                                         <template v-slot:append>
-                                            <q-btn size="sm" flat dense color="primary" icon="mdi-content-save-outline"
+                                            <q-btn size="sm" flat dense color="primary" :icon="mdiContentSaveOutline"
                                                 :disabled="props.row.id == 0" @click="savePersona(props.row)">
                                                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                                     {{ props.row.readonly ? $t('personas.actions.edit.tooltip') :
@@ -186,7 +186,7 @@
                                     </q-input>
                                 </div>
                                 <div class="col-auto">
-                                    <q-btn size="sm" dense flat icon="mdi-delete-outline" :color="iconColor"
+                                    <q-btn size="sm" dense flat :icon="mdiDeleteOutline" :color="iconColor"
                                         :disabled="props.row.id == 0" @click="deletePersona(props.row)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('personas.actions.delete.tooltip') }}
@@ -199,13 +199,13 @@
                             <div class="row">
                                 <div class="col">{{ props.row.prompt }}</div>
                                 <div class="col-auto">
-                                    <q-btn size="sm" dense flat icon="mdi-pencil-outline" :color="iconColor"
+                                    <q-btn size="sm" dense flat :icon="mdiPencilOutline" :color="iconColor"
                                         :disabled="props.row.id == 0" @click="props.row.readonly = false">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('personas.actions.add.tooltip') }}
                                         </q-tooltip>
                                     </q-btn>
-                                    <q-btn size="sm" dense flat icon="mdi-delete-outline" :color="iconColor"
+                                    <q-btn size="sm" dense flat :icon="mdiDeleteOutline" :color="iconColor"
                                         :disabled="props.row.id == 0" @click="deletePersona(props.row)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('personas.actions.delete.tooltip') }}
@@ -222,144 +222,130 @@
     </q-card>
 </template>
 
-<script>
-
+<script setup>
 import { computed, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useTeamsStore } from '@/stores/teams-store.js';
 import logger from '@/services/logger.js';
+import { 
+    mdiAccount,
+    mdiAccountPlusOutline,
+    mdiAccountArrowDownOutline,
+    mdiAccountCancelOutline,
+    mdiContentSaveOutline,
+    mdiDeleteOutline,
+    mdiPencilOutline,
+    mdiMagnify
+} from '@quasar/extras/mdi-v7';
 
-export default {
-    name: 'Personas',
-    setup() {
-        const { t } = useI18n();
-        const $q = useQuasar();
+const { t } = useI18n();
+const $q = useQuasar();
 
-        const teamsStore = useTeamsStore();
-        const { personas } = storeToRefs(teamsStore);
-        const awesomePrompts = ref([]);
+const teamsStore = useTeamsStore();
+const { personas } = storeToRefs(teamsStore);
+const awesomePrompts = ref([]);
 
-        const columns = [
-            { name: 'avatar', align: 'left', label: t('personas.tableHeading.avatar'), field: 'avatar', sortable: false, style: 'width: 50px' },
-            { name: 'name', align: 'left', label: t('personas.tableHeading.name'), field: 'name', sortable: true, style: 'width: 150px' },
-            { name: 'prompt', align: 'left', label: t('personas.tableHeading.prompt'), field: 'prompt', sortable: true }
-        ];
+const columns = [
+    { name: 'avatar', align: 'left', label: t('personas.tableHeading.avatar'), field: 'avatar', sortable: false, style: 'width: 50px' },
+    { name: 'name', align: 'left', label: t('personas.tableHeading.name'), field: 'name', sortable: true, style: 'width: 150px' },
+    { name: 'prompt', align: 'left', label: t('personas.tableHeading.prompt'), field: 'prompt', sortable: true }
+];
 
-        const fetchAwesomePrompts = (source = "AwesomeChatGPTPrompts") => {
-            const awesomeSources = {
-                "AwesomeChatGPTPrompts": "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
-                "ExamplePersonas": "https://raw.githubusercontent.com//PeterBlenessy/team-ai-examples/main/personas.json",
-            }
-            if (source == "AwesomeChatGPTPrompts") {
-                fetch(awesomeSources[source])
-                    .then(response => response.text())
-                    .then(data => {
-                        awesomePrompts.value = data.toString()
-                            .trim()
-                            .split("\n")
-                            .map((row, index) => {
-                                let id = Date.now().toString() + index.toString();
-                                let readonly = true;
-                                let [name, prompt] = row.split('","').map(item => item.trim().replace(/^"|"$/g, ''));
-                                return { id, name, prompt, readonly };
-                            });
-                        awesomePrompts.value.shift();
-                    })
-                    .catch(error => logger.error(`[Personas] - ${error}`))
-                    .finally(() => logger.log("[Personas] - fetch awesome prompts done"));
-            } else if (source == "ExamplePersonas") {
-                fetch(awesomeSources[source])
-                    .then(response => response.json())
-                    .then(data => {
-                        awesomePrompts.value = data.map((item, index) => {
-                            let id = Date.now().toString() + index.toString();
-                            let readonly = true;
-                            return { id, ...item, readonly };
-                        });
-                    })
-                    .catch(error => logger.error(`[Personas] - ${error}`))
-                    .finally(() => logger.log("[Personas] - fetch example personas done"));
-            }
-        }
+const newPersona = ref({
+    name: t('personas.actions.create.name'),
+    prompt: t('personas.actions.create.prompt'),
+    expanded: false
+});
 
-        const addAwesomePrompt = (persona) => {
-            awesomePrompts.value = awesomePrompts.value.filter(item => item.id != persona.id);
-            personas.value.push(persona);
-        }
+const avatarPicker = ref(null);
+const avatarImage = ref(null);
+const awesomePromptsfilter = ref('');
+const personasFilter = ref('');
+let selectedPersonaId = '';
 
-        const newPersona = ref({
-            name: t('personas.actions.create.name'),
-            prompt: t('personas.actions.create.prompt'),
-            expanded: false
-        });
+const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
-        // Avatar related
-        const avatarPicker = ref(null);
-        const avatarImage = ref(null);
-        let selectedPersonaId = '';
-        const handleAvatarPicker = (personaId) => {
-            selectedPersonaId = personaId;
-            avatarPicker.value.pickFiles();
-        }
-
-        // Converts image from the avatar picker dialog to base64 and stores it as user avatar
-        const handleAvatarSelected = () => {
-            if (avatarImage.value) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    // Set avatar for selected persona in personas array
-                    personas.value = personas.value.map(item => {
-                        if (item.id == selectedPersonaId) {
-                            item.avatar = reader.result;
-                        }
-                        return item;
-                    });
-                    // Reset values
-                    selectedPersonaId = '';
-                    avatarImage.value = null;
-                }
-                reader.readAsDataURL(avatarImage.value);
-            }
-        }
-
-        return {
-            t,
-            personas,
-            awesomePrompts,
-
-            columns,
-            awesomePromptsfilter: ref(''),
-            personasFilter: ref(''),
-
-            addAwesomePrompt,
-            newPersona,
-            saveNewPersona: () => {
-                personas.value.push({
-                    id: Date.now().toString(),
-                    name: newPersona.value.name,
-                    prompt: newPersona.value.prompt,
-                    readonly: true
-                });
-                newPersona.value.name = t('personas.actions.create.name'),
-                    newPersona.value.prompt = t('personas.actions.create.prompt'),
-                    newPersona.value.expanded = false;
-            },
-            savePersona: (persona) => persona.readonly = !persona.readonly,
-            deleteAwesomePrompts: () => awesomePrompts.value = [],
-            deletePersona: (persona) => personas.value = personas.value.filter(item => item.id != persona.id),
-            fetchAwesomePrompts,
-
-            handleAvatarPicker,
-            handleAvatarSelected,
-            avatarPicker,
-            avatarImage,
-
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
-        }
+const fetchAwesomePrompts = (source = "AwesomeChatGPTPrompts") => {
+    const awesomeSources = {
+        "AwesomeChatGPTPrompts": "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
+        "ExamplePersonas": "https://raw.githubusercontent.com//PeterBlenessy/team-ai-examples/main/personas.json",
     }
-}
+    if (source == "AwesomeChatGPTPrompts") {
+        fetch(awesomeSources[source])
+            .then(response => response.text())
+            .then(data => {
+                awesomePrompts.value = data.toString()
+                    .trim()
+                    .split("\n")
+                    .map((row, index) => {
+                        let id = Date.now().toString() + index.toString();
+                        let readonly = true;
+                        let [name, prompt] = row.split('","').map(item => item.trim().replace(/^"|"$/g, ''));
+                        return { id, name, prompt, readonly };
+                    });
+                awesomePrompts.value.shift();
+            })
+            .catch(error => logger.error(`[Personas] - ${error}`))
+            .finally(() => logger.log("[Personas] - fetch awesome prompts done"));
+    } else if (source == "ExamplePersonas") {
+        fetch(awesomeSources[source])
+            .then(response => response.json())
+            .then(data => {
+                awesomePrompts.value = data.map((item, index) => {
+                    let id = Date.now().toString() + index.toString();
+                    let readonly = true;
+                    return { id, ...item, readonly };
+                });
+            })
+            .catch(error => logger.error(`[Personas] - ${error}`))
+            .finally(() => logger.log("[Personas] - fetch example personas done"));
+    }
+};
+
+const addAwesomePrompt = (persona) => {
+    awesomePrompts.value = awesomePrompts.value.filter(item => item.id != persona.id);
+    personas.value.push(persona);
+};
+
+const handleAvatarPicker = (personaId) => {
+    selectedPersonaId = personaId;
+    avatarPicker.value.pickFiles();
+};
+
+const handleAvatarSelected = () => {
+    if (avatarImage.value) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            personas.value = personas.value.map(item => {
+                if (item.id == selectedPersonaId) {
+                    item.avatar = reader.result;
+                }
+                return item;
+            });
+            selectedPersonaId = '';
+            avatarImage.value = null;
+        }
+        reader.readAsDataURL(avatarImage.value);
+    }
+};
+
+const saveNewPersona = () => {
+    personas.value.push({
+        id: Date.now().toString(),
+        name: newPersona.value.name,
+        prompt: newPersona.value.prompt,
+        readonly: true
+    });
+    newPersona.value.name = t('personas.actions.create.name');
+    newPersona.value.prompt = t('personas.actions.create.prompt');
+    newPersona.value.expanded = false;
+};
+
+const savePersona = (persona) => persona.readonly = !persona.readonly;
+const deleteAwesomePrompts = () => awesomePrompts.value = [];
+const deletePersona = (persona) => personas.value = personas.value.filter(item => item.id != persona.id);
 </script>
 
 <style>

@@ -1,3 +1,243 @@
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useQuasar } from 'quasar';
+import { mdiDownload, mdiCancel, mdiFileDocumentOutline, mdiDelete, mdiReload } from '@quasar/extras/mdi-v7';
+import { useOllama } from '@/composables/useOllama';
+import logger from '@/services/logger';
+
+const $q = useQuasar();
+const {
+    availableModels,
+    deleteModel,
+    downloadingModels,
+    modelDownloading,
+    formatModelName,
+    getBaseName, 
+    getRunningModels,
+    loadAvailableModels,
+    loadModel,
+    modelDetails,
+    pullSpecificModel,
+    pullProgress,
+    resumeDownloads,
+    cancelModelDownload,
+} = useOllama();
+
+const tableLoading = ref(false);
+const newModelName = ref('');
+
+const modelColumns = [
+    { name: 'name', label: 'Model', field: row => formatModelName(row), align: 'left' },
+    { name: 'architecture', label: 'Architecture', field: row => modelDetails.value[row]?.model_info["general.architecture"] || '-', align: 'left' },
+    { name: 'size', label: 'Size', field: row => modelDetails.value[row]?.details?.parameter_size || '-', align: 'left' },
+    { name: 'quantization', label: 'Quantization', field: row => modelDetails.value[row]?.details?.quantization_level || '-', align: 'left' },
+    { name: 'modified', label: 'Modified', field: row => modelDetails.value[row]?.modified_at || '-', align: 'left' },
+    { name: 'actions', label: 'Actions', field: 'actions', align: 'right' }
+];
+
+const showLicenseDialog = ref(false);
+const selectedLicenseModelName = ref('');
+const selectedLicenseData = computed(() => 
+    selectedLicenseModelName.value ? modelDetails.value[selectedLicenseModelName.value] : null
+);
+
+function showLicenseInfo(modelName) {
+    setOperationLoading(modelName, 'info', true);
+    try {
+        selectedLicenseModelName.value = modelName;
+        showLicenseDialog.value = true;
+    } finally {
+        setOperationLoading(modelName, 'info', false);
+    }
+}
+
+// Combine available and downloading models
+const combinedModels = computed(() => {
+    const availableModelObjects = availableModels.value.map(name => ({
+        name,
+        downloading: false,
+        progress: 0
+    }));
+    
+    const downloadingModelObjects = downloadingModels.value.map(model => ({
+        name: model.name,
+        downloading: true,
+        progress: model.progress
+    }));
+    
+    // Put downloading models first, then sort available models alphabetically
+    return [
+        ...downloadingModelObjects,
+        ...availableModelObjects.sort((a, b) => a.name.localeCompare(b.name))
+    ];
+});
+
+async function handleDownloadModel(modelName) {
+    if (!modelName) return;
+
+    // Check if model is already downloading (exact match)
+    if (downloadingModels.value.some(m => m.name === modelName)) {
+        $q.notify({
+            type: 'warning',
+            message: `Model ${formatModelName(modelName)} is already downloading`
+        });
+        return;
+    }
+
+    // Check if model already exists (base name match)
+    const { base: newModelBase } = getBaseName(modelName);
+    const existingModel = availableModels.value.find(m => {
+        const { base: existingBase } = getBaseName(m);
+        return existingBase === newModelBase;
+    });
+
+    if (existingModel) {
+        $q.notify({
+            type: 'warning',
+            message: `Model ${formatModelName(existingModel)} is already installed`
+        });
+        return;
+    }
+
+    try {
+        newModelName.value = '';
+        await pullSpecificModel(modelName);
+    } catch (error) {
+        $q.notify({
+            type: 'negative',
+            message: `Failed to download model: ${error.message}`
+        });
+    }
+}
+
+onMounted(async () => {
+    tableLoading.value = true;
+    try {
+        await loadAvailableModels();
+        await updateModelStatuses();
+        await resumeDownloads();
+        // Start polling every 60 seconds
+        statusCheckInterval = setInterval(updateModelStatuses, 60000);
+    } finally {
+        tableLoading.value = false;
+    }
+});
+
+onUnmounted(() => {
+    if (statusCheckInterval) {
+        clearInterval(statusCheckInterval);
+    }
+});
+
+// Add loading states for model operations
+const modelOperations = ref({});
+
+function isOperationLoading(modelName, operation) {
+    return modelOperations.value[modelName]?.[operation] || false;
+}
+
+function setOperationLoading(modelName, operation, loading) {
+    if (!modelOperations.value[modelName]) {
+        modelOperations.value[modelName] = {};
+    }
+    modelOperations.value[modelName][operation] = loading;
+}
+
+// Rename modelStatus to modelLoaded and initialize as empty object
+const modelLoaded = ref({});
+let statusCheckInterval;
+
+// Update the function to use getRunningModels from useOllama
+async function updateModelStatuses() {
+    try {
+        const loadedModels = await getRunningModels();
+        // Reset all models to false first
+        modelLoaded.value = Object.fromEntries(
+            availableModels.value.map(model => [model, false])
+        );
+        // Then set the loaded ones to true
+        loadedModels.forEach(model => {
+            if (modelLoaded.value.hasOwnProperty(model)) {
+                modelLoaded.value[model] = true;
+            }
+        });
+    } catch (error) {
+        logger.error(`Failed to update model statuses: ${error}`);
+    }
+}
+
+async function handleLoadModel(modelName) {
+    setOperationLoading(modelName, 'load', true);
+    try {
+        await loadModel(modelName);
+        await updateModelStatuses();  // Update all statuses at once
+        $q.notify({
+            type: 'positive',
+            message: `Model ${formatModelName(modelName)} loaded successfully`
+        });
+    } catch (error) {
+        $q.notify({
+            type: 'negative',
+            message: `Failed to load model: ${error.message}`
+        });
+    } finally {
+        setOperationLoading(modelName, 'load', false);
+    }
+}
+
+async function handleDeleteModel(modelName) {
+    setOperationLoading(modelName, 'delete', true);
+    try {
+        $q.dialog({
+            message: `Are you sure you want to delete ${formatModelName(modelName)}?`,
+            color: 'primary',
+            cancel: true,
+            persistent: true
+        }).onOk(async () => {
+            await deleteModel(modelName);
+            $q.notify({
+                type: 'positive',
+                message: `Model ${formatModelName(modelName)} deleted successfully`
+            });
+        });
+    } catch (error) {
+        if (error) { // Not cancelled
+            $q.notify({
+                type: 'negative',
+                message: `Failed to delete model: ${error.message}`
+            });
+        }
+    } finally {
+        setOperationLoading(modelName, 'delete', false);
+    }
+}
+
+async function handleCancelDownload(modelName) {
+    try {
+        $q.dialog({
+            message: `Are you sure you want to cancel downloading ${formatModelName(modelName)}?`,
+            color: 'primary',
+            cancel: true,
+            persistent: true
+        }).onOk(async () => {
+            await cancelModelDownload(modelName);
+            $q.notify({
+                type: 'info',
+                message: `Download cancelled for ${formatModelName(modelName)}`
+            });
+        });
+    } catch (error) {
+        if (error) { // Not cancelled
+            $q.notify({
+                type: 'negative',
+                message: `Failed to cancel download: ${error.message}`
+            });
+        }
+    }
+}
+
+</script>
+
 <template>
     <q-card flat bordered class="q-mt-md">
         <q-card-section>
@@ -13,7 +253,7 @@
                 >
                     <template v-slot:append v-if="newModelName">
                         <q-btn
-                            flat round size="sm" icon="mdi-download"
+                            flat round size="sm" :icon="mdiDownload"
                             @click="handleDownloadModel(newModelName)"
                         />
                     </template>
@@ -55,14 +295,14 @@
                                         size="md"
                                         :thickness="0.4"
                                     />
-                                    <q-btn flat dense size="sm" icon="mdi-cancel" @click="handleCancelDownload(props.row.name)">
+                                    <q-btn flat dense size="sm" :icon="mdiCancel" @click="handleCancelDownload(props.row.name)">
                                         <q-tooltip>Cancel download</q-tooltip>
                                     </q-btn>
                             </template>
                             <template v-else>
                                 <q-btn v-if="modelDetails[props.row.name]"
                                     flat dense size="sm"
-                                    icon="mdi-file-document-outline"
+                                    :icon="mdiFileDocumentOutline"
                                     :loading="isOperationLoading(props.row.name, 'info')"
                                     @click="showLicenseInfo(props.row.name)"
                                 >
@@ -70,7 +310,7 @@
                                 </q-btn>
                                 <q-btn
                                     flat dense size="sm"
-                                    icon="mdi-delete"
+                                    :icon="mdiDelete"
                                     :loading="isOperationLoading(props.row.name, 'delete')"
                                     @click="handleDeleteModel(props.row.name)"
                                 >
@@ -78,7 +318,7 @@
                                 </q-btn>
                                 <q-btn
                                     flat dense size="sm"
-                                    icon="mdi-reload"
+                                    :icon="mdiReload"
                                     :color="modelLoaded[props.row.name] ? 'positive' : ''"
                                     :loading="isOperationLoading(props.row.name, 'load')"
                                     @click="handleLoadModel(props.row.name)"
@@ -118,274 +358,3 @@
         </q-card>
     </q-dialog>
 </template>
-
-<script>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useQuasar } from 'quasar';
-import { useOllama } from '@/composables/useOllama';
-import logger from '@/services/logger';
-
-export default {
-    name: 'OllamaModelManager',
-    setup() {
-        const $q = useQuasar();
-        const {
-            availableModels,
-            deleteModel,
-            downloadingModels,
-            modelDownloading,
-            formatModelName,
-            getBaseName, 
-            getRunningModels,
-            loadAvailableModels,
-            loadModel,
-            modelDetails,
-            pullSpecificModel,
-            pullProgress,
-            resumeDownloads,
-            cancelModelDownload,
-        } = useOllama();
-
-        const tableLoading = ref(false);
-        const newModelName = ref('');
-        
-        const modelColumns = [
-            { name: 'name', label: 'Model', field: row => formatModelName(row), align: 'left' },
-            { name: 'architecture', label: 'Architecture', field: row => modelDetails.value[row]?.model_info["general.architecture"] || '-', align: 'left' },
-            { name: 'size', label: 'Size', field: row => modelDetails.value[row]?.details?.parameter_size || '-', align: 'left' },
-            { name: 'quantization', label: 'Quantization', field: row => modelDetails.value[row]?.details?.quantization_level || '-', align: 'left' },
-            { name: 'modified', label: 'Modified', field: row => modelDetails.value[row]?.modified_at || '-', align: 'left' },
-            { name: 'actions', label: 'Actions', field: 'actions', align: 'right' }
-        ];
-
-        const showLicenseDialog = ref(false);
-        const selectedLicenseModelName = ref('');
-        const selectedLicenseData = computed(() => 
-            selectedLicenseModelName.value ? modelDetails.value[selectedLicenseModelName.value] : null
-        );
-
-        function showLicenseInfo(modelName) {
-            setOperationLoading(modelName, 'info', true);
-            try {
-                selectedLicenseModelName.value = modelName;
-                showLicenseDialog.value = true;
-            } finally {
-                setOperationLoading(modelName, 'info', false);
-            }
-        }
-
-        // Combine available and downloading models
-        const combinedModels = computed(() => {
-            const availableModelObjects = availableModels.value.map(name => ({
-                name,
-                downloading: false,
-                progress: 0
-            }));
-            
-            const downloadingModelObjects = downloadingModels.value.map(model => ({
-                name: model.name,
-                downloading: true,
-                progress: model.progress
-            }));
-            
-            // Put downloading models first, then sort available models alphabetically
-            return [
-                ...downloadingModelObjects,
-                ...availableModelObjects.sort((a, b) => a.name.localeCompare(b.name))
-            ];
-        });
-
-        async function handleDownloadModel(modelName) {
-            if (!modelName) return;
-
-            // Check if model is already downloading (exact match)
-            if (downloadingModels.value.some(m => m.name === modelName)) {
-                $q.notify({
-                    type: 'warning',
-                    message: `Model ${formatModelName(modelName)} is already downloading`
-                });
-                return;
-            }
-
-            // Check if model already exists (base name match)
-            const { base: newModelBase } = getBaseName(modelName);
-            const existingModel = availableModels.value.find(m => {
-                const { base: existingBase } = getBaseName(m);
-                return existingBase === newModelBase;
-            });
-
-            if (existingModel) {
-                $q.notify({
-                    type: 'warning',
-                    message: `Model ${formatModelName(existingModel)} is already installed`
-                });
-                return;
-            }
-
-            try {
-                newModelName.value = '';
-                await pullSpecificModel(modelName);
-            } catch (error) {
-                $q.notify({
-                    type: 'negative',
-                    message: `Failed to download model: ${error.message}`
-                });
-            }
-        }
-
-        onMounted(async () => {
-            tableLoading.value = true;
-            try {
-                await loadAvailableModels();
-                await updateModelStatuses();
-                await resumeDownloads();
-                // Start polling every 60 seconds
-                statusCheckInterval = setInterval(updateModelStatuses, 60000);
-            } finally {
-                tableLoading.value = false;
-            }
-        });
-
-        onUnmounted(() => {
-            if (statusCheckInterval) {
-                clearInterval(statusCheckInterval);
-            }
-        });
-
-        // Add loading states for model operations
-        const modelOperations = ref({});
-
-        function isOperationLoading(modelName, operation) {
-            return modelOperations.value[modelName]?.[operation] || false;
-        }
-
-        function setOperationLoading(modelName, operation, loading) {
-            if (!modelOperations.value[modelName]) {
-                modelOperations.value[modelName] = {};
-            }
-            modelOperations.value[modelName][operation] = loading;
-        }
-
-        // Rename modelStatus to modelLoaded and initialize as empty object
-        const modelLoaded = ref({});
-        let statusCheckInterval;
-
-        // Update the function to use getRunningModels from useOllama
-        async function updateModelStatuses() {
-            try {
-                const loadedModels = await getRunningModels();
-                // Reset all models to false first
-                modelLoaded.value = Object.fromEntries(
-                    availableModels.value.map(model => [model, false])
-                );
-                // Then set the loaded ones to true
-                loadedModels.forEach(model => {
-                    if (modelLoaded.value.hasOwnProperty(model)) {
-                        modelLoaded.value[model] = true;
-                    }
-                });
-            } catch (error) {
-                logger.error(`Failed to update model statuses: ${error}`);
-            }
-        }
-
-        async function handleLoadModel(modelName) {
-            setOperationLoading(modelName, 'load', true);
-            try {
-                await loadModel(modelName);
-                await updateModelStatuses();  // Update all statuses at once
-                $q.notify({
-                    type: 'positive',
-                    message: `Model ${formatModelName(modelName)} loaded successfully`
-                });
-            } catch (error) {
-                $q.notify({
-                    type: 'negative',
-                    message: `Failed to load model: ${error.message}`
-                });
-            } finally {
-                setOperationLoading(modelName, 'load', false);
-            }
-        }
-
-        async function handleDeleteModel(modelName) {
-            setOperationLoading(modelName, 'delete', true);
-            try {
-                $q.dialog({
-                    message: `Are you sure you want to delete ${formatModelName(modelName)}?`,
-                    color: 'primary',
-                    cancel: true,
-                    persistent: true
-                }).onOk(async () => {
-                    await deleteModel(modelName);
-                    $q.notify({
-                        type: 'positive',
-                        message: `Model ${formatModelName(modelName)} deleted successfully`
-                    });
-                });
-            } catch (error) {
-                if (error) { // Not cancelled
-                    $q.notify({
-                        type: 'negative',
-                        message: `Failed to delete model: ${error.message}`
-                    });
-                }
-            } finally {
-                setOperationLoading(modelName, 'delete', false);
-            }
-        }
-
-        async function handleCancelDownload(modelName) {
-            try {
-                $q.dialog({
-                    message: `Are you sure you want to cancel downloading ${formatModelName(modelName)}?`,
-                    color: 'primary',
-                    cancel: true,
-                    persistent: true
-                }).onOk(async () => {
-                    await cancelModelDownload(modelName);
-                    $q.notify({
-                        type: 'info',
-                        message: `Download cancelled for ${formatModelName(modelName)}`
-                    });
-                });
-            } catch (error) {
-                if (error) { // Not cancelled
-                    $q.notify({
-                        type: 'negative',
-                        message: `Failed to cancel download: ${error.message}`
-                    });
-                }
-            }
-        }
-
-        return {
-            availableModels,
-            modelDownloading,
-            pullProgress,
-            modelDetails,
-            formatModelName,
-            deleteModel,
-            loadModel,
-            
-            tableLoading,
-            modelColumns,
-            
-            newModelName,
-            handleDownloadModel,
-            handleCancelDownload,
-            
-            showLicenseDialog,
-            selectedLicenseModelName,
-            selectedLicenseData,
-            showLicenseInfo,
-            modelOperations,
-            handleLoadModel,
-            handleDeleteModel,
-            modelLoaded,
-            isOperationLoading,
-            combinedModels
-        };
-    }
-}
-</script>

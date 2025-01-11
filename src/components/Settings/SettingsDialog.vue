@@ -9,11 +9,11 @@
         <q-card-section>
 
             <q-tabs v-model="tab" dense active-color="primary" indicator-color="primary" no-caps mobile-arrows outside-arrows>
-                <q-tab name="general" icon="mdi-cog-outline" :label="t('settings.general.label')" />
-                <q-tab name="api" icon="mdi-web" :label="t('settings.api.label')" />
-                <q-tab name="text" icon="mdi-tooltip-text" :label="t('settings.text.label')" />
-                <q-tab name="image" icon="mdi-tooltip-image" :label="t('settings.image.label')" />
-                <q-tab name="cloudSync" icon="mdi-cloud-sync" :label="t('settings.cloud.label')" />
+                <q-tab name="general" :icon="mdiCogOutline" :label="t('settings.general.label')" />
+                <q-tab name="api" :icon="mdiWeb" :label="t('settings.api.label')" />
+                <q-tab name="text" :icon="mdiTooltipText" :label="t('settings.text.label')" />
+                <q-tab name="image" :icon="mdiTooltipImage" :label="t('settings.image.label')" />
+                <q-tab name="cloudSync" :icon="mdiCloudSync" :label="t('settings.cloud.label')" />
             </q-tabs>
 
             <q-separator />
@@ -49,11 +49,11 @@
     </q-card>
 </template>
 
-<script>
+<script setup>
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
-
+import { mdiCogOutline, mdiWeb, mdiTooltipText, mdiTooltipImage, mdiCloudSync } from '@quasar/extras/mdi-v7';
 import UserAvatarSettings from '@/components/Settings/UserAvatarSettings.vue';
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue';
 import ProviderSettings from "@/components/Settings/ProviderSettings.vue";
@@ -61,34 +61,16 @@ import TextGenerationSettings from "@/components/Settings/TextGenerationSettings
 import ImageGenerationSettings from "@/components/Settings/ImageGenerationSettings.vue";
 import CloudSyncSettings from '@/components/Settings/CloudSyncSettings.vue';
 
-export default {
-    name: "AppSettings",
-    components: {
-        UserAvatarSettings,
-        GeneralSettings,
-        ProviderSettings,
-        TextGenerationSettings,
-        ImageGenerationSettings,
-        CloudSyncSettings
-    },
+const props = defineProps({
+    initialTab: {
+        type: String,
+        default: 'general'
+    }
+});
 
-    props: {
-        initialTab: {
-            type: String,
-            default: 'general'
-        }
-    },
+const $q = useQuasar();
+const { t } = useI18n();
+const tab = ref(props.initialTab);
 
-    setup(props) {
-        const $q = useQuasar();
-        const { t } = useI18n();
-        const tab = ref(props.initialTab);
-
-        return {
-            t,
-            tab,
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
-        }
-    },
-}
+const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 </script>

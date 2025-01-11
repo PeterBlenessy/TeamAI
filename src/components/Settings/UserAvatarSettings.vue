@@ -12,12 +12,12 @@
             <q-avatar size="xl" @click="handleAvatarPicker()">
                 <q-img v-if="userAvatar" :src="userAvatar" @mouseover="showActionButton = true"
                     @mouseleave="showActionButton = false">
-                    <q-btn class="absolute-bottom" size="sm" icon="mdi-swap-horizontal"
+                    <q-btn class="absolute-bottom" size="sm" :icon="mdiSwapHorizontal"
                         v-show="showActionButton" />
                 </q-img>
-                <q-icon v-else name="mdi-account-circle" size="xl" :color="iconColor"
+                <q-icon v-else :name="mdiAccountCircle" size="xl" :color="iconColor"
                     @mouseover="showActionButton = true" @mouseleave="showActionButton = false">
-                    <q-btn class="absolute-bottom" size="sm" icon="mdi-plus-circle" v-show="showActionButton" />
+                    <q-btn class="absolute-bottom" size="sm" :icon="mdiPlusCircle" v-show="showActionButton" />
                 </q-icon>
                 <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.avatar.tooltip') }}
@@ -26,48 +26,34 @@
         </q-item-section>
     </q-item>
 </template>
-
-<script>
+<script setup>
 import { computed, ref } from 'vue';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import { mdiAccountCircle, mdiSwapHorizontal, mdiPlusCircle } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 
-export default {
-    name: 'UserAvatarSettings',
-    setup() {
-        const $q = useQuasar();
-        const { t } = useI18n();
-        const settingsStore = useSettingsStore();
-        const { userAvatar } = storeToRefs(settingsStore);
+const $q = useQuasar();
+const { t } = useI18n();
+const settingsStore = useSettingsStore();
+const { userAvatar } = storeToRefs(settingsStore);
 
-        const avatarImage = ref(null);
-        const avatarPicker = ref(null);
-        const showActionButton = ref(false);
+const avatarImage = ref(null);
+const avatarPicker = ref(null);
+const showActionButton = ref(false);
 
-        const handleAvatarPicker = () => {
-            avatarPicker.value.pickFiles();
-        }
+const handleAvatarPicker = () => {
+    avatarPicker.value.pickFiles();
+};
 
-        const handleAvatarSelected = () => {
-            if (avatarImage.value) {
-                const reader = new FileReader();
-                reader.onload = () => userAvatar.value = reader.result;
-                reader.readAsDataURL(avatarImage.value);
-            }
-        }
-
-        return {
-            t,
-            userAvatar,
-            avatarImage,
-            avatarPicker,
-            showActionButton,
-            handleAvatarPicker,
-            handleAvatarSelected,
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
-        }
+const handleAvatarSelected = () => {
+    if (avatarImage.value) {
+        const reader = new FileReader();
+        reader.onload = () => userAvatar.value = reader.result;
+        reader.readAsDataURL(avatarImage.value);
     }
-}
+};
+
+const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 </script>

@@ -3,7 +3,7 @@
         <!-- Cloud Sync Toggle -->
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-cloud-sync" :color="iconColor" />
+                <q-icon :name="mdiCloudSync" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.cloud.sync.label') }}</q-item-label>
@@ -28,7 +28,7 @@
         <!-- Cloud Provider Selection -->
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-cloud" :color="iconColor" />
+                <q-icon :name="mdiCloud" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-select
@@ -61,7 +61,7 @@
         <!-- Settings Sync Option -->
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-cog-sync" :color="iconColor" />
+                <q-icon :name="mdiCogSync" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.cloud.options.settings') }}</q-item-label>
@@ -83,7 +83,7 @@
         <!-- Personas Sync Option -->
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-account-sync" :color="iconColor" />
+                <q-icon :name="mdiAccountSync" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.cloud.options.personas') }}</q-item-label>
@@ -105,7 +105,7 @@
         <!-- Conversations Sync Option -->
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-message-text-clock" :color="iconColor" />
+                <q-icon :name="mdiMessageTextClock" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.cloud.options.conversations') }}</q-item-label>
@@ -129,7 +129,7 @@
         <!-- Last Sync Info -->
         <q-item v-if="cloudSync && lastSync">
             <q-item-section avatar>
-                <q-icon name="mdi-clock-outline" :color="iconColor" />
+                <q-icon :name="mdiClockOutline" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.cloud.lastSync.label') }}</q-item-label>
@@ -141,7 +141,7 @@
                 <q-btn
                     dense flat
                     round
-                    :icon="syncing ? 'mdi-sync-alert' : 'mdi-sync'"
+                    :icon="syncing ? mdiSyncAlert : mdiSync"
                     :loading="syncing"
                     :disable="!isMacOS || !cloudSync"
                     @click="handleSync"
@@ -153,7 +153,7 @@
     </q-list>
 </template>
 
-<script>
+<script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { platform } from '@tauri-apps/plugin-os';
@@ -161,29 +161,26 @@ import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useCloudSync } from '@/composables/useCloudSync';
+import { 
+    mdiCloudSync,
+    mdiCloud,
+    mdiCogSync, 
+    mdiAccountSync,
+    mdiMessageTextClock,
+    mdiClockOutline,
+    mdiSync,
+    mdiSyncAlert
+} from '@quasar/extras/mdi-v7';
 
-export default {
-    name: 'CloudSync',
-    setup() {
-        const { t } = useI18n();
-        const $q = useQuasar();
-        const settingsStore = useSettingsStore();
-        const { cloudSync, cloudProvider, lastSync, syncOptions } = storeToRefs(settingsStore);
+const { t } = useI18n();
+const $q = useQuasar();
+const settingsStore = useSettingsStore();
+const { cloudSync, cloudProvider, lastSync, syncOptions } = storeToRefs(settingsStore);
+const { syncing, syncToCloud } = useCloudSync();
 
-        const isMacOS = computed(() => platform() === 'macos');
-        const { syncing, syncToCloud } = useCloudSync();
+const isMacOS = computed(() => platform() === 'macos');
+const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
-        return {
-            t,
-            cloudSync,
-            cloudProvider,
-            lastSync,
-            syncOptions,
-            isMacOS,
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8'),
-            syncing,
-            handleSync: syncToCloud
-        };
-    }
-};
+const handleSync = () => syncToCloud();
+
 </script>

@@ -1,9 +1,8 @@
 <template>
     <q-list>
-
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-creation" :color="iconColor" />
+                <q-icon :name="mdiCreation" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label caption>{{ t('settings.text.model.label') }}</q-item-label>
@@ -27,7 +26,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon :name="maxTokens < 1024 ? 'mdi-text-short' : maxTokens < 2048 ? 'mdi-text' : 'mdi-text-long'"
+                <q-icon :name="maxTokens < 1024 ? mdiTextShort : maxTokens < 2048 ? mdiText : mdiTextLong"
                     :color="iconColor" />
             </q-item-section>
             <q-item-section>
@@ -43,7 +42,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-thermometer" :color="iconColor" />
+                <q-icon :name="mdiThermometer" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label caption>{{ t('settings.text.temperature.label') }} ({{ temperature
@@ -61,7 +60,7 @@
 
         <q-item v-if="appMode == 'advanced'">
             <q-item-section avatar>
-                <q-icon name="mdi-card-account-details-outline" :color="iconColor" />
+                <q-icon :name="mdiCardAccountDetailsOutline" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.text.personas.label') }}</q-item-label>
@@ -75,7 +74,7 @@
                             color="primary">
                             <q-avatar size="sm">
                                 <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
-                                <q-icon v-else name="mdi-account-circle" size="sm" />
+                                <q-icon v-else :name="mdiAccountCircle" size="sm" />
                             </q-avatar>
                             {{ scope.opt.name }}
                             <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
@@ -89,7 +88,7 @@
                             <q-item-section avatar>
                                 <q-avatar size="sm">
                                     <img v-if="scope.opt.avatar" :src="scope.opt.avatar" />
-                                    <q-icon v-else name="mdi-account-circle" size="sm" />
+                                    <q-icon v-else :name="mdiAccountCircle" size="sm" />
                                 </q-avatar>
                             </q-item-section>
                             <q-item-section>
@@ -107,78 +106,58 @@
     </q-list>
 </template>
 
-<script>
+<script setup>
 import { computed, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from "pinia";
+import { mdiCreation, mdiTextShort, mdiText, mdiTextLong, mdiThermometer, mdiAccountCircle, mdiCardAccountDetailsOutline } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 import { useTeamsStore } from '@/stores/teams-store.js';
 
-export default {
-    setup() {
-        const $q = useQuasar();
-        const { t } = useI18n();
-        const settingsStore = useSettingsStore();
-        const {
-            appMode,
-            apiProviders,
-            model,
-            maxTokens,
-            temperature,
-            choices,
-            personas,
-            streamResponse
-        } = storeToRefs(settingsStore);
+const $q = useQuasar();
+const { t } = useI18n();
+const settingsStore = useSettingsStore();
+const {
+    appMode,
+    apiProviders,
+    model,
+    maxTokens,
+    temperature,
+    personas,
+} = storeToRefs(settingsStore);
 
-        const teamsStore = useTeamsStore();
-        const personaOptions = ref(teamsStore.personas);
+const teamsStore = useTeamsStore();
+const personaOptions = ref(teamsStore.personas);
 
-        watch(personaOptions, () => console.log(personaOptions.value));
-        watch(personas, () => console.log(personas.value));
+watch(personaOptions, () => console.log(personaOptions.value));
+watch(personas, () => console.log(personas.value));
 
-        // Filters personas based on input characters in the select box
-        function personaFilterFn(val, update) {
-            if (val === '') {
-                update(() => personaOptions.value = teamsStore.personas);
-                return;
-            }
-
-            update(() => {
-                const needle = val.toLowerCase();
-                personaOptions.value = teamsStore.personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
-            });
-        }
-
-        // Computed array of { providers, models } to use in select options
-        const modelOptions = computed(() => {
-            return apiProviders.value.map(provider => {
-                return provider.models.map(model => ({
-                    "label": model,
-                    "provider": provider.name,
-                    "value": model
-                }));
-            }).flat()
-        });
-
-        return {
-            t,
-            appMode,
-
-            model,
-            modelOptions,
-            maxTokens,
-            temperature,
-            choices,
-
-            personaOptions,
-            personaFilterFn,
-            personas,
-
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
-        }
+// Filters personas based on input characters in the select box
+function personaFilterFn(val, update) {
+    if (val === '') {
+        update(() => personaOptions.value = teamsStore.personas);
+        return;
     }
+
+    update(() => {
+        const needle = val.toLowerCase();
+        personaOptions.value = teamsStore.personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
+    });
 }
+
+// Computed array of { providers, models } to use in select options
+const modelOptions = computed(() => {
+    return apiProviders.value.map(provider => {
+        return provider.models.map(model => ({
+            "label": model,
+            "provider": provider.name,
+            "value": model
+        }));
+    }).flat()
+});
+
+const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 </script>
 
 <style scoped>

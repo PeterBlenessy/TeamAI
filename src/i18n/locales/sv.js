@@ -18,7 +18,7 @@ export default {
             text: 'Ställ din fråga',
             image: 'Beskriv bilden du vill generera'
         },
-        label: "Ctrl+↵ skickar",
+        label: "Tryck på Skift (⇧) + Retur (↵) för en ny rad",
         tooltip: {
             send: 'Skicka din fråga',
             stop: 'Avbryt generering',

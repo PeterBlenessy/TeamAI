@@ -2,7 +2,7 @@
     <q-list>
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-compare" :color="iconColor" />
+                <q-icon :name="mdiCompare" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.general.darkMode.label') }}</q-item-label>
@@ -18,7 +18,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-translate" :color="iconColor" />
+                <q-icon :name="mdiTranslate" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.general.locale.label') }}</q-item-label>
@@ -35,7 +35,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-microphone-message" :color="iconColor" />
+                <q-icon :name="mdiMicrophoneMessage" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ t('settings.general.speech.label') }}</q-item-label>
@@ -52,7 +52,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon :name="chatDirection == 'up' ? 'mdi-transfer-up' : 'mdi-transfer-down'" :color="iconColor" />
+                <q-icon :name="chatDirection == 'up' ? mdiTransferUp : mdiTransferDown" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ $t('settings.general.chatDirection.label') }}</q-item-label>
@@ -68,7 +68,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon :name="conversationMode ? 'mdi-forum-outline' : 'mdi-message-outline'" :color="iconColor" />
+                <q-icon :name="conversationMode ? mdiForum : mdiMessageOutline" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ $t('settings.general.conversationMode.label') }}</q-item-label>
@@ -84,7 +84,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon :name="appMode == 'basic' ? 'mdi-account' : 'mdi-account-group'" :color="iconColor" />
+                <q-icon :name="appMode == 'basic' ? mdiAccount : mdiAccountGroup" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ $t('settings.general.appMode.label') }}</q-item-label>
@@ -100,7 +100,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon :name="quickSettings == true ? 'mdi-cogs' : 'mdi-cog-off'" :color="iconColor" />
+                <q-icon :name="quickSettings == true ? mdiCogs : mdiCogOff" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ $t('settings.general.quickSettings.label') }}</q-item-label>
@@ -116,7 +116,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-set-split" :color="iconColor" />
+                <q-icon :name="mdiSetSplit" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label>{{ $t('settings.general.streamResponse.label') }}</q-item-label>
@@ -132,42 +132,28 @@
     </q-list>
 </template>
 
-<script>
+<script setup>
 import { computed } from 'vue';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import { mdiCompare, mdiTranslate, mdiMicrophoneMessage, mdiTransferUp, mdiTransferDown, mdiForum, 
+    mdiMessageOutline, mdiAccount, mdiAccountGroup, mdiCogs, mdiCogOff, mdiSetSplit 
+} from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 
-export default {
-    name: 'GeneralSettings',
-    setup() {
-        const $q = useQuasar();
-        const { t, locale, availableLocales } = useI18n();
-        const settingsStore = useSettingsStore();
-        const {
-            appMode,
-            darkMode,
-            conversationMode,
-            chatDirection, 
-            quickSettings,
-            streamResponse,
-            speechLanguage,
-        } = storeToRefs(settingsStore);
+const $q = useQuasar();
+const { t, locale, availableLocales } = useI18n();
+const settingsStore = useSettingsStore();
+const {
+    appMode,
+    darkMode,
+    conversationMode,
+    chatDirection, 
+    quickSettings,
+    streamResponse,
+    speechLanguage,
+} = storeToRefs(settingsStore);
 
-        return {
-            t,
-            locale,
-            availableLocales,
-            speechLanguage,
-            appMode,
-            darkMode,
-            conversationMode,
-            chatDirection,
-            quickSettings,
-            streamResponse,
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
-        }
-    }
-}
+const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 </script>

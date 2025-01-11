@@ -2,7 +2,7 @@
     <q-list>
         <q-item v-if="false">
             <q-item-section avatar>
-                <q-icon name="mdi-image-multiple-outline" :color="iconColor" />
+                <q-icon :name="mdiImageMultipleOutline" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label caption>{{ t('settings.image.choices.label') }} ({{ choices
@@ -17,7 +17,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-image-size-select-large" :color="iconColor" />
+                <q-icon :name="mdiImageSizeSelectLarge" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label caption>{{ t('settings.image.size.label') }} ({{ imageSize
@@ -32,7 +32,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon :name="imageQuality == 'hd' ? 'mdi-high-definition' : 'mdi-standard-definition'"
+                <q-icon :name="imageQuality == 'hd' ? mdiHighDefinition : mdiStandardDefinition"
                     :color="iconColor" />
             </q-item-section>
             <q-item-section>
@@ -48,7 +48,7 @@
 
         <q-item>
             <q-item-section avatar>
-                <q-icon name="mdi-palette" :color="iconColor" />
+                <q-icon :name="mdiPalette" :color="iconColor" />
             </q-item-section>
             <q-item-section>
                 <q-item-label caption>{{ t('settings.image.style.label') }} ({{ imageStyle
@@ -64,62 +64,42 @@
     </q-list>
 </template>
 
-<script>
+<script setup>
 import { computed, ref, watch } from 'vue';
 import { storeToRefs } from "pinia";
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
+import { mdiImageMultipleOutline, mdiImageSizeSelectLarge, mdiHighDefinition, mdiStandardDefinition, mdiPalette } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 import openaiConfig from '@/services/openai.config.json';
 
-export default {
-    setup() {
-        const $q = useQuasar();
-        const { t } = useI18n();
-        const settingsStore = useSettingsStore();
-        const {
-            appMode,
-            imageSize, 
-            imageQuality,
-            imageStyle
-        } = storeToRefs(settingsStore);
+const $q = useQuasar();
+const { t } = useI18n();
+const settingsStore = useSettingsStore();
+const { appMode, imageSize, imageQuality, imageStyle } = storeToRefs(settingsStore);
 
-        // Load OpenAI API format parameters
-        const imageSizeOptions = openaiConfig.imageSizeOptions;
-        const imageQualityOptions = openaiConfig.imageQualityOptions;
-        const imageStyleOptions = openaiConfig.imageStyleOptions;
+// Load OpenAI API format parameters
+const imageSizeOptions = openaiConfig.imageSizeOptions;
+const imageQualityOptions = openaiConfig.imageQualityOptions;
+const imageStyleOptions = openaiConfig.imageStyleOptions;
 
-        const imageSizeValue = ref(imageSizeOptions.indexOf(imageSize.value));
-        const imageQualityValue = ref(imageQualityOptions.indexOf(imageQuality.value));
-        const imageStyleValue = ref(imageStyleOptions.indexOf(imageStyle.value));
+const imageSizeValue = ref(imageSizeOptions.indexOf(imageSize.value));
+const imageQualityValue = ref(imageQualityOptions.indexOf(imageQuality.value));
+const imageStyleValue = ref(imageStyleOptions.indexOf(imageStyle.value));
 
-        watch(imageSizeValue, () => {
-            imageSize.value = imageSizeOptions[imageSizeValue.value];
-        });
+watch(imageSizeValue, () => {
+    imageSize.value = imageSizeOptions[imageSizeValue.value];
+});
 
-        watch(imageQualityValue, () => {
-            imageQuality.value = imageQualityOptions[imageQualityValue.value];
-        });
+watch(imageQualityValue, () => {
+    imageQuality.value = imageQualityOptions[imageQualityValue.value];
+});
 
-        watch(imageStyleValue, () => {
-            imageStyle.value = imageStyleOptions[imageStyleValue.value];
-        });
+watch(imageStyleValue, () => {
+    imageStyle.value = imageStyleOptions[imageStyleValue.value];
+});
 
-        return {
-            t,
-            appMode,
-
-            imageSize,
-            imageSizeValue,
-            imageQuality,
-            imageQualityValue,
-            imageStyle,
-            imageStyleValue,
-
-            iconColor: computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8')
-        }
-    }
-}
+const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 </script>
 
 <style scoped>
