@@ -199,17 +199,16 @@ export const useTeamsStore = defineStore('teams', () => {
         }
     }
 
-    function getLastUserMessage(id) {
+    function getUserMessage(id, offset = 0) {
         const conversation = messages.value.filter(message => message.conversationId == id);
-
-        // Find latest user message
-        for (let i = conversation.length - 1; i >= 0; i--) {
-            if (conversation[i].role === "user") {
-                return conversation[i];
-            }
+        const userMessages = conversation.filter(message => message.role === "user");
+        
+        if (userMessages.length === 0 || offset < 0) {
+            return undefined;
         }
         
-        return undefined;
+        const targetIndex = userMessages.length - 1 - offset;
+        return targetIndex >= 0 ? userMessages[targetIndex] : undefined;
     }
 
     function getPersona(id) {
@@ -256,7 +255,7 @@ export const useTeamsStore = defineStore('teams', () => {
         getConversation,
         getConversationInfo,
         getMessage,
-        getLastUserMessage,
+        getUserMessage,
         getOrphanedMessages,
         getSettingsFromLastMessage,
         getPersona,

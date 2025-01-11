@@ -3,8 +3,10 @@
         <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive" stack-label
             :placeholder="isCreateImageSelected ? t('userInput.placeholder.image') : t('userInput.placeholder.text')"
             :label="isCreateImageSelected ? t('userInput.label') : t('userInput.label')"
-            @keydown.enter.prevent="handleUserInput" v-model="question" type="textarea"
-            @keydown.up.prevent="getLastUserMessage">
+            @keydown.enter.prevent="handleUserInput" 
+            @keydown.up.prevent="getPreviousUserMessage"
+            @keydown.down.prevent="getNextUserMessage"
+            v-model="question" type="textarea">
 
             <template v-slot:prepend>
                 <q-btn dense flat :icon="!isCreateImageSelected ? mdiTooltipText : mdiTooltipTextOutline"
@@ -76,6 +78,8 @@ const question = ref('');
 const { t } = useI18n();
 const $q = useQuasar();
 
+const messageHistoryIndex = ref(-1);
+
 function handleUserInput() {
 
     // Handle user aborts request
@@ -92,6 +96,7 @@ function handleUserInput() {
     userInput.value = question.value;
     question.value = '';
     stopSpeechRecognition();
+    messageHistoryIndex.value = -1;
 }
 
 const isMicrophoneActive = ref(false);
@@ -146,8 +151,33 @@ const stopSpeechRecognition = () => {
     recognition.stop();
 }
 
-const getLastUserMessage = () => {
-    console.log("Last user message: ", teamsStore.getLastUserMessage(conversationId.value));
+const getPreviousUserMessage = () => {
+    messageHistoryIndex.value++;
+    
+    const message = teamsStore.getUserMessage(conversationId.value, messageHistoryIndex.value);
+    
+    if (message) {
+        question.value = message.content;
+        console.log('User message', messageHistoryIndex.value, message.content);
+    } else {
+        // If no more messages, reset the index
+        messageHistoryIndex.value--;
+        console.log('Set index to:', messageHistoryIndex.value);
+    }
+}
+
+const getNextUserMessage = () => {
+    if (messageHistoryIndex.value >= 0) {
+        messageHistoryIndex.value--;
+        const message = teamsStore.getUserMessage(conversationId.value, messageHistoryIndex.value);
+        
+        if (message) {
+            question.value = message.content;
+        } else {
+            messageHistoryIndex.value = -1;
+            question.value = '';
+        }
+    }
 }
 
 const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
