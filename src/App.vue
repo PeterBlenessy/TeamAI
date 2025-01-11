@@ -116,7 +116,7 @@ const settingsStore = useSettingsStore();
 const { appMode, darkMode, quickSettings, userLocale, chatDirection, isDBUpgraded } = storeToRefs(settingsStore);
 
 const teamsStore = useTeamsStore();
-const { newConversation, messages } = teamsStore;
+const { newConversation } = teamsStore;
 
 const showSettings = ref(false);
 const showInformation = ref(false);
@@ -128,9 +128,7 @@ const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
 const dbUpgrader = DatabaseUpgrader();
 const updaterRef = ref(null);
-const { isUpdateAvailable, updateInfo, checkForUpdates: autoCheck } = useAutoUpdater(
-    () => updaterRef.value?.checkForUpdates()
-);
+const { isUpdateAvailable } = useAutoUpdater();
 
 // Watch miniDrawer changes and update the toolbar icon
 watch(miniDrawer, () => {
@@ -245,9 +243,15 @@ watch(darkMode, () => $q.dark.set(darkMode.value));
 watch(locale, () => userLocale.value = locale.value);
 watch(userLocale, () => locale.value = userLocale.value);
 
+// Watch for update availability
+watch(isUpdateAvailable, async (newValue) => {
+    if (newValue) {
+        await updaterRef.value?.checkForUpdates();
+    }
+});
+
 // Check for updates
 async function handleCheckForUpdates() {
-    //isUpdateAvailable.value = false; // Reset badge when manually checking
     await updaterRef.value?.checkForUpdates();
 }
 

@@ -3,36 +3,31 @@
 </template>
 
 <script setup>
-import { check } from '@tauri-apps/plugin-updater'
-import { relaunch } from '@tauri-apps/plugin-process';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { mdiAlert } from '@quasar/extras/mdi-v7';
+import { useAutoUpdater } from '@/composables/useAutoUpdater';
 import logger from '@/services/logger';
 
 const { t } = useI18n();
 const $q = useQuasar();
 
-// Add emits declaration
-const emit = defineEmits(['update-available', 'update-not-available', 'error']);
+const { checkForUpdates, downloadAndInstall, restartApp } = useAutoUpdater();
 
-async function checkForUpdates() {
+async function handleCheckForUpdates() {
     try {
-        const update = await check();
+        const update = await checkForUpdates();
 
         if (update?.available) {
             logger.log(`[Updater] - Update to ${update.version} available! Date: ${update.date}`);
-            logger.log(`[Updater] - Release notes: ${update.body}`);
-
-            // Format release notes - split by newlines and add bullet points
+            
+            // Format release notes and date
             const releaseNotes = update.body
                 .split('- ')
                 .map(line => line.trim())
                 .filter(line => line.length > 0)
                 .map(line => `<li>${line}</li>`)
                 .join('<br>');
-
-            // Format the release date
             const releaseDate = update.date.split(" ")[0];
 
             // Ask user to download and install update
@@ -64,7 +59,7 @@ async function checkForUpdates() {
                         spinner: true
                     });
 
-                    await update.downloadAndInstall();
+                    await downloadAndInstall(update);
                     downloadNotif();
 
                     // Ask for restart
@@ -81,7 +76,7 @@ async function checkForUpdates() {
                         },
                         persistent: true
                     }).onOk(async () => {
-                        await relaunch();
+                        await restartApp();
                     }).onCancel(() => {
                         $q.notify({
                             type: 'info',
@@ -91,7 +86,7 @@ async function checkForUpdates() {
                         });
                     });
                 } catch (error) {
-                    logger.error(`[Updater] - Download/Install error: ${error}`);
+                    logger.error(`[Updater] - Error during update process: ${error}`);
                     $q.notify({
                         type: 'negative',
                         message: t('updater.error.message'),
@@ -100,31 +95,23 @@ async function checkForUpdates() {
                     });
                 }
             });
-            emit('update-available', update);
-            return update;
         } else {
-            logger.log("[Updater] - No update available");
             $q.notify({
                 type: 'info',
                 message: t('updater.upToDate.message'),
             });
-            emit('update-not-available');
-            return null;
         }
     } catch (error) {
-        logger.error(`[Updater] - Check error: ${error}`);
         $q.notify({
             type: 'negative',
             message: t('updater.error.message'),
             caption: error.toString(),
             icon: mdiAlert
         });
-        emit('error', error);
-        throw error;
     }
 }
 
 defineExpose({
-    checkForUpdates
+    checkForUpdates: handleCheckForUpdates
 });
 </script>
