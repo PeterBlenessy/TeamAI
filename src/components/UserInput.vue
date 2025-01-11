@@ -3,7 +3,7 @@
         <q-input dense filled autofocus autogrow style="width: 100%;" :dark="$q.dark.isActive" stack-label
             :placeholder="isCreateImageSelected ? t('userInput.placeholder.image') : t('userInput.placeholder.text')"
             :label="isCreateImageSelected ? t('userInput.label') : t('userInput.label')"
-            @keydown.enter.prevent="handleUserInput" 
+            @keydown.enter.exact.prevent="handleUserInput" 
             @keydown.up.prevent="getPreviousUserMessage"
             @keydown.down.prevent="getNextUserMessage"
             v-model="question" type="textarea">
@@ -158,11 +158,9 @@ const getPreviousUserMessage = () => {
     
     if (message) {
         question.value = message.content;
-        console.log('User message', messageHistoryIndex.value, message.content);
     } else {
         // If no more messages, reset the index
         messageHistoryIndex.value--;
-        console.log('Set index to:', messageHistoryIndex.value);
     }
 }
 
