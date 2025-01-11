@@ -29,7 +29,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## NEXT
 - Fix error where selected models in ollama model dropdown are the hard coded ones, not the ones available. Flow should be this: list hard coded models that are not downloaded, show download icon. Fix in both settings and quick settings.
-- Change icons to use SVG instead of webfonts.
+
+## v2.2.3 - 2025-01-11
+- Fixed bug in ProviderSettings where API key would not be hidden when clicking the hide/show toggle.
+- Changed icons to SVG from web-fonts to decrease bundle size.
+- Refactored all components to use Vuejs 3 Composition API with `\<script setup\>`
+- Changed UserInput to sent question on `Enter`, instead of `Command`+`Enter`.
+- Changed guiding text in UserInput to `Press Shift (⇧) + Enter (↵) for new line`
+- Added support for retrieving previous user messages by pressing `up`/`down` key in UserInput.
+- Fixed bug where UserInput did not allow "Shift+Enter" to create new lines in the input field.
+- Added support for both multi-line navigation and message history navigation in UserInput.
+- Updated Cargo dependencies.
 
 ## v2.2.2 - 2025-01-10
 - Added support for the `@` alias in `vite.config.js` and updated import paths.
