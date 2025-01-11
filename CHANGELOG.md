@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix error where selected models in ollama model dropdown are the hard coded ones, not the ones available. Flow should be this: list hard coded models that are not downloaded, show download icon. Fix in both settings and quick settings.
 - Fix error where default provider is missing or not selected on first start of the application.
 
+## v2.2.5 - 2025-01-11
+- Updated button styles and formatting of the release notes in update available dialog.
+- Refactored useAutoUpdater composable to contain all the backend communication logic.
+- Refactored App.vue and Updater.vue component to focus on UI interactions and user feedback.
+- Refactored Updater.vue by move UI elements to the template section and keeping the logic in the script section.
+
 ## v2.2.4 - 2025-01-11
 - Added handler for `ResizeObserver` errors to suppress warnings such as `ResizeObserver loop completed with undelivered notifications`.
 - Added the `iconColor` computed variable to `useHelpers` composable and updated components where needed.
