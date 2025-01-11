@@ -3,7 +3,7 @@ import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import logger from '@/services/logger';
 
-export function useAutoUpdater(intervalInMinutes = 60) {
+export function useUpdater(intervalInMinutes = 60) {
     const isUpdateAvailable = ref(false);
     const updateInfo = ref(null);
     let updateInterval;
@@ -15,7 +15,7 @@ export function useAutoUpdater(intervalInMinutes = 60) {
             updateInfo.value = update;
             return update;
         } catch (error) {
-            logger.error(`[AutoUpdater] - ${error}`);
+            logger.error(`[Updater] - ${error}`);
             throw error;
         }
     }
@@ -25,16 +25,16 @@ export function useAutoUpdater(intervalInMinutes = 60) {
             await update.downloadAndInstall();
             return true;
         } catch (error) {
-            logger.error(`[AutoUpdater] - Download/Install error: ${error}`);
+            logger.error(`[Updater] - Download/Install error: ${error}`);
             throw error;
         }
     }
 
-    async function restartApp() {
+    async function relaunchApp() {
         try {
             await relaunch();
         } catch (error) {
-            logger.error(`[AutoUpdater] - Relaunch error: ${error}`);
+            logger.error(`[Updater] - Relaunch error: ${error}`);
             throw error;
         }
     }
@@ -59,6 +59,6 @@ export function useAutoUpdater(intervalInMinutes = 60) {
         updateInfo,
         checkForUpdates,
         downloadAndInstall,
-        restartApp
+        relaunchApp
     };
 }

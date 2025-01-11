@@ -108,7 +108,7 @@ import {
     mdiTune, mdiUpdate, mdiInformationOutline, mdiArrowUp, mdiArrowDown,
     mdiCloudSync, mdiCloudOff, mdiCloudCheck, mdiCloudAlert, mdiCloudUpload
 } from '@quasar/extras/mdi-v7';
-import { useAutoUpdater } from '@/composables/useAutoUpdater';
+import { useUpdater } from '@/composables/useUpdater';
 
 const { t, locale } = useI18n();
 const $q = useQuasar();
@@ -128,7 +128,7 @@ const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
 const dbUpgrader = DatabaseUpgrader();
 const updaterRef = ref(null);
-const { isUpdateAvailable } = useAutoUpdater();
+const { isUpdateAvailable } = useUpdater();
 
 // Watch miniDrawer changes and update the toolbar icon
 watch(miniDrawer, () => {

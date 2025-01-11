@@ -448,11 +448,11 @@ export default {
             caption: 'Du kör den senaste versionen.',
         },
         updateAvailable: {
-            message: 'En ny version är tillgänglig.',
+            title: 'En ny version är tillgänglig',
             caption: 'Vill du ladda ner och installera den nya versionen?',
             actions: {
-                install: 'LAdda ner och installera',
-                later: 'Senare'
+                install: 'Ladda ner och installera',
+                later: 'Avfärda'
             }
         },
         relaunch: {
@@ -460,7 +460,7 @@ export default {
             caption: 'Vill du starta om nu för att använda den nya versionen?',
             actions: {
                 relaunch: 'Starta om',
-                later: 'Senare'
+                later: 'Avfärda'
             }
         },
         relaunchLater: {

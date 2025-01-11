@@ -483,22 +483,22 @@ export default {
             caption: 'You are running the latest version.'
         },
         updateAvailable: {
-            message: 'Update available.',
+            title: 'Update available',
             caption: 'Would you like to download and install the update?',
             actions: {
                 install: 'Download and install',
-                later: 'Later'
+                dismiss: 'Dismiss'
             }
         },
         relaunch: {
-            message: 'New version downloaded.',
+            title: 'New version downloaded',
             caption: 'Would you like to relaunch the application now to use the new version?',
             actions: {
                 relaunch: 'Relaunch',
-                later: 'Later'
+                dismiss: 'Dismiss'
             }
         },
-        relaunchLater: {
+        relaunchDismiss: {
             message: 'Update installed',
             caption: 'The new version will be available after the next restart'
         },

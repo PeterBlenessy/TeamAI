@@ -450,11 +450,11 @@ export default {
             caption: "A legfrissebb verziót használja."
         },
         updateAvailable: {
-            message: "Frissítés elérhető.",
+            title: "Frissítés elérhető",
             caption: "Szeretné letölteni és telepíteni a frissítést?",
             actions: {
                 install: "Letöltés és telepítés",
-                later: "Később"
+                later: "Bezárás"
             }
         },
         relaunch: {
@@ -462,7 +462,7 @@ export default {
             caption: "Szeretné újraindítani az alkalmazást most, hogy használja az új verziót?",
             actions: {
                 relaunch: "Újraindítás",
-                later: "Később"
+                later: "Bezárás"
             }
         },
         relaunchLater: {
@@ -489,11 +489,11 @@ export default {
         completed: {
             message: "Az adatbázis frissítése befejeződött.",
             caption: "Minden rendben. Az adatbázis verziója most {version}.",
-            action: "Elfogad"
+            action: "Bezárás"
         },
         error: {
             message: "Hiba történt az adatbázis frissítése közben.",
-            caption: "Elfogad"
+            caption: "Bezárás"
         }
     },
     icloud: {
