@@ -16,19 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [BACKLOG]
 - Add language information to messages and extract it automatically to know current language.
-- Should make iconColor() a utility function.
 - Length of persona name should be restricted to e.g. 32 characters to fit dropdown selection box.
 - Avatars should be scaled down to save storage space. Unless stored as separate files, only once.
 
 ### [KNOWN-BUGS]
-- ResizeObserver loop completed with undelivered notifications. 
-  https://github.com/quasarframework/quasar/issues/2233#issuecomment-1719873402
 - Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
-
-## NEXT
 - Fix error where selected models in ollama model dropdown are the hard coded ones, not the ones available. Flow should be this: list hard coded models that are not downloaded, show download icon. Fix in both settings and quick settings.
+- Fix error where default provider is missing or not selected on first start of the application.
+
+## v2.2.4 - 2025-01-11
+- Added handler for `ResizeObserver` errors to suppress warnings such as `ResizeObserver loop completed with undelivered notifications`.
+- Added the `iconColor` computed variable to `useHelpers` composable and updated components where needed.
+- Added Updater component with improved UX and more informative application update flow.
 
 ## v2.2.3 - 2025-01-11
 - Fixed bug in ProviderSettings where API key would not be hidden when clicking the hide/show toggle.
