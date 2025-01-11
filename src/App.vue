@@ -18,7 +18,10 @@
 
                         <q-item clickable v-ripple @click="item.action">
                             <q-item-section avatar>
-                                <q-icon dense flat :name="item.icon" :color="iconColor" />
+                                <q-icon dense flat :name="item.icon" :color="iconColor">
+                                    <q-badge v-if="item.tooltip === 'toolbar.tooltip.checkForUpdates' && isUpdateAvailable" 
+                                            floating rounded />
+                                </q-icon>
                                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                     {{ $t(item.tooltip) }}
                                 </q-tooltip>
@@ -77,6 +80,7 @@
             </q-footer>
 
         </q-page-container>
+        <Updater ref="updaterRef" />
     </q-layout>
 </template>
 
@@ -85,13 +89,6 @@ import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
-import { check } from '@tauri-apps/plugin-updater'
-import { relaunch } from '@tauri-apps/plugin-process';
-import { 
-    mdiMenu, mdiMenuOpen, mdiChatPlusOutline, mdiHistory, mdiCardAccountDetailsOutline, 
-    mdiTune, mdiUpdate, mdiInformationOutline, mdiArrowUp, mdiArrowDown,
-    mdiCloudSync, mdiCloudOff, mdiCloudCheck, mdiCloudAlert, mdiCloudUpload
-} from '@quasar/extras/mdi-v7';
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue";
 import QuickSettings from "@/components/Settings/QuickSettings.vue";
 import UserInput from "@/components/UserInput.vue";
@@ -105,6 +102,13 @@ import { useTeamsStore } from '@/stores/teams-store.js';
 import DatabaseUpgrader from '@/services/databaseUpgrader.js';
 import logger from '@/services/logger';
 import iCloudService from '@/services/iCloudService';
+import Updater from '@/components/Updater.vue';
+import { 
+    mdiMenu, mdiMenuOpen, mdiChatPlusOutline, mdiHistory, mdiCardAccountDetailsOutline, 
+    mdiTune, mdiUpdate, mdiInformationOutline, mdiArrowUp, mdiArrowDown,
+    mdiCloudSync, mdiCloudOff, mdiCloudCheck, mdiCloudAlert, mdiCloudUpload
+} from '@quasar/extras/mdi-v7';
+import { useAutoUpdater } from '@/composables/useAutoUpdater';
 
 const { t, locale } = useI18n();
 const $q = useQuasar();
@@ -123,6 +127,10 @@ const miniDrawer = ref(true);
 const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
 const dbUpgrader = DatabaseUpgrader();
+const updaterRef = ref(null);
+const { isUpdateAvailable, updateInfo, checkForUpdates: autoCheck } = useAutoUpdater(
+    () => updaterRef.value?.checkForUpdates()
+);
 
 // Watch miniDrawer changes and update the toolbar icon
 watch(miniDrawer, () => {
@@ -162,7 +170,7 @@ const toolbar = ref([
         appMode: 'basic'
     },
     {
-        action: checkForUpdates,
+        action: handleCheckForUpdates,
         icon: mdiUpdate,
         tooltip: 'toolbar.tooltip.checkForUpdates',
         appMode: 'advanced'
@@ -238,77 +246,9 @@ watch(locale, () => userLocale.value = locale.value);
 watch(userLocale, () => locale.value = userLocale.value);
 
 // Check for updates
-async function checkForUpdates() {
-
-    // Listen to updater events
-    // const unlisten = await onUpdaterEvent(({ error, status }) => {
-    //     // This will log all updater events, including status updates and errors.
-    //     logger.log(`[App] - Updater event': ${error}, ${status}`);
-
-    //     let updater = {
-    //         'PENDING': { icon: mdiInformation, type: 'info', message: t('updater.pending.message'), caption: t('updater.pending.caption') },
-    //         'ERROR': { icon: mdiAlert, type: 'negative', message: t('updater.error.message'), caption: t('updater.error.caption') },
-    //         'DONE': { icon: mdiCheck, type: 'positive', message: t('updater.done.message'), caption: t('updater.done.caption') },
-    //         'UPTODATE': { icon: mdiCheck, type: 'positive', message: t('updater.upToDate.message'), caption: t('updater.upToDate.caption') }
-    //     };
-
-    //     $q.notify({
-    //         position: 'top',
-    //         icon: updater[status].icon,
-    //         type: updater[status].type,
-    //         spinner: false,
-    //         message: updater[status].message,
-    //         caption: updater[status].caption,
-    //         timeout: 2000
-    //     });
-    // });
-
-
-    try {
-        // check() displays Tauri update flow if an update is available.
-        // When no update is available, onUpdaterEvent() will be triggered and frontend notifications used.
-        // const { shouldUpdate, manifest } = await check();
-        const update = await check();
-
-        if (update?.available) {
-            logger.log(`[App] - Update to ${update.version} available! Date: ${update.date}`);
-            logger.log(`[App] - Release notes: ${update.body}`);
-            await update.downloadAndInstall();
-            // requires the `process` plugin
-            await relaunch();
-
-            // Uncomment to enable frontend install/relaunch flow.
-            // Also, disable the built-in Tauri dialog in Tauri config.
-
-            // Install the update. This will also restart the app on Windows!
-            // notification({
-            //     multiline: true,
-            //     message: t('updater.updateAvailable.message'),
-            //     caption: t('updater.updateAvailable.caption') + updateInfo,
-            //     actions: [
-            //         { label: t('updater.updateAvailable.actions.install'), color: 'white', handler: async () => { await installUpdate(); } },
-            //         { label: t('updater.updateAvailable..actions.later'), color: 'white', handler: () => { } }
-            //     ],
-            // });
-
-            // On macOS and Linux you will need to restart the app manually.
-            // notification({
-            //     message: t('updater.relaunch.message'),
-            //     caption: t('updater.relaunch.caption'),
-            //     actions: [
-            //         { label: t('updater.relaunch.actions.relaunch'), color: 'white', handler: async () => { await relaunch(); } },
-            //         { label: t('updater.relaunch.actions.later'), color: 'white', handler: () => { } }
-            //     ],
-            // });
-        } else {
-            logger.log("[App] - No update available")
-        }
-    } catch (error) {
-        logger.error(`[App] - ${error}`);
-    }
-
-    // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.
-    // unlisten();
+async function handleCheckForUpdates() {
+    isUpdateAvailable.value = false; // Reset badge when manually checking
+    await updaterRef.value?.checkForUpdates();
 }
 
 async function cloudSync() {

@@ -465,9 +465,17 @@ export default {
                 later: "Később"
             }
         },
+        relaunchLater: {
+            message: 'Frissítés telepítve',
+            caption: 'Az új verzió a következő újraindítás után lesz elérhető'
+        },
         done: {
             message: "A frissítés letöltődött.",
             caption: ""
+        },
+        releaseNotes: {
+            message: 'Kiadási megjegyzések',
+            caption: 'Változások ebben a verzióban:'
         }
     },
     databaseUpgrade: {

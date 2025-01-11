@@ -498,10 +498,17 @@ export default {
                 later: 'Later'
             }
         },
-
+        relaunchLater: {
+            message: 'Update installed',
+            caption: 'The new version will be available after the next restart'
+        },
         done: {
             message: 'Update downloaded.',
             caption: ''
+        },
+        releaseNotes: {
+            message: 'Release Notes',
+            caption: 'Changes in this version:'
         },
     },
     databaseUpgrade: {

@@ -463,10 +463,17 @@ export default {
                 later: 'Senare'
             }
         },
-
+        relaunchLater: {
+            message: 'Uppdatering installerad',
+            caption: 'Den nya versionen kommer att vara tillgänglig efter nästa omstart'
+        },
         done: {
             message: 'Uppdatering är nerladdad.',
             caption: ''
+        },
+        releaseNotes: {
+            message: 'Versionsanteckningar',
+            caption: 'Ändringar i denna version:'
         },
     },
     databaseUpgrade: {
