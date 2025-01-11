@@ -247,7 +247,7 @@ watch(userLocale, () => locale.value = userLocale.value);
 
 // Check for updates
 async function handleCheckForUpdates() {
-    isUpdateAvailable.value = false; // Reset badge when manually checking
+    //isUpdateAvailable.value = false; // Reset badge when manually checking
     await updaterRef.value?.checkForUpdates();
 }
 

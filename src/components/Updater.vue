@@ -7,7 +7,7 @@ import { check } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
-import { mdiAlert, mdiCheck, mdiInformation } from '@quasar/extras/mdi-v7';
+import { mdiAlert } from '@quasar/extras/mdi-v7';
 import logger from '@/services/logger';
 
 const { t } = useI18n();
@@ -26,10 +26,10 @@ async function checkForUpdates() {
 
             // Format release notes - split by newlines and add bullet points
             const releaseNotes = update.body
-                .split('\n')
+                .split('- ')
                 .map(line => line.trim())
                 .filter(line => line.length > 0)
-                .map(line => `- ${line}`)
+                .map(line => `<li>${line}</li>`)
                 .join('<br>');
 
             // Format the release date
@@ -37,22 +37,23 @@ async function checkForUpdates() {
 
             // Ask user to download and install update
             $q.dialog({
-                title: t('updater.updateAvailable.title'),
-                message: `<div class="text-body1 q-mb-md">${t('updater.updateAvailable.message')}</div>
-                         <div class="text-caption">Version: ${update.version}</div>
+                title: t('updater.updateAvailable.message'),
+                message: `<div class="text-caption">Version: ${update.version}</div>
                          <div class="text-caption">Release date: ${releaseDate}</div>
                          <div class="text-overline mt-2">${t('updater.releaseNotes.message')}</div>
-                         <div class="text-caption">${releaseNotes}</div>`,
+                         <div class="text-caption"><ul class="pl-4">${releaseNotes}</ul></div>`,
                 html: true,
                 ok: {
                     label: t('updater.updateAvailable.actions.install'),
-                    color: 'primary'
+                    textColor: 'primary',
+                    flat: true
                 },
                 cancel: {
                     label: t('updater.updateAvailable.actions.later'),
-                    flat: true
+                    flat: true,
+                    textColor: 'grey-13',
                 },
-                persistent: true
+                persistent: false
             }).onOk(async () => {
                 try {
                     // Show download progress
