@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
+## v2.2.8 - 2025-01-12
+- Updated Ollama models to include downloaded models only, and to be listed only when the Ollama server is running.
+
 ## v2.2.7 - 2025-01-12
 - Fixed error with broken updater introduced in v2.2.5; used un-initialized updater when starting download and install.
 - Updated updater to display download progress.

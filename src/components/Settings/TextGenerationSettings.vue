@@ -118,7 +118,7 @@ import { useOllama } from '@/composables/useOllama';
 import { useQuasar } from 'quasar';
 
 const { iconColor } = useHelpers();
-const { availableModels, loadAvailableModels, isOllamaProvider } = useOllama();
+const { availableModels, isOllamaConnected, loadAvailableModels, isOllamaProvider, checkOllamaStatus } = useOllama();
 
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
@@ -150,29 +150,44 @@ function personaFilterFn(val, update) {
     });
 }
 
+// Get Ollama provider config
+const ollamaProvider = computed(() => 
+    apiProviders.value.find(p => isOllamaProvider(p.name))
+);
+
 // Computed array of { providers, models } to use in select options
 const modelOptions = computed(() => {
     // First create array with all models
     const allModels = apiProviders.value.map(provider => {
-        const models = isOllamaProvider(provider.name)
-            ? [...provider.models, ...availableModels.value]
-            : provider.models;
-
-        return models.map(model => ({
+        // For Ollama provider, only include models if connected and have downloads
+        if (isOllamaProvider(provider.name)) {
+            if (!isOllamaConnected.value || availableModels.value.length === 0) {
+                return [];
+            }
+            return availableModels.value.map(model => ({
+                "label": model,
+                "provider": provider.name,
+                "value": model
+            }));
+        }
+        // For other providers, use their configured models
+        return provider.models.map(model => ({
             "label": model,
             "provider": provider.name,
             "value": model
         }));
     }).flat();
 
-    // Remove duplicates using JSON stringify/parse technique and sort
+    // Remove duplicates and sort
     return Array.from(new Set(allModels.map(obj => JSON.stringify(obj))))
         .map(str => JSON.parse(str))
         .sort((a, b) => a.label.localeCompare(b.label));
 });
 
-onMounted( () => {
-    loadAvailableModels();
+onMounted(async () => {
+    if (ollamaProvider.value) {
+        await checkOllamaStatus(ollamaProvider.value);
+    }
 });
 
 </script>

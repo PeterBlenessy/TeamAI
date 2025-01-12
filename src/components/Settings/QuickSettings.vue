@@ -245,7 +245,12 @@ const {
 const teamsStore = useTeamsStore();
 const { conversationId, isCreateImageSelected, isTeamWorkActivated, messages } = storeToRefs(teamsStore);
 const personaOptions = ref(teamsStore.personas);
-const { availableModels, isOllamaProvider, loadAvailableModels } = useOllama();
+const { availableModels, isOllamaConnected, loadAvailableModels, isOllamaProvider, checkOllamaStatus } = useOllama();
+
+// Get Ollama provider config
+const ollamaProvider = computed(() => 
+    apiProviders.value.find(p => isOllamaProvider(p.name))
+);
 
 // Filters personas based on input characters in the select box
 function personaFilterFn(val, update) {
@@ -262,23 +267,28 @@ function personaFilterFn(val, update) {
 
 // Computed array of { providers, models } to use in select options
 const modelOptions = computed(() => {
-
     const allModels = apiProviders.value.map(provider => {
-        const models = isOllamaProvider(provider.name)
-            ? [...provider.models, ...availableModels.value]
-            : provider.models;
-
-        return models.map(model => ({
+        // For Ollama provider, only include models if connected and have downloads
+        if (isOllamaProvider(provider.name)) {
+            if (!isOllamaConnected.value || availableModels.value.length === 0) {
+                return [];
+            }
+            return availableModels.value.map(model => ({
+                model: model,
+                provider: provider.name,
+            }));
+        }
+        // For other providers, use their configured models
+        return provider.models.map(model => ({
             model: model,
             provider: provider.name,
         }));
     }).flat();
 
-    // Remove duplicates using JSON stringify/parse technique and sort
+    // Remove duplicates and sort
     return Array.from(new Set(allModels.map(obj => JSON.stringify(obj))))
-    .map(str => JSON.parse(str))
-    .sort((a, b) => a.model.localeCompare(b.model));
-
+        .map(str => JSON.parse(str))
+        .sort((a, b) => a.model.localeCompare(b.model));
 });
 
 // Load OpenAI API format parameters
@@ -302,7 +312,10 @@ watch(imageStyleValue, () => {
     imageStyle.value = imageStyleOptions[imageStyleValue.value];
 });
 
-onMounted( () => {
+onMounted(async () => {
+    if (ollamaProvider.value) {
+        await checkOllamaStatus(ollamaProvider.value);
+    }
     loadAvailableModels();
 });
 
