@@ -3,25 +3,39 @@ import { Command, open } from '@tauri-apps/plugin-shell';
 import { platform } from '@tauri-apps/plugin-os';
 import logger from '@/services/logger';
 
+const DEFAULT_HOST = 'http://localhost:11434';
+
 class OllamaService {
     constructor() {
-        this.host = null;
-        this.ollama = null;
         this.platformName = platform();
         this.downloadStreams = new Map();
+        this._initialize(DEFAULT_HOST);
         logger.info(`[OllamaService] - Initialized for platform: ${this.platformName}`);
     }
 
-    setHost(baseUrl) {
-        // Remove /v1 suffix if present
+    _initialize(baseUrl) {
         this.host = baseUrl.replace(/\/v1\/?$/, '');
-        // Create Ollama instance with normalized URL
-        this.ollama = new Ollama({ 
-            host: this.host,
-            // The Ollama package will append /v1 where needed
-        });
+        this.ollama = new Ollama({ host: this.host });
+    }
 
-        logger.info(`[OllamaService] - Host set to: ${this.host}`);
+    setHost(baseUrl) {
+        if (!baseUrl) return;
+        if (baseUrl === this.host) return;
+        
+        this._initialize(baseUrl);
+        logger.info(`[OllamaService] - Host updated to: ${this.host}`);
+    }
+
+    async initializeWithProvider(provider) {
+        if (!provider) return false;
+        if (!this.isOllamaProvider(provider.name)) return false;
+
+        this.setHost(provider.baseUrl);
+        return await this.checkConnection();
+    }
+
+    isOllamaProvider(providerName) {
+        return providerName?.toLowerCase().includes('ollama');
     }
 
     async checkConnection() {

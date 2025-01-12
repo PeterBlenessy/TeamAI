@@ -1,15 +1,13 @@
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
-import { Command } from '@tauri-apps/plugin-shell';
-import { platform } from '@tauri-apps/plugin-os';
 import { ollamaService } from '@/services/ollama.service';
 import { useSettingsStore } from '@/stores/settings-store';
 import logger from '@/services/logger';
 
-export function useOllama() {
+export function useOllama(provider = null) {
     const $q = useQuasar();
     const settingsStore = useSettingsStore();
-
+    
     // Initialize refs
     const availableModels = ref([]);
     const modelDownloading = ref({});
@@ -84,7 +82,7 @@ export function useOllama() {
     // Remove the downloadIterators map and modify pullSpecificModel to only handle progress
     async function pullSpecificModel(modelName, isResume = false) {
         if (!modelName) return;
-        
+
         const baseName = getBaseName(modelName);
         if (!baseName) {
             logger.error(`Invalid model name: ${modelName}`);
@@ -94,7 +92,7 @@ export function useOllama() {
             });
             return;
         }
-        
+
         try {
             if (!isResume) {
                 modelDownloading.value[modelName] = true;
@@ -143,10 +141,10 @@ export function useOllama() {
             logger.error('No model name provided for deletion');
             return false;
         }
-        
+
         try {
             const { base } = getBaseName(modelName);
-            
+
             const modelInstances = availableModels.value.filter(m => {
                 const { base: downloadedBase } = getBaseName(m);
                 return downloadedBase === base;
@@ -172,7 +170,7 @@ export function useOllama() {
     // Load model details
     async function loadModelDetails(modelName) {
         if (loadingDetails.value[modelName]) return;
-        
+
         loadingDetails.value[modelName] = true;
         try {
             const details = await ollamaService.showModel(modelName);
@@ -219,12 +217,8 @@ export function useOllama() {
     }
 
     // Generate model options
-    function getAllModelOptions(tmpProvider, downloaded = []) {
-        if (!tmpProvider?.name?.toLowerCase().includes('ollama')) {
-            return tmpProvider?.models || [];
-        }
-
-        const preConfiguredModels = tmpProvider?.models || [];
+    function getAllModelOptions(provider, downloaded = []) {
+        const preConfiguredModels = provider?.models || [];
         const modelMap = new Map();
 
         downloaded.forEach(model => {
@@ -252,7 +246,7 @@ export function useOllama() {
         restartingOllama.value = true;
         try {
             const os = platform();
-            
+
             // Set environment variable
             switch (os) {
                 case 'macos':
@@ -303,19 +297,19 @@ export function useOllama() {
         }
     }
 
-    async function checkOllamaStatus(provider) {
-        if (!provider) return;
+    async function checkOllamaStatus(providerConfig) {
+        if (!providerConfig) return;
 
-        ollamaService.setHost(provider.baseUrl);
+        const { isRunning, needsConfig } = await ollamaService.initializeWithProvider(providerConfig);
+        isOllamaConnected.value = isRunning;
+        isOllamaConfigured.value = !needsConfig;
 
-        isOllamaConnected.value = await ollamaService.checkConnection();
-        logger.info(`Ollama connected: ${isOllamaConnected.value}`);
-        if (isOllamaConnected.value) {
-            isOllamaConfigured.value = await ollamaService.isConfiguredCorrectly();
-            if (isOllamaConfigured.value) {
-                loadAvailableModels();
-            }
+        if (isOllamaConnected.value && isOllamaConfigured.value) {
+            await loadAvailableModels();
+            await resumeDownloads();
         }
+
+        return { isRunning, needsConfig };
     }
 
     // Add new function to get running models
@@ -331,6 +325,12 @@ export function useOllama() {
     function isOllamaProvider(providerName) {
         return providerName?.toLowerCase().includes('ollama');
     }
+
+    onMounted(async () => {
+        if (provider) {
+            await checkOllamaStatus(provider);
+        }
+    });
 
     return {
         availableModels,

@@ -207,7 +207,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
@@ -222,6 +222,7 @@ import { useTeamsStore } from '@/stores/teams-store.js';
 import openaiConfig from '@/services/openai.config.json';
 import { exportConversation } from '@/services/helpers.js';
 import logger from '@/services/logger.js';
+import { useOllama } from '@/composables/useOllama';
 
 const $q = useQuasar();
 const { t } = useI18n();
@@ -244,6 +245,7 @@ const {
 const teamsStore = useTeamsStore();
 const { conversationId, isCreateImageSelected, isTeamWorkActivated, messages } = storeToRefs(teamsStore);
 const personaOptions = ref(teamsStore.personas);
+const { availableModels, isOllamaProvider, loadAvailableModels } = useOllama();
 
 // Filters personas based on input characters in the select box
 function personaFilterFn(val, update) {
@@ -260,12 +262,23 @@ function personaFilterFn(val, update) {
 
 // Computed array of { providers, models } to use in select options
 const modelOptions = computed(() => {
-    return apiProviders.value.map(provider => {
-        return provider.models.map(model => ({
+
+    const allModels = apiProviders.value.map(provider => {
+        const models = isOllamaProvider(provider.name)
+            ? [...provider.models, ...availableModels.value]
+            : provider.models;
+
+        return models.map(model => ({
+            model: model,
             provider: provider.name,
-            model: model
         }));
-    }).flat()
+    }).flat();
+
+    // Remove duplicates using JSON stringify/parse technique and sort
+    return Array.from(new Set(allModels.map(obj => JSON.stringify(obj))))
+    .map(str => JSON.parse(str))
+    .sort((a, b) => a.model.localeCompare(b.model));
+
 });
 
 // Load OpenAI API format parameters
@@ -289,6 +302,9 @@ watch(imageStyleValue, () => {
     imageStyle.value = imageStyleOptions[imageStyleValue.value];
 });
 
+onMounted( () => {
+    loadAvailableModels();
+});
 
 // Show message info
 const showConversationInfo = (id) => {

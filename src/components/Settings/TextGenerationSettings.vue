@@ -118,8 +118,7 @@ import { useOllama } from '@/composables/useOllama';
 import { useQuasar } from 'quasar';
 
 const { iconColor } = useHelpers();
-const { availableModels, loadAvailableModels, isOllamaProvider, loadModel } = useOllama();
-const $q = useQuasar();
+const { availableModels, loadAvailableModels, isOllamaProvider } = useOllama();
 
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
@@ -172,32 +171,10 @@ const modelOptions = computed(() => {
         .sort((a, b) => a.label.localeCompare(b.label));
 });
 
-onMounted(async () => {
-    await loadAvailableModels();
+onMounted( () => {
+    loadAvailableModels();
 });
 
-// Watch model changes to load Ollama models when selected
-watch(model, async (newModel) => {
-    // Check if the selected model belongs to an Ollama provider
-    const ollamaProvider = apiProviders.value.find(p => 
-        isOllamaProvider(p.name) && p.models.includes(newModel) || availableModels.value.includes(newModel)
-    );
-
-    if (ollamaProvider) {
-        try {
-            await loadModel(newModel);
-            $q.notify({
-                type: 'info',
-                message: `Model ${newModel} loaded successfully`
-            });
-        } catch (error) {
-            $q.notify({
-                type: 'negative',
-                message: `Failed to load model: ${error.message}`
-            });
-        }
-    }
-});
 </script>
 
 <style scoped>
