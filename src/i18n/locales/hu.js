@@ -476,6 +476,10 @@ export default {
         releaseNotes: {
             message: 'Kiadási megjegyzések',
             caption: 'Változások ebben a verzióban:'
+        },
+        downloading: {
+            title: 'Frissítés letöltése',
+            message: 'Kérjük várjon amíg a frissítés letöltődik...'
         }
     },
     databaseUpgrade: {

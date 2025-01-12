@@ -475,6 +475,10 @@ export default {
             message: 'Versionsanteckningar',
             caption: 'Ändringar i denna version:'
         },
+        downloading: {
+            title: 'Laddar ner uppdatering',
+            message: 'Vänligen vänta medan uppdateringen laddas ner...'
+        },
     },
     databaseUpgrade: {
         needed: {

@@ -510,6 +510,10 @@ export default {
             message: 'Release Notes',
             caption: 'Changes in this version:'
         },
+        downloading: {
+            title: 'Downloading Update',
+            message: 'Please wait while the update is being downloaded...'
+        },
     },
     databaseUpgrade: {
         needed: {

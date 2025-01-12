@@ -1,18 +1,17 @@
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref } from 'vue';
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import logger from '@/services/logger';
 
-export function useUpdater(intervalInMinutes = 60) {
+export function useUpdater() {
     const isUpdateAvailable = ref(false);
-    const updateInfo = ref(null);
-    let updateInterval;
+    const downloaded = ref(0);
+    const contentLength = ref(0);
 
     async function checkForUpdates() {
         try {
             const update = await check();
             isUpdateAvailable.value = update?.available || false;
-            updateInfo.value = update;
             return update;
         } catch (error) {
             logger.error(`[Updater] - ${error}`);
@@ -20,9 +19,32 @@ export function useUpdater(intervalInMinutes = 60) {
         }
     }
 
-    async function downloadAndInstall(update) {
+    async function downloadAndInstall() {
         try {
-            await update.downloadAndInstall();
+            const update = await check();
+            if (!update?.available) {
+                logger.info('[Updater] - No updates available');
+                return false;
+            }
+
+            downloaded.value = 0;
+            contentLength.value = 0;
+
+            await update.downloadAndInstall((event) => {
+                switch (event.event) {
+                    case 'Started':
+                        contentLength.value = event.data.contentLength;
+                        logger.info(`[Updater] - Started downloading ${event.data.contentLength} bytes`);
+                        break;
+                    case 'Progress':
+                        downloaded.value += event.data.chunkLength;
+                        logger.info(`[Updater] - Downloaded ${downloaded.value} from ${contentLength.value}`);
+                        break;
+                    case 'Finished':
+                        logger.info('[Updater] - Download finished');
+                        break;
+                }
+            });
             return true;
         } catch (error) {
             logger.error(`[Updater] - Download/Install error: ${error}`);
@@ -39,24 +61,10 @@ export function useUpdater(intervalInMinutes = 60) {
         }
     }
 
-    // Start periodic checks
-    function startAutoCheck() {
-        checkForUpdates(); // Initial check
-        updateInterval = setInterval(checkForUpdates, intervalInMinutes * 60 * 1000);
-    }
-
-    function stopAutoCheck() {
-        if (updateInterval) {
-            clearInterval(updateInterval);
-        }
-    }
-
-    onMounted(startAutoCheck);
-    onUnmounted(stopAutoCheck);
-
     return {
         isUpdateAvailable,
-        updateInfo,
+        downloaded,
+        contentLength,
         checkForUpdates,
         downloadAndInstall,
         relaunchApp

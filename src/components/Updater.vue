@@ -1,8 +1,8 @@
 <template>
     <!-- Update Available Dialog -->
-    <q-dialog v-model="showUpdateDialog">
+    <q-dialog v-model="showUpdateAvailableDialog">
         <q-card>
-            <q-card-section class="row " >
+            <q-card-section class="row" >
                 <div class="text-h6 text-weight-bold">{{ t('updater.updateAvailable.title') }}</div>
                 <q-space />
                 <q-btn :icon="mdiClose" flat dense v-close-popup />
@@ -17,42 +17,41 @@
             </q-card-section>
 
             <q-card-actions align="right">
-                <q-btn flat 
-                       :label="t('updater.updateAvailable.actions.dismiss')" 
-                       color="grey-13" 
-                       v-close-popup />
-                <q-btn flat 
-                       :label="t('updater.updateAvailable.actions.install')" 
-                       color="primary" 
-                       @click="handleInstall" />
+                <q-btn flat :label="t('updater.updateAvailable.actions.dismiss')" color="grey-13" v-close-popup />
+                <q-btn flat :label="t('updater.updateAvailable.actions.install')" color="primary" @click="handleInstall" />
             </q-card-actions>
         </q-card>
     </q-dialog>
 
-    <!-- Relaunch Dialog -->
-    <q-dialog v-model="showRelaunchDialog" persistent>
-        <q-card>
-            <q-card-section>
-                <div class="text-h6">{{ t('updater.relaunch.title') }}</div>
-                <div class="text-body1">{{ t('updater.relaunch.message') }}</div>
+    <!-- Download Progress Dialog -->
+    <q-dialog v-model="showDownloadDialog" persistent>
+        <q-card style="min-width: 300px">
+            <q-card-section class="row items-center">
+                <div>{{ t('updater.downloading.message') }}</div>
+                <q-space />
+                <q-circular-progress
+                    show-value
+                    font-size="16px"
+                    :value="Math.round(downloadProgress * 100)"
+                    size="90px"
+                    :thickness="0.22"
+                    :color="isDownloadComplete ? 'positive' : 'primary'"
+                    class="q-ma-md"
+                >
+                    {{ Math.round(downloadProgress * 100) }}%
+                </q-circular-progress>
             </q-card-section>
 
-            <q-card-actions align="right">
-                <q-btn flat 
-                       :label="t('updater.relaunch.actions.dismiss')" 
-                       @click="handleRelaunchDismiss" 
-                       v-close-popup />
-                <q-btn flat 
-                       :label="t('updater.relaunch.actions.relaunch')" 
-                       color="primary" 
-                       @click="handleRelaunch" />
+            <q-card-actions align="right" v-if="isDownloadComplete">
+                <q-btn flat :label="t('updater.relaunch.actions.dismiss')" @click="handleRelaunchDismiss" v-close-popup/>
+                <q-btn flat :label="t('updater.relaunch.actions.relaunch')" @click="handleRelaunch" color="primary" />
             </q-card-actions>
         </q-card>
     </q-dialog>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { mdiAlert, mdiClose } from '@quasar/extras/mdi-v7';
@@ -62,13 +61,19 @@ import logger from '@/services/logger';
 const { t } = useI18n();
 const $q = useQuasar();
 
-const showUpdateDialog = ref(false);
-const showRelaunchDialog = ref(false);
+const showUpdateAvailableDialog = ref(false);
+const showDownloadDialog = ref(false);
+const isDownloadComplete = ref(false);
 const updateVersion = ref('');
 const releaseDate = ref('');
 const releaseNotes = ref('');
 
-const { checkForUpdates, downloadAndInstall, relaunchApp } = useUpdater();
+const { checkForUpdates, downloadAndInstall, relaunchApp, downloaded, contentLength } = useUpdater();
+
+const downloadProgress = computed(() => {
+    if (contentLength.value === 0) return 0;
+    return downloaded.value / contentLength.value;
+});
 
 async function handleCheckForUpdates() {
     try {
@@ -87,7 +92,7 @@ async function handleCheckForUpdates() {
                 .map(line => `<li>${line}</li>`)
                 .join('<br>');
 
-            showUpdateDialog.value = true;
+            showUpdateAvailableDialog.value = true;
         } else {
             $q.notify({
                 type: 'info',
@@ -106,20 +111,14 @@ async function handleCheckForUpdates() {
 
 async function handleInstall() {
     try {
-        showUpdateDialog.value = false;
+        showUpdateAvailableDialog.value = false;
+        showDownloadDialog.value = true;
+        isDownloadComplete.value = false;
         
-        const downloadNotif = $q.notify({
-            message: t('updater.downloading.message'),
-            caption: t('updater.downloading.caption'),
-            timeout: 0,
-            spinner: true
-        });
-
         await downloadAndInstall();
-        downloadNotif();
-        
-        showRelaunchDialog.value = true;
+        isDownloadComplete.value = true;
     } catch (error) {
+        showDownloadDialog.value = false;
         logger.error(`[Updater] - Error during update process: ${error}`);
         $q.notify({
             type: 'negative',

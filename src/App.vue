@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeMount, onMounted, ref, watch, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
@@ -128,7 +128,21 @@ const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
 const dbUpgrader = DatabaseUpgrader();
 const updaterRef = ref(null);
-const { isUpdateAvailable } = useUpdater();
+const { isUpdateAvailable, checkForUpdates } = useUpdater();
+let updateInterval;
+
+// Start periodic update checks
+function startAutoCheck(intervalInMinutes = 60) {
+    checkForUpdates(); // Initial check
+    updateInterval = setInterval(checkForUpdates, intervalInMinutes * 60 * 1000);
+}
+
+// Stop periodic update checks
+function stopAutoCheck() {
+    if (updateInterval) {
+        clearInterval(updateInterval);
+    }
+}
 
 // Watch miniDrawer changes and update the toolbar icon
 watch(miniDrawer, () => {
@@ -234,7 +248,14 @@ onBeforeMount( async () => {
 });
 
 // Set application locale to the one selected by the user and stored in the settings store.
-onMounted(() => locale.value = userLocale.value);
+onMounted(() => {
+    locale.value = userLocale.value;
+    startAutoCheck();
+});
+
+onUnmounted(() => {
+    stopAutoCheck();
+});
 
 // Watch runtime changes to dark mode
 watch(darkMode, () => $q.dark.set(darkMode.value));

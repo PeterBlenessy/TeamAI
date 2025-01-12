@@ -18,19 +18,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add language information to messages and extract it automatically to know current language.
 - Length of persona name should be restricted to e.g. 32 characters to fit dropdown selection box.
 - Avatars should be scaled down to save storage space. Unless stored as separate files, only once.
+- Refactor `ollama.service.js` to be a composable instead of a class, perhaps merge with `useOllama.js` composable
+- Refactor `openai.js` to be a composable instead of a class
+- Refactor `useUpdater.js` to have one dialog which is updated based on updater state.
+- Refactor composables and services - feels like one level of abstraction can be removed. Remaining services can be helpers instead.
+- Use `worker` for dowloading models; the UI freezes when multiple models are being downloaded and Ollama is "working hard"
+- Improve error handling of Ollama communication; UI freezes when ollama is not responsive
 
 ### [KNOWN-BUGS]
 - Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
-## v2.2.6 - 2025-01-12
+## v2.2.7 - 2025-01-12
+- Fixed error with broken updater introduced in v2.2.5; used un-initialized updater when starting download and install.
+- Updated updater to display download progress.
+- Moved periodical update check from useUpdater composable to App.vue.
+- Added new translations for downloading update dialog.
+
+## v2.2.6 - 2025-01-12 - removed builds from GitHub due to broken updater introduced in v2.2.5.
 - Fixed error where downloaded Ollama models were not listed in TextGenerationSettings component.
 - Fixed error where downloaded Ollama models were not listed in QuickSettings component.
 - Fixed error where Ollama host address was not configured on service creation.
 - Updated dependencies.
 
-## v2.2.5 - 2025-01-11
+## v2.2.5 - 2025-01-11 - removed builds from GitHub due to broken updater introduced in v2.2.5.
 - Updated button styles and formatting of the release notes in update available dialog.
 - Refactored useAutoUpdater composable to contain all the backend communication logic.
 - Refactored App.vue and Updater.vue component to focus on UI interactions and user feedback.
