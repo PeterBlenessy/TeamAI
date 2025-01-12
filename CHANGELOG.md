@@ -23,8 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
-- Fix error where selected models in ollama model dropdown are the hard coded ones, not the ones available. Flow should be this: list hard coded models that are not downloaded, show download icon. Fix in both settings and quick settings.
-- Fix error where default provider is missing or not selected on first start of the application.
+
+## v2.2.6 - 2025-01-12
+- Fixed error where downloaded Ollama models were not listed in TextGenerationSettings component.
+- Fixed error where downloaded Ollama models were not listed in QuickSettings component.
+- Fixed error where Ollama host address was not configured on service creation.
+- Updated dependencies.
 
 ## v2.2.5 - 2025-01-11
 - Updated button styles and formatting of the release notes in update available dialog.

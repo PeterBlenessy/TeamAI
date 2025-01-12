@@ -1,7 +1,7 @@
 {
   "name": "team-ai",
   "private": true,
-  "version": "2.2.5",
+  "version": "2.2.6",
   "type": "module",
   "license": "MIT",
   "author": "Péter Blénessy <peter.blenessy@gmail.com>",
