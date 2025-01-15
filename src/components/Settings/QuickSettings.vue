@@ -207,7 +207,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
@@ -245,12 +245,7 @@ const {
 const teamsStore = useTeamsStore();
 const { conversationId, isCreateImageSelected, isTeamWorkActivated, messages } = storeToRefs(teamsStore);
 const personaOptions = ref(teamsStore.personas);
-const { availableModels, isOllamaConnected, loadAvailableModels, isOllamaProvider, checkOllamaStatus } = useOllama();
-
-// Get Ollama provider config
-const ollamaProvider = computed(() => 
-    apiProviders.value.find(p => isOllamaProvider(p.name))
-);
+const { availableModels, isOllamaRunning, getAvailableModels, isOllamaProvider, checkOllamaStatus } = useOllama();
 
 // Filters personas based on input characters in the select box
 function personaFilterFn(val, update) {
@@ -270,9 +265,11 @@ const modelOptions = computed(() => {
     const allModels = apiProviders.value.map(provider => {
         // For Ollama provider, only include models if connected and have downloads
         if (isOllamaProvider(provider.name)) {
-            if (!isOllamaConnected.value || availableModels.value.length === 0) {
+
+            if (!isOllamaRunning.value || availableModels.value.length === 0) {
                 return [];
             }
+
             return availableModels.value.map(model => ({
                 model: model,
                 provider: provider.name,
@@ -312,11 +309,12 @@ watch(imageStyleValue, () => {
     imageStyle.value = imageStyleOptions[imageStyleValue.value];
 });
 
-onMounted(async () => {
-    if (ollamaProvider.value) {
-        await checkOllamaStatus(ollamaProvider.value);
+watch(apiProviders, async () => {
+    const ollamaProvider = apiProviders.value.find(p => isOllamaProvider(p.name) ? p : null);
+    await checkOllamaStatus(ollamaProvider);
+    if (isOllamaRunning) {
+        await getAvailableModels();
     }
-    loadAvailableModels();
 });
 
 // Show message info
@@ -359,4 +357,5 @@ const shareConversation = (id) => navigator.share({ text: exportConversation(id)
     .catch(e => logger.error(`[QuickSettings] - ${e}`));
 
 const { iconColor } = useHelpers();
+
 </script>

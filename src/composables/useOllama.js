@@ -13,15 +13,42 @@ export function useOllama(provider = null) {
     const modelDownloading = ref({});
     const pullProgress = ref(0);
     const modelDetails = ref({});
-    const loadingDetails = ref({});
+    const modelInformation = ref({});
     const runningModels = ref({});
-    const isOllamaConnected = ref(false);
+    const isOllamaRunning = ref(false);
     const isOllamaConfigured = ref(false);
     const restartingOllama = ref(false);
 
-    // Replace downloadingModels ref with store reference
+    //--------------------------------------------------------------------------------
+    // GENERAL HALPER FUNCTIONS
+    //--------------------------------------------------------------------------------
+
+    // Get base name and version, if available
+    function getBaseName(name) {
+        if (!name || typeof name !== 'string') return { base: '', version: '' };
+        const [base, version] = name.split(':');
+        return {
+            base: base.trim().toLowerCase(),
+            version: version ? version.trim().toLowerCase() : ''
+        };
+    }
+
+    // Format model name to `name:version`
+    function formatModelName(name) {
+        if (!name || typeof name !== 'string') return '';
+        const { base, version } = getBaseName(name);
+        return version ? `${base}:${version}` : base;
+    }
+
+    //--------------------------------------------------------------------------------
+    // FUNCTIONS TO HANDLE MODEL DOWNLOADS
+    //--------------------------------------------------------------------------------
+
+    // Holds models being downloaded to expose to the UI, so the UI does not have to look in the store.
+    // We want to keep it in the store, so downloads can be restored on app restart.
     const downloadingModels = computed(() => settingsStore.downloadingModels);
 
+    // Update the store with a new model being downloaded
     const addDownloadingModel = (modelName) => {
         settingsStore.downloadingModels.push({
             name: modelName,
@@ -29,6 +56,7 @@ export function useOllama(provider = null) {
         });
     };
 
+    // Update download progress for a model in the store, so it can be restored on app restart.
     const updateDownloadProgress = (modelName, progress) => {
         const model = settingsStore.downloadingModels.find(m => m.name === modelName);
         if (model) {
@@ -40,29 +68,11 @@ export function useOllama(provider = null) {
         settingsStore.downloadingModels = settingsStore.downloadingModels.filter(
             m => m.name !== modelName
         );
+        modelDownloading.value[modelName] = false;
     };
 
-    // Remove window.addEventListener('beforeunload') handler as it's no longer needed
-
-    // Helper to get base name and version
-    function getBaseName(name) {
-        if (!name || typeof name !== 'string') return { base: '', version: '' };
-        const [base, version] = name.split(':');
-        return {
-            base: base.trim().toLowerCase(),
-            version: version ? version.trim().toLowerCase() : ''
-        };
-    }
-
-    // Helper function to format model name
-    function formatModelName(name) {
-        if (!name || typeof name !== 'string') return '';
-        const { base, version } = getBaseName(name);
-        return version ? `${base}:${version}` : base;
-    }
-
-    // Get model status
-    function getModelStatus(modelName) {
+    // Get the downloading status of a model, i.e., downloading or downloaded
+    function getModelDownloadStatus(modelName) {
         if (!modelName) return { downloaded: false, downloading: false };
         const { base } = getBaseName(modelName);
         return {
@@ -71,16 +81,17 @@ export function useOllama(provider = null) {
         };
     }
 
+    // Resume previously started model downloads
     async function resumeDownloads() {
         logger.info(`Resuming downloads: ${JSON.stringify(settingsStore.downloadingModels)}`);
         for (const model of settingsStore.downloadingModels) {
             // Re-trigger pull for each downloading model
-            pullSpecificModel(model.name, true);
+            downloadModel(model.name, true);
         }
     }
 
-    // Remove the downloadIterators map and modify pullSpecificModel to only handle progress
-    async function pullSpecificModel(modelName, isResume = false) {
+    // Download a model from Ollama repository
+    async function downloadModel(modelName, isResume = false) {
         if (!modelName) return;
 
         const baseName = getBaseName(modelName);
@@ -107,15 +118,13 @@ export function useOllama(provider = null) {
                 }
             });
 
-            await loadAvailableModels();
-            removeDownloadingModel(modelName);
+            await getAvailableModels();
             return true;
         } catch (error) {
             logger.error(`Failed to pull model ${modelName}: ${error}`);
-            removeDownloadingModel(modelName);
             throw error;
         } finally {
-            modelDownloading.value[modelName] = false;
+            removeDownloadingModel(modelName);
             pullProgress.value = 0;
         }
     }
@@ -134,6 +143,10 @@ export function useOllama(provider = null) {
             throw error;
         }
     }
+
+    //--------------------------------------------------------------------------------
+    // FUNCTIONS TO HANDLE MODEL OPERATIONS
+    //--------------------------------------------------------------------------------
 
     // Delete model
     async function deleteModel(modelName) {
@@ -158,7 +171,7 @@ export function useOllama(provider = null) {
                 await ollamaService.deleteModel(modelInstance);
             }
 
-            await loadAvailableModels();
+            await getAvailableModels();
 
             return true;
         } catch (error) {
@@ -167,11 +180,11 @@ export function useOllama(provider = null) {
         }
     }
 
-    // Load model details
-    async function loadModelDetails(modelName) {
-        if (loadingDetails.value[modelName]) return;
+    // Get information for a model
+    async function getModelInformation(modelName) {
+        if (modelInformation.value[modelName]) return;
 
-        loadingDetails.value[modelName] = true;
+        modelInformation.value[modelName] = true;
         try {
             const details = await ollamaService.showModel(modelName);
             modelDetails.value[modelName] = details;
@@ -179,25 +192,26 @@ export function useOllama(provider = null) {
             logger.error(`Failed to load details for model ${modelName}: ${error}`);
             throw new Error(`Failed to load details for model ${modelName}: ${error.message}`);
         } finally {
-            loadingDetails.value[modelName] = false;
+            modelInformation.value[modelName] = false;
         }
     }
 
-    // Load available models
-    async function loadAvailableModels() {
+    // Get available (downloaded) models and their information
+    async function getAvailableModels() {
         try {
             const models = await ollamaService.listModels();
             availableModels.value = models;
-            // Load details for all models
+
+            // Get information for all models
             for (const model of models) {
-                await loadModelDetails(model);
+                await getModelInformation(model);
             }
         } catch (error) {
             logger.error('Failed to load models:', error);
         }
     }
 
-    // Load model
+    // Load model in Ollama server
     async function loadModel(modelName) {
         if (await ollamaService.loadModel(modelName)) {
             runningModels.value[modelName] = true;
@@ -206,6 +220,7 @@ export function useOllama(provider = null) {
         return false;
     }
 
+    // Check if model is loaded in Ollama server
     async function isModelLoaded(modelName) {
         try {
             const runningModels = await ollamaService.ps();
@@ -216,16 +231,22 @@ export function useOllama(provider = null) {
         }
     }
 
-    // Generate model options
+    // Generate a list of model objects with label, value, and downloaded status
+    // for Quasar Select options
     function getAllModelOptions(provider, downloaded = []) {
-        const preConfiguredModels = provider?.models || [];
         const modelMap = new Map();
+        
+        // Models which are pre-configured with the provider
+        const preConfiguredModels = provider?.models || [];
 
+        // Models which have been downloaded
         downloaded.forEach(model => {
             const { base } = getBaseName(model);
             modelMap.set(base, model);
         });
 
+        // Add pre-configured models to the map, 
+        // but only if they don't already exist in the map
         preConfiguredModels.forEach(model => {
             const { base } = getBaseName(model);
             if (!modelMap.has(base)) {
@@ -238,10 +259,15 @@ export function useOllama(provider = null) {
             .map(model => ({
                 label: formatModelName(model),
                 value: model,
-                downloaded: getModelStatus(model).downloaded
+                downloaded: getModelDownloadStatus(model).downloaded
             }));
     }
 
+    //--------------------------------------------------------------------------------
+    // FUNCTIONS TO HANDLE OLLAMA SERVER
+    //--------------------------------------------------------------------------------
+
+    // Restart Ollama server with updated environment variables on the supported platforms
     async function configureAndRestartOllama() {
         restartingOllama.value = true;
         try {
@@ -297,15 +323,17 @@ export function useOllama(provider = null) {
         }
     }
 
+    // Initialize the ollama service with provider configuration, and
+    // check if the Ollama server is running and configured to be reachable
     async function checkOllamaStatus(providerConfig) {
         if (!providerConfig) return;
 
         const { isRunning, needsConfig } = await ollamaService.initializeWithProvider(providerConfig);
-        isOllamaConnected.value = isRunning;
+        isOllamaRunning.value = isRunning;
         isOllamaConfigured.value = !needsConfig;
 
-        if (isOllamaConnected.value && isOllamaConfigured.value) {
-            await loadAvailableModels();
+        if (isOllamaRunning.value && isOllamaConfigured.value) {
+            await getAvailableModels();
             await resumeDownloads();
         }
 
@@ -323,7 +351,7 @@ export function useOllama(provider = null) {
     }
 
     function isOllamaProvider(providerName) {
-        return providerName?.toLowerCase().includes('ollama');
+        return ollamaService?.isOllamaProvider(providerName);
     }
 
     onMounted(async () => {
@@ -340,15 +368,15 @@ export function useOllama(provider = null) {
         runningModels,
         getBaseName,
         formatModelName,
-        getModelStatus,
-        pullSpecificModel,
+        getModelDownloadStatus,
+        downloadModel,
         deleteModel,
-        loadModelDetails,
-        loadAvailableModels,
+        getModelInformation,
+        getAvailableModels,
         loadModel,
         isModelLoaded,  // rename from displayModelStatus
         getAllModelOptions,
-        isOllamaConnected,
+        isOllamaRunning,
         isOllamaConfigured,
         restartingOllama,
         configureAndRestartOllama,

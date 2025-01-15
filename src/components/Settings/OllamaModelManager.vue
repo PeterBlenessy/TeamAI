@@ -13,10 +13,10 @@ const {
     formatModelName,
     getBaseName, 
     getRunningModels,
-    loadAvailableModels,
+    getAvailableModels,
     loadModel,
     modelDetails,
-    pullSpecificModel,
+    downloadModel,
     resumeDownloads,
     cancelModelDownload,
 } = useOllama();
@@ -99,7 +99,7 @@ async function handleDownloadModel(modelName) {
 
     try {
         newModelName.value = '';
-        await pullSpecificModel(modelName);
+        await downloadModel(modelName);
     } catch (error) {
         $q.notify({
             type: 'negative',
@@ -111,7 +111,7 @@ async function handleDownloadModel(modelName) {
 onMounted(async () => {
     tableLoading.value = true;
     try {
-        await loadAvailableModels();
+        await getAvailableModels();
         await updateModelStatuses();
         await resumeDownloads();
         // Start polling every 60 seconds

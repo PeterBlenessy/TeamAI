@@ -17,6 +17,11 @@
                             </q-item-section>
                         </q-item>
                     </template>
+                    <template v-slot:append>
+                        <q-item-label caption class="q-pr-sm">
+                            {{ modelOptions.find(opt => opt.value === model)?.provider }}
+                        </q-item-label>
+                    </template>
                 </q-select>
                 <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
                     {{ t('settings.text.model.tooltip') }}
@@ -115,10 +120,9 @@ import { mdiCreation, mdiTextShort, mdiText, mdiTextLong, mdiThermometer, mdiAcc
 import { useSettingsStore } from '@/stores/settings-store.js';
 import { useTeamsStore } from '@/stores/teams-store.js';
 import { useOllama } from '@/composables/useOllama';
-import { useQuasar } from 'quasar';
 
 const { iconColor } = useHelpers();
-const { availableModels, isOllamaConnected, loadAvailableModels, isOllamaProvider, checkOllamaStatus } = useOllama();
+const { availableModels, isOllamaRunning, isOllamaProvider, checkOllamaStatus } = useOllama();
 
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
@@ -150,18 +154,13 @@ function personaFilterFn(val, update) {
     });
 }
 
-// Get Ollama provider config
-const ollamaProvider = computed(() => 
-    apiProviders.value.find(p => isOllamaProvider(p.name))
-);
-
 // Computed array of { providers, models } to use in select options
 const modelOptions = computed(() => {
     // First create array with all models
     const allModels = apiProviders.value.map(provider => {
         // For Ollama provider, only include models if connected and have downloads
         if (isOllamaProvider(provider.name)) {
-            if (!isOllamaConnected.value || availableModels.value.length === 0) {
+            if (!isOllamaRunning.value || availableModels.value.length === 0) {
                 return [];
             }
             return availableModels.value.map(model => ({
@@ -184,8 +183,15 @@ const modelOptions = computed(() => {
         .sort((a, b) => a.label.localeCompare(b.label));
 });
 
+
+// Get Ollama provider config
+const ollamaProvider = computed(() => 
+    apiProviders.value.find(p => isOllamaProvider(p.name))
+);
+
 onMounted(async () => {
     if (ollamaProvider.value) {
+        console.log('Checking Ollama status');
         await checkOllamaStatus(ollamaProvider.value);
     }
 });

@@ -20,7 +20,7 @@
                             <div class="row items-center full-width">
                                 <template v-if="isOllamaProvider(defaultProvider)">
                                     <!-- Not running -->
-                                    <q-btn v-if="!isOllamaConnected" 
+                                    <q-btn v-if="!isOllamaRunning" 
                                         flat dense size="sm"
                                         :icon="mdiDownload" 
                                         color="warning"
@@ -178,7 +178,7 @@
                                         <q-item-label>{{ formatModelName(scope.opt.value) }}</q-item-label>
                                     </q-item-section>
                                     <q-item-section side>
-                                        <template v-if="getModelStatus(scope.opt.value).downloaded">
+                                        <template v-if="getModelDownloadStatus(scope.opt.value).downloaded">
                                             <q-btn flat round dense size="sm" :icon="mdiDelete" 
                                                 @click.stop="deleteModel(scope.opt.value)">
                                                 <q-tooltip>Delete model</q-tooltip>
@@ -187,7 +187,7 @@
                                         <template v-else>
                                             <q-btn flat round dense size="sm" :icon="mdiDownload"
                                                 :loading="modelDownloading[scope.opt.value]"
-                                                @click.stop="pullSpecificModel(scope.opt.value)">
+                                                @click.stop="downloadModel(scope.opt.value)">
                                                 <q-tooltip>Download model</q-tooltip>
                                             </q-btn>
                                         </template>
@@ -264,13 +264,12 @@ const addProvider = ref(false);
 const {
     availableModels,
     modelDownloading,
-    pullProgress,
     formatModelName,
-    getModelStatus,
-    pullSpecificModel,
+    getModelDownloadStatus,
+    downloadModel,
     deleteModel,
     getAllModelOptions,
-    isOllamaConnected,
+    isOllamaRunning,
     isOllamaConfigured,
     restartingOllama,
     configureAndRestartOllama,
@@ -301,7 +300,6 @@ async function checkOllamaStatusWithInterval() {
     }
 }
 
-// Replace allModelOptions computed with getAllModelOptions from composable
 const allModelOptions = computed(() => 
     getAllModelOptions(tmpProvider.value, availableModels.value)
 );
@@ -421,7 +419,7 @@ watch(defaultProvider, async (newProvider) => {
         await checkOllamaStatus(provider);
     } else {
         isOllamaConfigured.value = false;
-        isOllamaConnected.value = false;
+        isOllamaRunning.value = false;
     }
 });
 
