@@ -158,7 +158,7 @@ function personaFilterFn(val, update) {
 const modelOptions = computed(() => {
     // First create array with all models
     const allModels = apiProviders.value.map(provider => {
-        // For Ollama provider, only include models if connected and have downloads
+        // For Ollama provider, only include models if ollama server is connected and models are downloaded
         if (isOllamaProvider(provider.name)) {
             if (!isOllamaRunning.value || availableModels.value.length === 0) {
                 return [];

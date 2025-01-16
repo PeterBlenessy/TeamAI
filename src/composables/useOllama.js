@@ -231,38 +231,6 @@ export function useOllama(provider = null) {
         }
     }
 
-    // Generate a list of model objects with label, value, and downloaded status
-    // for Quasar Select options
-    function getAllModelOptions(provider, downloaded = []) {
-        const modelMap = new Map();
-        
-        // Models which are pre-configured with the provider
-        const preConfiguredModels = provider?.models || [];
-
-        // Models which have been downloaded
-        downloaded.forEach(model => {
-            const { base } = getBaseName(model);
-            modelMap.set(base, model);
-        });
-
-        // Add pre-configured models to the map, 
-        // but only if they don't already exist in the map
-        preConfiguredModels.forEach(model => {
-            const { base } = getBaseName(model);
-            if (!modelMap.has(base)) {
-                modelMap.set(base, model);
-            }
-        });
-
-        return Array.from(modelMap.values())
-            .filter(model => model)
-            .map(model => ({
-                label: formatModelName(model),
-                value: model,
-                downloaded: getModelDownloadStatus(model).downloaded
-            }));
-    }
-
     //--------------------------------------------------------------------------------
     // FUNCTIONS TO HANDLE OLLAMA SERVER
     //--------------------------------------------------------------------------------
@@ -340,7 +308,7 @@ export function useOllama(provider = null) {
         return { isRunning, needsConfig };
     }
 
-    // Add new function to get running models
+    // Get models running in Ollama server
     async function getRunningModels() {
         try {
             return await ollamaService.ps();
@@ -350,10 +318,12 @@ export function useOllama(provider = null) {
         }
     }
 
+    // Check if the provider is an Ollama provider
     function isOllamaProvider(providerName) {
         return ollamaService?.isOllamaProvider(providerName);
     }
 
+    // Check Ollama status on component mount (isOllamaRunning, isOllamaConfigured)
     onMounted(async () => {
         if (provider) {
             await checkOllamaStatus(provider);
@@ -374,17 +344,16 @@ export function useOllama(provider = null) {
         getModelInformation,
         getAvailableModels,
         loadModel,
-        isModelLoaded,  // rename from displayModelStatus
-        getAllModelOptions,
+        isModelLoaded,
         isOllamaRunning,
         isOllamaConfigured,
         restartingOllama,
         configureAndRestartOllama,
         checkOllamaStatus,
-        getRunningModels,  // Add the new function to exports
+        getRunningModels,
         downloadingModels,
-        resumeDownloads,  // Add the new function to exports
-        cancelModelDownload,  // Add the new function to exports
+        resumeDownloads,
+        cancelModelDownload,
         isOllamaProvider,
     };
 }

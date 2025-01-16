@@ -157,40 +157,35 @@
                         </q-input>
 
                         <q-select
-                            v-model="tmpProvider.models"
-                            :options="allModelOptions"
+                            v-model="tmpProvider.selectedModel"
+                            :options="modelOptions"
                             options-dense
-                            new-value-mode="add-unique" use-chips use-input multiple
+                            use-chips
+                            :use-input="!isOllamaProvider({value: tmpProvider.name})"
                             input-debounce="0"
-                            emit-value
-                            map-options
+                            :new-value-mode="isOllamaProvider({value: tmpProvider.name}) ? undefined : 'add'"
+                            @new-value="handleNewValue"
                         >
                             <template v-slot:prepend>
                                 <q-icon size="xs" :name="mdiCreation" />
                             </template>
 
-                            <!-- Option display -->
-                            <template v-if="isOllamaProvider(defaultProvider)" 
-                                v-slot:option="scope"
-                            >
+                            <!-- Update option template for all providers -->
+                            <template v-slot:option="scope">
                                 <q-item v-bind="scope.itemProps" v-on="scope.itemEvents || {}">
                                     <q-item-section>
                                         <q-item-label>{{ formatModelName(scope.opt.value) }}</q-item-label>
                                     </q-item-section>
-                                    <q-item-section side>
-                                        <template v-if="getModelDownloadStatus(scope.opt.value).downloaded">
-                                            <q-btn flat round dense size="sm" :icon="mdiDelete" 
-                                                @click.stop="deleteModel(scope.opt.value)">
-                                                <q-tooltip>Delete model</q-tooltip>
-                                            </q-btn>
-                                        </template>
-                                        <template v-else>
-                                            <q-btn flat round dense size="sm" :icon="mdiDownload"
-                                                :loading="modelDownloading[scope.opt.value]"
-                                                @click.stop="downloadModel(scope.opt.value)">
-                                                <q-tooltip>Download model</q-tooltip>
-                                            </q-btn>
-                                        </template>
+                                    <q-item-section v-if="!isOllamaProvider({value: tmpProvider.name})" side>
+                                        <q-btn
+                                            flat
+                                            round
+                                            dense
+                                            size="xs"
+                                            :icon="mdiDeleteOutline"
+                                            @click.stop="handleDeleteModel(scope.opt.value)"
+                                        >
+                                        </q-btn>
                                     </q-item-section>
                                 </q-item>
                             </template>
@@ -263,12 +258,7 @@ const addProvider = ref(false);
 
 const {
     availableModels,
-    modelDownloading,
     formatModelName,
-    getModelDownloadStatus,
-    downloadModel,
-    deleteModel,
-    getAllModelOptions,
     isOllamaRunning,
     isOllamaConfigured,
     restartingOllama,
@@ -300,9 +290,33 @@ async function checkOllamaStatusWithInterval() {
     }
 }
 
-const allModelOptions = computed(() => 
-    getAllModelOptions(tmpProvider.value, availableModels.value)
-);
+// Computed array of { providers, models } to use in select options
+const modelOptions = computed(() => {
+    const provider = tmpProvider.value;
+    if (!provider) return [];
+
+    // For Ollama provider, return available models
+    if (isOllamaProvider({ value: provider.name })) {
+        if (!isOllamaRunning.value || availableModels.value.length === 0) {
+            return [];
+        }
+        return availableModels.value.map(model => ({
+            label: formatModelName(model),
+            value: model
+        }));
+    }
+    
+    // For other providers, ensure models array exists
+    if (!provider.models) {
+        provider.models = [];
+    }
+    
+    // Return all models as options
+    return provider.models.map(model => ({
+        label: formatModelName(model),
+        value: model
+    }));
+});
 
 const isDownloadingOllama = ref(false);
 
@@ -337,21 +351,30 @@ function handleEditProvider() {
     }
     // Deep-copy the found provider
     tmpProvider.value = JSON.parse(JSON.stringify(foundProvider));
+    // Ensure models array exists
+    if (!tmpProvider.value.models) {
+        tmpProvider.value.models = [];
+    }
     // Ensure selectedModel is set using the current provider's selection
-    if (foundProvider && foundProvider.selectedModel) {
+    if (foundProvider.selectedModel) {
         tmpProvider.value.selectedModel = foundProvider.selectedModel;
-    } else if (foundProvider && foundProvider.models && foundProvider.models.length > 0) {
-        // Fallback to first model in the list if no selected model
+    } else if (foundProvider.models && foundProvider.models.length > 0) {
         tmpProvider.value.selectedModel = foundProvider.models[0];
     } else {
         tmpProvider.value.selectedModel = null;
     }
     editProvider.value = true;
     showModelManager.value = false;
-};
+}
 
 function handleAddNewProvider() {
-    tmpProvider.value = { name: '', baseUrl: '', apiKey: '' };
+    tmpProvider.value = { 
+        name: '', 
+        baseUrl: '', 
+        apiKey: '',
+        models: [],
+        selectedModel: null
+    };
     addProvider.value = true;
     showModelManager.value = false;
 }
@@ -424,6 +447,40 @@ watch(defaultProvider, async (newProvider) => {
 });
 
 const showModelManager = ref(false);
+
+function handleNewValue(val, done) {
+    // Only allow adding models for non-Ollama providers
+    if (isOllamaProvider({value: tmpProvider.value.name})) {
+        done();
+        return;
+    }
+
+    if (!tmpProvider.value.models) {
+        tmpProvider.value.models = [];
+    }
+    if (!tmpProvider.value.models.includes(val)) {
+        tmpProvider.value.models.push(val);
+    }
+    done(val); // This tells q-select to add the value
+}
+
+// Add the delete model handler
+function handleDeleteModel(modelValue) {
+    // Only allow deleting models for non-Ollama providers
+    if (isOllamaProvider({value: tmpProvider.value.name})) return;
+    
+    if (!tmpProvider.value.models) return;
+    
+    const index = tmpProvider.value.models.indexOf(modelValue);
+    if (index > -1) {
+        tmpProvider.value.models.splice(index, 1);
+        
+        // Reset selected model if it was deleted
+        if (tmpProvider.value.selectedModel === modelValue) {
+            tmpProvider.value.selectedModel = tmpProvider.value.models[0] || null;
+        }
+    }
+}
 
 </script>
 
