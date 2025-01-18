@@ -3,85 +3,84 @@ import { Command, open } from '@tauri-apps/plugin-shell';
 import { platform } from '@tauri-apps/plugin-os';
 import logger from '@/services/logger';
 
-const DEFAULT_HOST = 'http://localhost:11434';
+function createOllamaService(baseUrl) {
 
-class OllamaService {
-    constructor() {
-        this.platformName = platform();
-        this.downloadStreams = new Map();
-        this._initialize(DEFAULT_HOST);
-        logger.info(`[OllamaService] - Initialized for platform: ${this.platformName}`);
-    }
+    // Private state
+    const state = {
+        platformName: null,
+        downloadStreams: new Map(),
+        host: null,
+        ollama: null,
+        initialized: false
+    };
 
-    _initialize(baseUrl) {
-        this.host = baseUrl.replace(/\/v1\/?$/, '');
-        this.ollama = new Ollama({ host: this.host });
-    }
-
-    setHost(baseUrl) {
-        if (!baseUrl) return;
-        if (baseUrl === this.host) return;
+    // Private methods
+    const initialize = () => {
+        if (state.initialized || !baseUrl) {
+            logger.warn('[OllamaService] - No valid baseUrl provided');
+            return;
+        }
         
-        this._initialize(baseUrl);
-        logger.info(`[OllamaService] - Host updated to: ${this.host}`);
-    }
+        state.platformName = platform();
+        state.host = baseUrl.replace(/\/v1\/?$/, '');
+        state.ollama = new Ollama({ host: state.host });
+        state.initialized = true;
+        logger.info(`[OllamaService] - Initialized for platform: ${state.platformName} with host: ${state.host}`);
+    };
 
-    async initializeWithProvider(provider) {
-        if (!provider) return false;
-        if (!this.isOllamaProvider(provider.name)) return false;
+    // Initialize immediately with provided configuration
+    initialize();
 
-        this.setHost(provider.baseUrl);
-        return await this.checkConnection();
-    }
+    // Public interface implementation
 
-    isOllamaProvider(providerName) {
+    const setHost = (baseUrl) => {
+        if (!baseUrl || baseUrl === state.host) return;
+        state.host = baseUrl.replace(/\/v1\/?$/, '');
+        state.ollama = new Ollama({ host: state.host });
+        logger.info(`[OllamaService] - Host updated to: ${state.host}`);
+    };
+
+    const isOllamaProvider = (providerName) => {
         return providerName?.toLowerCase().includes('ollama');
-    }
+    };
 
-    async checkConnection() {
+    const checkConnection = async () => {
         try {
-            // First try to call the API
-            const models = await this.ollama.list();
+            await state.ollama.list();
             logger.info('[OllamaService] - Connection successful');
             return { isRunning: true, needsConfig: false };
         } catch (error) {
             logger.info('[OllamaService] - API call failed, trying to start Ollama');
             
-            // API failed, try to start Ollama
             try {
-                await this.startOllamaServer();
-                // Wait for server to initialize
+                await startOllamaServer();
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Try API call again
-                const models = await this.ollama.list();
+                await state.ollama.list();
                 logger.info('[OllamaService] - Started successfully');
                 return { isRunning: true, needsConfig: false };
             } catch (startError) {
                 logger.info('[OllamaService] - Failed to start, probably not installed');
-                // If we can't start it, it's probably not installed
                 return { isRunning: false, needsConfig: false };
             }
         }
-    }
+    };
 
-    async startOllamaServer() {
-        const command = new Command(this.platformName === 'windows' ? 'cmd' : 'open');
+    const startOllamaServer = async () => {
+        const command = new Command(state.platformName === 'windows' ? 'cmd' : 'open');
         
-        if (this.platformName === 'windows') {
+        if (state.platformName === 'windows') {
             await command.execute(['/C', 'start', '', 'ollama']);
-        } else if (this.platformName === 'macos') {
+        } else if (state.platformName === 'macos') {
             await command.execute(['-a', 'Ollama']);
         } else {
             await command.execute(['ollama', 'serve']);
         }
-    }
+    };
 
-    async isConfiguredCorrectly() {
+    const isConfiguredCorrectly = async () => {
         try {
-            // Try to list models with a different origin to test CORS
             const testOllama = new Ollama({ 
-                host: this.host,
+                host: state.host,
                 headers: { 'Origin': 'http://invalid.origin' }
             });
             await testOllama.list();
@@ -89,34 +88,31 @@ class OllamaService {
         } catch {
             return false;
         }
-    }
+    };
 
-    async listModels() {
+    const listModels = async () => {
         try {
-            const response = await this.ollama.list();
+            const response = await state.ollama.list();
             return response.models.map(model => model.name);
         } catch (error) {
-            console.error('Failed to list models:', error);
+            logger.error('[OllamaService] - Failed to list models:', error);
             throw error;
         }
-    }
+    };
 
-    async pullModel(modelName, onProgress) {
+    const pullModel = async (modelName, onProgress) => {
         try {
-            const stream = await this.ollama.pull({ 
+            const stream = await state.ollama.pull({ 
                 model: modelName, 
                 stream: true 
             });
 
-            // Store the steams to be able to cancel them
-            this.downloadStreams.set(modelName, stream);
+            state.downloadStreams.set(modelName, stream);
 
             for await (const part of stream) {
-                if (part.digest) {
-                    if (part.completed && part.total) {
-                        const progress = Math.round((part.completed / part.total) * 100);
-                        onProgress(progress);
-                    }
+                if (part.digest && part.completed && part.total) {
+                    const progress = Math.round((part.completed / part.total) * 100);
+                    onProgress(progress);
                 }
             }
         } catch (error) {
@@ -127,29 +123,28 @@ class OllamaService {
                 throw error;
             }
         } finally {
-            this.downloadStreams.delete(modelName);
+            state.downloadStreams.delete(modelName);
         }
-    }
+    };
 
-    cancelModelDownload(modelName) {
-        const stream = this.downloadStreams.get(modelName);
+    const cancelModelDownload = (modelName) => {
+        const stream = state.downloadStreams.get(modelName);
         if (stream) {
             stream.abort();
-            this.downloadStreams.delete(modelName);
+            state.downloadStreams.delete(modelName);
             return true;
         }
         return false;
-    }
+    };
 
-    async deleteModel(modelName) {
+    const deleteModel = async (modelName) => {
         try {
             logger.info(`[OllamaService] - Attempting to delete model: ${modelName}`);
             if (!modelName) {
                 throw new Error('Model name is required');
             }
 
-            // Use 'model' instead of 'name' in the parameter object
-            await this.ollama.delete({
+            await state.ollama.delete({
                 model: modelName
             });
             
@@ -158,61 +153,75 @@ class OllamaService {
             logger.error(`[OllamaService] - Failed to delete model: ${error}`);
             throw error;
         }
-    }
+    };
 
-    async showModel(modelName) {
+    const showModel = async (modelName) => {
         try {
-            logger.info(`[OllamaService] - Getting details for model: ${modelName}`);
             if (!modelName) {
                 throw new Error('Model name is required');
             }
 
-            const response = await this.ollama.show({
+            const response = await state.ollama.show({
                 model: modelName
             });
             
-            logger.info(`[OllamaService] - Got details for model ${modelName}`);
             return response;
         } catch (error) {
             logger.error(`[OllamaService] - Failed to get model details: ${error}`);
             throw error;
         }
-    }
+    };
 
-    async downloadOllama() {
+    const downloadOllama = async () => {
         logger.info('[OllamaService] - Opening Ollama download page');
         await open('https://ollama.com/download');
-    }
+    };
 
-    async ps() {
+    const ps = async () => {
         try {
-            const response = await this.ollama.ps();
+            const response = await state.ollama.ps();
             return response.models.map(model => model.name);
         } catch (error) {
             logger.error(`[OllamaService] - Failed to get running models: ${error}`);
             throw error;
         }
-    }
+    };
 
-    async loadModel(modelName) {
+    const loadModel = async (modelName) => {
         if (!modelName) return false;
         try {
-            // Check if model is already loaded using ps()
-            const runningModels = await this.ps();
+            const runningModels = await ps();
             if (runningModels.includes(modelName)) {
                 return true;
             }
-            // If not loaded, attempt to load it
-            await this.ollama.generate({
+            await state.ollama.generate({
                 model: modelName,
                 prompt: '', 
                 stream: false
             });
             return true;
-        } catch {
+        } catch (error) {
+            logger.warn(`[OllamaService] - Model load failed: ${modelName}`);
             return false;
         }
-    }
+    };
+
+    // Public interface
+    return {
+        setHost,
+        isOllamaProvider,
+        checkConnection,
+        startOllamaServer,
+        isConfiguredCorrectly,
+        listModels,
+        pullModel,
+        cancelModelDownload,
+        deleteModel,
+        showModel,
+        downloadOllama,
+        ps,
+        loadModel
+    };
 }
 
-export const ollamaService = new OllamaService();
+export default createOllamaService;

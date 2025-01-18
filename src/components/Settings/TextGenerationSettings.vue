@@ -138,8 +138,8 @@ const {
 const teamsStore = useTeamsStore();
 const personaOptions = ref(teamsStore.personas);
 
-watch(personaOptions, () => console.log(personaOptions.value));
-watch(personas, () => console.log(personas.value));
+watch(personaOptions, () => logger.log('[OllamaModelManager] - ', personaOptions.value));
+watch(personas, () => logger.log('[OllamaModelManager] - ', personas.value));
 
 // Filters personas based on input characters in the select box
 function personaFilterFn(val, update) {
@@ -191,7 +191,7 @@ const ollamaProvider = computed(() =>
 
 onMounted(async () => {
     if (ollamaProvider.value) {
-        console.log('Checking Ollama status');
+        logger.log('[OllamaModelManager] - Checking Ollama status');
         await checkOllamaStatus(ollamaProvider.value);
     }
 });

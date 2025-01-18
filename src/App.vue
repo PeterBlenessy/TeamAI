@@ -89,6 +89,8 @@ import { computed, onBeforeMount, onMounted, ref, watch, onUnmounted } from 'vue
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from 'pinia';
+import { useSettingsStore } from '@/stores/settings-store.js';
+import { useTeamsStore } from '@/stores/teams-store.js';
 import SettingsDialog from "@/components/Settings/SettingsDialog.vue";
 import QuickSettings from "@/components/Settings/QuickSettings.vue";
 import UserInput from "@/components/UserInput.vue";
@@ -97,8 +99,6 @@ import OpenAI from '@/components/OpenAI.vue';
 import History from '@/components/History.vue';
 import Information from '@/components/Information.vue';
 import Personas from '@/components/Personas.vue';
-import { useSettingsStore } from '@/stores/settings-store.js';
-import { useTeamsStore } from '@/stores/teams-store.js';
 import DatabaseUpgrader from '@/services/databaseUpgrader.js';
 import logger from '@/services/logger';
 import iCloudService from '@/services/iCloudService';

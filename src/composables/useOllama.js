@@ -1,13 +1,57 @@
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useQuasar } from 'quasar';
-import { ollamaService } from '@/services/ollama.service';
+import createOllamaService from '@/services/ollama.service';
 import { useSettingsStore } from '@/stores/settings-store';
 import logger from '@/services/logger';
+import { storeToRefs } from "pinia";
 
 export function useOllama(provider = null) {
     const $q = useQuasar();
     const settingsStore = useSettingsStore();
+    const { apiProviders } = storeToRefs(settingsStore);
     
+    // Get Ollama provider configuration from store
+    const getOllamaConfig = () => {
+        // Use storeToRefs for reactive state access
+        const { apiProviders } = storeToRefs(settingsStore);
+        
+        logger.info('[useOllama] - Getting Ollama config from store');
+        
+        if (!apiProviders.value || apiProviders.value.length === 0) {
+            logger.warn('[useOllama] - No providers found in store');
+            return null;
+        }
+
+        const ollamaProvider = apiProviders.value.find(p => 
+            p.name?.toLowerCase().includes('ollama') || 
+            p.baseUrl?.toLowerCase().includes('ollama')
+        );
+        
+        logger.info(`[useOllama] - Found Ollama provider: ${ollamaProvider.name}, ${ollamaProvider.baseUrl}`);
+        return ollamaProvider?.baseUrl;
+    };
+
+    // Watch for changes in apiProviders
+    // to update the Ollama service instance with the new provider configuration
+    watch(apiProviders, async (newProviders) => {
+        const ollamaProvider = newProviders.find(p => 
+            p.name?.toLowerCase().includes('ollama') || 
+            p.baseUrl?.toLowerCase().includes('ollama')
+        );
+        
+        if (ollamaProvider?.baseUrl) {
+            logger.info(`[useOllama] - Updating host from provider change: ${ollamaProvider.baseUrl}`);
+            updateHost(ollamaProvider.baseUrl);
+            await checkOllamaStatus(ollamaProvider);
+        }
+    });
+
+    // Create service instance with baseUrl, with fallback
+    const baseUrl = provider?.baseUrl || getOllamaConfig() || 'http://localhost:11434';
+    logger.info(`[useOllama] - Initializing with baseUrl: ${baseUrl}`);
+    
+    let ollamaService = createOllamaService(baseUrl);
+
     // Initialize refs
     const availableModels = ref([]);
     const modelDownloading = ref({});
@@ -83,7 +127,7 @@ export function useOllama(provider = null) {
 
     // Resume previously started model downloads
     async function resumeDownloads() {
-        logger.info(`Resuming downloads: ${JSON.stringify(settingsStore.downloadingModels)}`);
+        logger.info(`[useOllama] - Resuming downloads: ${JSON.stringify(settingsStore.downloadingModels)}`);
         for (const model of settingsStore.downloadingModels) {
             // Re-trigger pull for each downloading model
             downloadModel(model.name, true);
@@ -96,7 +140,7 @@ export function useOllama(provider = null) {
 
         const baseName = getBaseName(modelName);
         if (!baseName) {
-            logger.error(`Invalid model name: ${modelName}`);
+            logger.error(`[useOllama] - Invalid model name: ${modelName}`);
             $q.notify({
                 type: 'negative',
                 message: 'Invalid model name'
@@ -121,7 +165,7 @@ export function useOllama(provider = null) {
             await getAvailableModels();
             return true;
         } catch (error) {
-            logger.error(`Failed to pull model ${modelName}: ${error}`);
+            logger.error(`[useOllama] - Failed to pull model ${modelName}: ${error}`);
             throw error;
         } finally {
             removeDownloadingModel(modelName);
@@ -139,7 +183,7 @@ export function useOllama(provider = null) {
             }
             return false;
         } catch (error) {
-            logger.error(`Failed to cancel download: ${error}`);
+            logger.error(`[useOllama] - Failed to cancel download: ${error}`);
             throw error;
         }
     }
@@ -151,7 +195,7 @@ export function useOllama(provider = null) {
     // Delete model
     async function deleteModel(modelName) {
         if (!modelName) {
-            logger.error('No model name provided for deletion');
+            logger.error('[useOllama] - No model name provided for deletion');
             return false;
         }
 
@@ -175,7 +219,7 @@ export function useOllama(provider = null) {
 
             return true;
         } catch (error) {
-            logger.error(`Failed to delete model ${modelName}: ${error}`);
+            logger.error(`[useOllama] - Failed to delete model ${modelName}: ${error}`);
             throw new Error(`Failed to delete model ${modelName}: ${error.message}`);
         }
     }
@@ -189,7 +233,7 @@ export function useOllama(provider = null) {
             const details = await ollamaService.showModel(modelName);
             modelDetails.value[modelName] = details;
         } catch (error) {
-            logger.error(`Failed to load details for model ${modelName}: ${error}`);
+            logger.error(`[useOllama] - Failed to load details for model ${modelName}: ${error}`);
             throw new Error(`Failed to load details for model ${modelName}: ${error.message}`);
         } finally {
             modelInformation.value[modelName] = false;
@@ -207,7 +251,7 @@ export function useOllama(provider = null) {
                 await getModelInformation(model);
             }
         } catch (error) {
-            logger.error('Failed to load models:', error);
+            logger.error('[useOllama] - Failed to load models:', error);
         }
     }
 
@@ -226,7 +270,7 @@ export function useOllama(provider = null) {
             const runningModels = await ollamaService.ps();
             return runningModels.includes(modelName);
         } catch (error) {
-            logger.error('Failed to check model status:', error);
+            logger.error('[useOllama] - Failed to check model status:', error);
             return false;
         }
     }
@@ -283,9 +327,9 @@ export function useOllama(provider = null) {
                     break;
             }
 
-            logger.info('Successfully configured and restarted Ollama');
+            logger.info('[useOllama] - Successfully configured and restarted Ollama');
         } catch (error) {
-            logger.error(`Failed to configure and restart Ollama: ${error}`);
+            logger.error(`[useOllama] - Failed to configure and restart Ollama: ${error}`);
         } finally {
             restartingOllama.value = false;
         }
@@ -294,9 +338,9 @@ export function useOllama(provider = null) {
     // Initialize the ollama service with provider configuration, and
     // check if the Ollama server is running and configured to be reachable
     async function checkOllamaStatus(providerConfig) {
-        if (!providerConfig) return;
+        if (!providerConfig?.baseUrl) return;
 
-        const { isRunning, needsConfig } = await ollamaService.initializeWithProvider(providerConfig);
+        const { isRunning, needsConfig } = await ollamaService.checkConnection();
         isOllamaRunning.value = isRunning;
         isOllamaConfigured.value = !needsConfig;
 
@@ -313,7 +357,7 @@ export function useOllama(provider = null) {
         try {
             return await ollamaService.ps();
         } catch (error) {
-            logger.error(`Failed to get running models: ${error}`);
+            logger.error(`[useOllama] - Failed to get running models: ${error}`);
             return [];
         }
     }
@@ -323,12 +367,14 @@ export function useOllama(provider = null) {
         return ollamaService?.isOllamaProvider(providerName);
     }
 
-    // Check Ollama status on component mount (isOllamaRunning, isOllamaConfigured)
-    onMounted(async () => {
-        if (provider) {
-            await checkOllamaStatus(provider);
+    // Remove reinitialize and expose setHost instead
+    const updateHost = (baseUrl) => {
+        if (!baseUrl) {
+            logger.warn('[useOllama] - No baseUrl provided for host update');
+            return;
         }
-    });
+        ollamaService.setHost(baseUrl);
+    };
 
     return {
         availableModels,
@@ -355,5 +401,7 @@ export function useOllama(provider = null) {
         resumeDownloads,
         cancelModelDownload,
         isOllamaProvider,
+        downloadOllama: ollamaService.downloadOllama,
+        updateHost,
     };
 }

@@ -187,8 +187,8 @@
                                         >
                                         </q-btn>
                                     </q-item-section>
-                                </q-item>
-                            </template>
+                                    </q-item>
+                                </template>
 
                         </q-select>
 
@@ -216,7 +216,6 @@ import { mdiApi, mdiDownload, mdiRestart, mdiCircle, mdiPencil, mdiPlus, mdiDele
 } from '@quasar/extras/mdi-v7';
 import { useSettingsStore } from '@/stores/settings-store.js';
 import defaultProviders from '@/services/providers.config.json';
-import { ollamaService } from '@/services/ollama.service';
 import ollamaLogo from '@/assets/ollama-logo.png';
 import openaiLogo from '@/assets/openai-logo.png';
 import { useOllama } from '@/composables/useOllama';
@@ -263,7 +262,9 @@ const {
     isOllamaConfigured,
     restartingOllama,
     configureAndRestartOllama,
-    checkOllamaStatus
+    checkOllamaStatus,
+    downloadOllama,
+    updateHost,
 } = useOllama();
 
 const isOllamaProvider = (providerObj) => {
@@ -323,8 +324,7 @@ const isDownloadingOllama = ref(false);
 async function handleDownloadOllama() {
     try {
         isDownloadingOllama.value = true;
-        await ollamaService.downloadOllama();
-        // Check status after installation
+        await downloadOllama();  // Use the composable function instead
         await checkOllamaStatus();
         // Show success notification
         $q.notify({
@@ -332,7 +332,7 @@ async function handleDownloadOllama() {
             message: 'Ollama installed successfully'
         });
     } catch (error) {
-        console.error('Failed to download Ollama:', error);
+        logger.error('[ProviderSettings] - Failed to download Ollama:', error);
         $q.notify({
             type: 'negative',
             message: 'Failed to install Ollama: ' + error.message
@@ -346,7 +346,7 @@ async function handleDownloadOllama() {
 function handleEditProvider() {
     const foundProvider = apiProviders.value.find(provider => provider.name === defaultProvider.value.value);
     if (!foundProvider) {
-        console.error('Provider not found');
+        logger.error('[ProviderSettings] - Provider not found');
         return;
     }
     // Deep-copy the found provider
@@ -395,7 +395,7 @@ function handleCancel() {
 function handleSaveProvider() {
     // Check for '' values
     if (tmpProvider.value.name === '' || tmpProvider.value.baseUrl === '' || tmpProvider.value.apiKey === '') {
-        console.error('Empty values');
+        logger.error('[ProviderSettings] - Empty values');
         return;
     }
 
@@ -408,7 +408,7 @@ function handleSaveProvider() {
             defaultProvider.value.value = tmpProvider.value.name;
             editProvider.value = false;
         } else {
-            console.error('Provider not found');
+            logger.error('[ProviderSettings] - Provider not found');
         }
     } else if (addProvider.value == true) {
         const index = apiProviders.value.findIndex(provider => provider.name === tmpProvider.value.name);
@@ -419,7 +419,7 @@ function handleSaveProvider() {
             addProvider.value = false;
         } else { // Provider already exists
             // Notify the user
-            console.error('Provider already exists');
+            logger.error('[ProviderSettings] - Provider already exists');
             return;
         }
     }
@@ -439,7 +439,10 @@ onMounted(() => {
 watch(defaultProvider, async (newProvider) => {
     if (isOllamaProvider(newProvider)) {
         const provider = apiProviders.value.find(p => p.name === newProvider.value);
-        await checkOllamaStatus(provider);
+        if (provider) {
+            updateHost(provider.baseUrl);
+            await checkOllamaStatus(provider);
+        }
     } else {
         isOllamaConfigured.value = false;
         isOllamaRunning.value = false;

@@ -11,7 +11,6 @@ const {
     deleteModel,
     downloadingModels,
     formatModelName,
-    getBaseName, 
     getRunningModels,
     getAvailableModels,
     loadModel,
@@ -154,7 +153,7 @@ async function updateModelStatuses() {
             }
         });
     } catch (error) {
-        logger.error(`Failed to update model statuses: ${error}`);
+        logger.error(`[OllamaModelManager] - Failed to update model statuses: ${error}`);
     }
 }
 

@@ -207,7 +207,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { storeToRefs } from "pinia";
 import { useI18n } from 'vue-i18n';
@@ -245,7 +245,7 @@ const {
 const teamsStore = useTeamsStore();
 const { conversationId, isCreateImageSelected, isTeamWorkActivated, messages } = storeToRefs(teamsStore);
 const personaOptions = ref(teamsStore.personas);
-const { availableModels, isOllamaRunning, getAvailableModels, isOllamaProvider, checkOllamaStatus } = useOllama();
+const { availableModels, isOllamaRunning, isOllamaProvider } = useOllama();
 
 // Filters personas based on input characters in the select box
 function personaFilterFn(val, update) {
@@ -309,14 +309,6 @@ watch(imageStyleValue, () => {
     imageStyle.value = imageStyleOptions[imageStyleValue.value];
 });
 
-watch(apiProviders, async () => {
-    const ollamaProvider = apiProviders.value.find(p => isOllamaProvider(p.name) ? p : null);
-    await checkOllamaStatus(ollamaProvider);
-    if (isOllamaRunning) {
-        await getAvailableModels();
-    }
-});
-
 // Show message info
 const showConversationInfo = (id) => {
 
@@ -355,7 +347,5 @@ const deleteConversation = (id) => teamsStore.deleteConversation(id);
 const shareConversation = (id) => navigator.share({ text: exportConversation(id) })
     .then(logger.log("[QuickSettings] - Shared conversation"))
     .catch(e => logger.error(`[QuickSettings] - ${e}`));
-
-const { iconColor } = useHelpers();
 
 </script>
