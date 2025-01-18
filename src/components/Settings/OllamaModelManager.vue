@@ -82,17 +82,11 @@ async function handleDownloadModel(modelName) {
         return;
     }
 
-    // Check if model already exists (base name match)
-    const { base: newModelBase } = getBaseName(modelName);
-    const existingModel = availableModels.value.find(m => {
-        const { base: existingBase } = getBaseName(m);
-        return existingBase === newModelBase;
-    });
-
-    if (existingModel) {
+    // Check if model already exists (exact match)
+    if (availableModels.value.includes(modelName)) {
         $q.notify({
             type: 'warning',
-            message: `Model ${formatModelName(existingModel)} is already installed`
+            message: `Model ${formatModelName(modelName)} is already installed`
         });
         return;
     }
