@@ -101,8 +101,6 @@ export function useOllama(provider = null) {
             ...apiProviders.value[providerIndex],
             models: models
         };
-
-        logger.info(`[useOllama] - Synced models with provider: ${JSON.stringify(models)}`);
     }
 
     //--------------------------------------------------------------------------------

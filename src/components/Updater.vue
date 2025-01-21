@@ -25,26 +25,22 @@
 
     <!-- Download Progress Dialog -->
     <q-dialog v-model="showDownloadDialog" persistent>
-        <q-card style="min-width: 300px">
-            <q-card-section class="row items-center">
-                <div>{{ t('updater.downloading.message') }}</div>
-                <q-space />
-                <q-circular-progress
-                    show-value
-                    font-size="16px"
-                    :value="Math.round(downloadProgress * 100)"
-                    size="90px"
-                    :thickness="0.22"
+        <q-card style="width: 400px;">
+            <q-card-section>
+                {{ isDownloadComplete ? t('updater.relaunch.caption') : t('updater.downloading.caption') }}
+            </q-card-section>
+            <q-space />
+            <q-card-section>
+                <q-linear-progress
+                    :value="downloadProgress"
                     :color="isDownloadComplete ? 'positive' : 'primary'"
-                    class="q-ma-md"
-                >
-                    {{ Math.round(downloadProgress * 100) }}%
-                </q-circular-progress>
+                    instant-feedback rounded size="25px"
+                />
             </q-card-section>
 
-            <q-card-actions align="right" v-if="isDownloadComplete">
-                <q-btn flat :label="t('updater.relaunch.actions.dismiss')" @click="handleRelaunchDismiss" v-close-popup/>
-                <q-btn flat :label="t('updater.relaunch.actions.relaunch')" @click="handleRelaunch" color="primary" />
+            <q-card-actions align="right">
+                <q-btn flat :label="t('updater.relaunch.actions.dismiss')" @click="handleRelaunchDismiss" v-close-popup :disabled="!isDownloadComplete"/>
+                <q-btn flat :label="t('updater.relaunch.actions.relaunch')" @click="handleRelaunch" color="primary" :disabled="!isDownloadComplete"/>
             </q-card-actions>
         </q-card>
     </q-dialog>
@@ -70,12 +66,19 @@ const releaseNotes = ref('');
 
 const { checkForUpdates, downloadAndInstall, relaunchApp, downloaded, contentLength } = useUpdater();
 
+function resetDownloadState() {
+    isDownloadComplete.value = false;
+    downloaded.value = 0;
+    contentLength.value = 0;
+}
+
 const downloadProgress = computed(() => {
     if (contentLength.value === 0) return 0;
     return downloaded.value / contentLength.value;
 });
 
 async function handleCheckForUpdates() {
+    resetDownloadState();
     try {
         const update = await checkForUpdates();
 
@@ -113,7 +116,7 @@ async function handleInstall() {
     try {
         showUpdateAvailableDialog.value = false;
         showDownloadDialog.value = true;
-        isDownloadComplete.value = false;
+        resetDownloadState();
         
         await downloadAndInstall();
         isDownloadComplete.value = true;
@@ -134,6 +137,8 @@ async function handleRelaunch() {
 }
 
 function handleRelaunchDismiss() {
+    resetDownloadState();
+    showDownloadDialog.value = false;
     $q.notify({
         type: 'info',
         message: t('updater.relaunchDismiss.message'),

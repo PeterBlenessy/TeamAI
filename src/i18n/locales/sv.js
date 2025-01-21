@@ -457,7 +457,7 @@ export default {
         },
         relaunch: {
             message: 'Ny version installerad.',
-            caption: 'Vill du starta om nu för att använda den nya versionen?',
+            caption: 'Vill du starta om applikationen?',
             actions: {
                 relaunch: 'Starta om',
                 later: 'Avfärda'
@@ -477,7 +477,7 @@ export default {
         },
         downloading: {
             title: 'Laddar ner uppdatering',
-            message: 'Vänligen vänta medan uppdateringen laddas ner...'
+            caption: 'Vänligen vänta medan uppdateringen laddas ner...'
         },
     },
     databaseUpgrade: {

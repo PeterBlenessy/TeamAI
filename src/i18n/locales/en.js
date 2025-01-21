@@ -490,9 +490,13 @@ export default {
                 dismiss: 'Dismiss'
             }
         },
+        downloading: {
+            title: 'Downloading Update',
+            caption: 'Please wait while the update is being downloaded...'
+        },
         relaunch: {
             title: 'New version downloaded',
-            caption: 'Would you like to relaunch the application now to use the new version?',
+            caption: 'Would you like to relaunch the application now?',
             actions: {
                 relaunch: 'Relaunch',
                 dismiss: 'Dismiss'
@@ -509,10 +513,6 @@ export default {
         releaseNotes: {
             message: 'Release Notes',
             caption: 'Changes in this version:'
-        },
-        downloading: {
-            title: 'Downloading Update',
-            message: 'Please wait while the update is being downloaded...'
         },
     },
     databaseUpgrade: {

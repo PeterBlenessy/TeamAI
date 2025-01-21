@@ -459,7 +459,7 @@ export default {
         },
         relaunch: {
             message: "Az új verzió letöltődött.",
-            caption: "Szeretné újraindítani az alkalmazást most, hogy használja az új verziót?",
+            caption: "Szeretné újraindítani az alkalmazást most?",
             actions: {
                 relaunch: "Újraindítás",
                 later: "Bezárás"
@@ -479,7 +479,7 @@ export default {
         },
         downloading: {
             title: 'Frissítés letöltése',
-            message: 'Kérjük várjon amíg a frissítés letöltődik...'
+            caption: 'Kérjük várjon amíg a frissítés letöltődik...'
         }
     },
     databaseUpgrade: {
