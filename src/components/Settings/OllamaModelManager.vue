@@ -29,7 +29,7 @@ const modelColumns = [
     { name: 'size', label: 'Size', field: row => modelDetails.value[row]?.details?.parameter_size || '-', align: 'left' },
     { name: 'quantization', label: 'Quantization', field: row => modelDetails.value[row]?.details?.quantization_level || '-', align: 'left' },
     { name: 'modified', label: 'Modified', field: row => modelDetails.value[row]?.modified_at || '-', align: 'left' },
-    { name: 'actions', label: 'Actions', field: 'actions', align: 'right' }
+    { name: 'actions', label: 'Actions', field: 'actions', align: 'center' }
 ];
 
 const showLicenseDialog = ref(false);
