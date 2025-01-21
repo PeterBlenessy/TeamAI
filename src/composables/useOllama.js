@@ -86,21 +86,22 @@ export function useOllama(provider = null) {
 
     // Add this helper function after the other helper functions
     function syncModelsWithProvider(models) {
-        const ollamaProvider = apiProviders.value.find(p => 
+        const providerIndex = apiProviders.value.findIndex(p => 
             p.name?.toLowerCase().includes('ollama') || 
             p.baseUrl?.toLowerCase().includes('ollama')
         );
 
-        if (!ollamaProvider) {
+        if (providerIndex === -1) {
             logger.warn('[useOllama] - No Ollama provider found for model sync');
             return;
         }
 
-        // Update provider's models array directly with model names
-        ollamaProvider.models = models;
+        // Update provider's models array directly
+        apiProviders.value[providerIndex] = {
+            ...apiProviders.value[providerIndex],
+            models: models
+        };
 
-        // Update the store
-        settingsStore.updateApiProvider(ollamaProvider);
         logger.info(`[useOllama] - Synced models with provider: ${JSON.stringify(models)}`);
     }
 
