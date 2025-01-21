@@ -84,6 +84,26 @@ export function useOllama(provider = null) {
         return version ? `${base}:${version}` : base;
     }
 
+    // Add this helper function after the other helper functions
+    function syncModelsWithProvider(models) {
+        const ollamaProvider = apiProviders.value.find(p => 
+            p.name?.toLowerCase().includes('ollama') || 
+            p.baseUrl?.toLowerCase().includes('ollama')
+        );
+
+        if (!ollamaProvider) {
+            logger.warn('[useOllama] - No Ollama provider found for model sync');
+            return;
+        }
+
+        // Update provider's models array directly with model names
+        ollamaProvider.models = models;
+
+        // Update the store
+        settingsStore.updateApiProvider(ollamaProvider);
+        logger.info(`[useOllama] - Synced models with provider: ${JSON.stringify(models)}`);
+    }
+
     //--------------------------------------------------------------------------------
     // FUNCTIONS TO HANDLE MODEL DOWNLOADS
     //--------------------------------------------------------------------------------
@@ -162,6 +182,7 @@ export function useOllama(provider = null) {
                 }
             });
 
+            // After successful download, update available models and sync
             await getAvailableModels();
             return true;
         } catch (error) {
@@ -215,6 +236,7 @@ export function useOllama(provider = null) {
                 await ollamaService.deleteModel(modelInstance);
             }
 
+            // After successful deletion, update available models and sync
             await getAvailableModels();
 
             return true;
@@ -245,6 +267,9 @@ export function useOllama(provider = null) {
         try {
             const models = await ollamaService.listModels();
             availableModels.value = models;
+
+            // Sync with provider store
+            syncModelsWithProvider(models);
 
             // Get information for all models
             for (const model of models) {
@@ -335,18 +360,23 @@ export function useOllama(provider = null) {
         }
     }
 
-    // Initialize the ollama service with provider configuration, and
-    // check if the Ollama server is running and configured to be reachable
+    // Checks if the Ollama server is running and configured to be reachable
     async function checkOllamaStatus(providerConfig) {
-        if (!providerConfig?.baseUrl) return;
+        if (!providerConfig?.baseUrl) {
+            logger.warn('[useOllama] - No Ollama provider configuration provided');
+            return;
+        }
 
         const { isRunning, needsConfig } = await ollamaService.checkConnection();
         isOllamaRunning.value = isRunning;
         isOllamaConfigured.value = !needsConfig;
 
         if (isOllamaRunning.value && isOllamaConfigured.value) {
+            logger.info('[useOllama] - Ollama server is running and configured');
             await getAvailableModels();
             await resumeDownloads();
+        } else {
+            logger.warn('[useOllama] - Ollama server is not running or configured');
         }
 
         return { isRunning, needsConfig };
@@ -377,31 +407,36 @@ export function useOllama(provider = null) {
     };
 
     return {
+        // General helper functions
+        getBaseName,
+        formatModelName,
+        
+        // Model management
         availableModels,
         modelDownloading,
         pullProgress,
         modelDetails,
         runningModels,
-        getBaseName,
-        formatModelName,
+        downloadingModels,
         getModelDownloadStatus,
         downloadModel,
+        getRunningModels,
+        resumeDownloads,
+        cancelModelDownload,
         deleteModel,
-        getModelInformation,
         getAvailableModels,
-        loadModel,
+        getModelInformation,
         isModelLoaded,
+        loadModel,
+
+        // Ollama server management
         isOllamaRunning,
         isOllamaConfigured,
         restartingOllama,
+        downloadOllama: ollamaService.downloadOllama,
         configureAndRestartOllama,
         checkOllamaStatus,
-        getRunningModels,
-        downloadingModels,
-        resumeDownloads,
-        cancelModelDownload,
         isOllamaProvider,
-        downloadOllama: ollamaService.downloadOllama,
         updateHost,
     };
 }
