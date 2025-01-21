@@ -25,12 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `worker` for dowloading models; the UI freezes when multiple models are being downloaded and Ollama is "working hard"
 - Improve error handling of Ollama communication; UI freezes when ollama is not responsive, i.e. if downloading mutiple models and chatting
 - Add support for OLLAMA_KEEP_ALIVE environment variable when starting Ollama, -1
-- Updater issues: too large circular progress; Update "Please wait while the update is being downloaded..." when download is done; feels jun´mpy, maybe change to linear-progress?
 
 ### [KNOWN-BUGS]
 - Base_64 encoded images stored with messages cannot be shared after introducing blobs and objectURLs.
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
+
+## v2.2.11 - 2025-01-21
+- Changed updater progress indication to linear progress and changed texts to better reflect updater status.
 
 ## v2.2.10 - 2025-01-21
 - Fixed error where several versions of a model could not be downloaded, like phi4:latest blocked phi4:14b-q8_0.
