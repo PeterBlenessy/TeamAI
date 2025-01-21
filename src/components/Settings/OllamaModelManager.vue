@@ -107,6 +107,10 @@ onMounted(async () => {
         await getAvailableModels();
         await updateModelStatuses();
         await resumeDownloads();
+        logger.info('[OllamaModelManager] - Model manager initialized');
+        logger.info(`[OllamaModelManager] - Available models: ${availableModels.value}`);
+        logger.info(`[OllamaModelManager] - Downloading models: ${downloadingModels.value}`);
+        logger.info(`[OllamaModelManager] - Model details: ${modelDetails.value}`);
         // Start polling every 60 seconds
         statusCheckInterval = setInterval(updateModelStatuses, 60000);
     } finally {
@@ -275,7 +279,7 @@ async function handleCancelDownload(modelName) {
                         </q-td>
                         <q-td key="modified">
                             {{ modelDetails[props.row.name]?.modified_at ? 
-                                new Date(modelDetails[props.row.name].modified_at).toLocaleString() : '' }}
+                                new Date(modelDetails[props.row.name].modified_at).toISOString().split('T')[0] : '' }}
                         </q-td>
                         <q-td key="actions" class="text-right">
                             <template v-if="props.row.downloading">
