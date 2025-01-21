@@ -107,10 +107,6 @@ onMounted(async () => {
         await getAvailableModels();
         await updateModelStatuses();
         await resumeDownloads();
-        logger.info('[OllamaModelManager] - Model manager initialized');
-        logger.info(`[OllamaModelManager] - Available models: ${availableModels.value}`);
-        logger.info(`[OllamaModelManager] - Downloading models: ${downloadingModels.value}`);
-        logger.info(`[OllamaModelManager] - Model details: ${modelDetails.value}`);
         // Start polling every 60 seconds
         statusCheckInterval = setInterval(updateModelStatuses, 60000);
     } finally {
