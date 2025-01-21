@@ -279,14 +279,13 @@ const askQuestion = async (question) => {
             }
 
         } catch (error) {
-            let message = ''
-            let caption = ''
+            let message = '';
+            let caption = '';
 
             if (response in error) {
                 message = error.response.status;
                 caption = error.response.data;
             } else {
-
                 // Check if user aborted the request
                 if (error == 'AbortError: Fetch is aborted' || 
                     error == 'Error: Fetch is aborted' ||
@@ -297,19 +296,21 @@ const askQuestion = async (question) => {
                     return;
                 }
 
-                const path = 'apiErrors.' + (message in error ? error.message.split(' ')[0] : error.split(' ')[0]);
+                const errorCode = getErrorCode(error);
+                const path = `apiErrors.${errorCode}`;
 
                 // Check if error message is defined in i18n language files
                 try {
                     message = t(path + '.message');
                     caption = t(path + '.caption');
-                } catch (error) {
-                    message = "Unknown error occured. ";
-                    caption = error;
+                } catch (err) {
+                    message = "Unknown error occurred.";
+                    caption = error?.message || error?.toString() || "Unknown error";
                 }
             }
+            
             logger.error(`[OpenAI] - ${message} ${caption}`);
-
+            
             // Show error message in app
             $q.notify({
                 type: 'negative',
@@ -336,5 +337,22 @@ const askQuestion = async (question) => {
         if (isCreateImageSelected.value) break;
     }
 }
+
+const getErrorCode = (error) => {
+    // If it's a string, try to get first word
+    logger.error(`[OpenAI] - Getting error message translation for: ${error}`);
+    if (typeof error === 'string') {
+        const firstWord = error.split(' ')[0];
+        return firstWord || 'unknown';
+    }
+    
+    // If it has message property, try to get first word
+    if (error?.message) {
+        const firstWord = error.message.split(' ')[0];
+        return firstWord || 'unknown';
+    }
+    
+    return 'unknown';
+};
 
 </script>
