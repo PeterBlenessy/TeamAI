@@ -2,13 +2,12 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { imageDB, settingsDB, teamsDB } from '@/services/localforage.js';
 import { useSettingsStore } from '@/stores/settings-store.js';
+import storage from '@/services/localStorage.js';
 import logger from '@/services/logger.js';
 
 const databaseUpgrader = () => {
-
     const { t } = useI18n();
     const $q = useQuasar();
-
 
     const dBVersions = [
         {
@@ -34,17 +33,41 @@ const databaseUpgrader = () => {
             description: 'Removed OpenAI API parameter options from persistent storage.',
             caption: t('databaseUpgrade.inProgress.caption', { version: '8' }),
             upgrade: async () => upgradeToVersion8()
+        },
+        {
+            version: 9,
+            description: 'Migrated application settings from IndexedDB to localStorage.',
+            caption: t('databaseUpgrade.inProgress.caption', { version: '9' }),
+            upgrade: async () => upgradeToVersion9()
         }
     ];
 
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 8;
+    const LATEST_DB_VERSION = 9;
 
     // =================================================================================================
-    const getDBVersion = async () => parseInt(JSON.parse(await settingsDB.getItem('dBVersion')));
-    const setDBVersion = async (version) => await settingsDB.setItem('dBVersion', JSON.stringify(version));
+    const getDBVersion = async () => {
+        // Check localStorage first (post v9)
+        const settingsStore = useSettingsStore();
+        if (settingsStore.dBVersion !== undefined && settingsStore.dBVersion !== null) {
+            return settingsStore.dBVersion;
+        }
+        // If not in localStorage, check IndexedDB (pre v9)
+        try {
+            const version = await settingsDB.getItem('dBVersion');
+            return version ? parseInt(JSON.parse(version)) : 0;
+        } catch (error) {
+            logger.error(`[dbUpgrader] - Error getting version from IndexedDB: ${error}`);
+            return 0;
+        }
+    };
+    
+    const setDBVersion = async (version) => {
+        const settingsStore = useSettingsStore();
+        settingsStore.dBVersion = version;
+    };
 
     const isUpgradeNeed = async () => {
         logger.log("[dbUpgrader] - Checking if database upgrade is needed...");
@@ -80,10 +103,53 @@ const databaseUpgrader = () => {
             throw error;
         }
     }
+
+    // Migrate settings from IndexedDB to localStorage
+    const upgradeToVersion9 = async () => {
+        try {
+            logger.log("[dbUpgrader][v9] - Starting settings migration to localStorage");
+            const settingsStore = useSettingsStore();
+
+            // Get all settings from IndexedDB
+            logger.log("[dbUpgrader][v9] - Reading settings from IndexedDB");
+            const settingsEntries = [];
+            await settingsDB.iterate((value, key) => {
+                if (key in settingsStore) { // Only migrate keys that exist in the store
+                    try {
+                        const parsedValue = JSON.parse(value);
+                        settingsEntries.push([key, parsedValue]);
+                        logger.log(`[dbUpgrader][v9] - Read ${key} from IndexedDB`);
+                    } catch (error) {
+                        logger.error(`[dbUpgrader][v9] - Error parsing ${key}: ${error}`);
+                    }
+                }
+            });
+
+            // Update settings store with migrated values
+            logger.log("[dbUpgrader][v9] - Updating settings store");
+            for (const [key, value] of settingsEntries) {
+                settingsStore[key] = value;
+                logger.log(`[dbUpgrader][v9] - Updated ${key} in settings store`);
+            }
+
+            // All settings are migrated, drop settings database
+            logger.log("[dbUpgrader][v9] - All settings migrated, dropping settings database");
+            await settingsDB._dropInstance({
+                name: settingsDB._config.name,
+                storeName: settingsDB._config.storeName
+            });
+            logger.log("[dbUpgrader][v9] - Settings database dropped");
+
+            logger.log("[dbUpgrader][v9] - Settings migration completed");
+        } catch (error) {
+            logger.error(`[dbUpgrader][v9] - Error: ${JSON.stringify(error)}`);
+            throw error;
+        }
+    }
+
     // Upgrade to mitigate performance issues due to images being stored in message objects.
     // This upgrade moves images to a separate table, imageDB.
     const upgradeToVersion6 = async () => {
-
         try {
             // Get messages from persistent storage
             let messages = JSON.parse(await teamsDB.getItem('messages'));

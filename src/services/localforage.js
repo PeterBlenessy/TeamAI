@@ -8,12 +8,15 @@ const defaultLocalForageConfiguration = {
     name: dbName,
 };
 
-// Create localForage instance for storing application settings
-const settingsDB = localforage.createInstance({
-    ...defaultLocalForageConfiguration,
-    storeName: 'settings',
-    description: 'Application settings'
-});
+// Only create settingsDB if settings haven't been migrated to localStorage yet
+let settingsDB;
+if (!localStorage.getItem('dBVersion')) {
+    settingsDB = localforage.createInstance({
+        ...defaultLocalForageConfiguration,
+        storeName: 'settings',
+        description: 'Application settings'
+    });
+}
 
 // Create localForage instance for storing teams, their members, and their messages
 const teamsDB = localforage.createInstance({
@@ -30,7 +33,6 @@ const imageDB = localforage.createInstance({
 
 // LocalForage plugin for pinia stores
 const localForagePlugin = (({ store }) => {
-
     // Make sure we use the right localForage instance for this store.
     // Existing instance will be reused.
     const storage = localforage.createInstance({
@@ -66,13 +68,16 @@ const localForagePlugin = (({ store }) => {
     });
 
     // Subscribe to store changes and save them to the persistent storage.
-    store.$subscribe((mutation, state) => {
-        // Persist each state element separately
-        for (const element in state) {
-            storage.setItem(element, JSON.stringify(state[element]));
-        }
-    });
-})
+    // Skip persisting changes for the settings store since it uses localStorage
+    if (store.$id !== 'settings') {
+        store.$subscribe((mutation, state) => {
+            // Persist each state element separately
+            for (const element in state) {
+                storage.setItem(element, JSON.stringify(state[element]));
+            }
+        });
+    }
+});
 
 export {
     imageDB,
