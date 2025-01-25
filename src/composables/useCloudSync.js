@@ -1,204 +1,269 @@
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useQuasar } from 'quasar';
-import { useSettingsStore } from '@/stores/settings-store';
-import { useTeamsStore } from '@/stores/teams-store';
-import iCloudService from '@/services/iCloudService';
-import logger from '@/services/logger';
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
+import { useSettingsStore } from '@/stores/settings-store'
+import { useTeamsStore } from '@/stores/teams-store'
+import iCloudService from '@/services/iCloudService'
+import logger from '@/services/logger'
+import { syncStateManager, SyncState, SyncType } from '@/services/syncStateManager'
 
 export function useCloudSync() {
-    const { t } = useI18n();
-    const $q = useQuasar();
-    const settingsStore = useSettingsStore();
-    const teamsStore = useTeamsStore();
-    const syncing = ref(false);
+    const { t } = useI18n()
+    const $q = useQuasar()
+    const settingsStore = useSettingsStore()
+    const teamsStore = useTeamsStore()
+    
+    // Reactive state
+    const syncManager = syncStateManager.init()
+    const syncing = computed(() => syncManager.syncState === SyncState.IN_PROGRESS)
+    const hasUnsynced = computed(() => syncManager.hasLocalChanges())
+    const syncProgress = ref(0)
+    const syncStatus = ref('')
 
-    const syncToCloud = async () => {
-        if (syncing.value) return;
-        syncing.value = true;
-        
-        logger.log('[CloudSync] - iCloud sync requested');
-        
-        if (!iCloudService.isAvailable()) {
-            $q.notify({
-                position: 'bottom-right',
-                icon: 'mdi-cloud-off',
-                type: 'warning',
-                message: t('icloud.sync.unavailable.message'),
-                caption: t('icloud.sync.unavailable.caption'),
-                timeout: 3000
-            });
-            syncing.value = false;
-            return;
+    // Notify user about sync status
+    const notifySync = (type, message, options = {}) => {
+        $q.notify({
+            position: 'bottom-right',
+            ...options,
+            message: t(message)
+        })
+    }
+
+    // Handle sync conflicts
+    const handleConflict = async (conflicts) => {
+        return new Promise((resolve) => {
+            $q.dialog({
+                title: t('icloud.sync.conflict.title'),
+                message: t('icloud.sync.conflict.message'),
+                component: 'sync-conflict-dialog',
+                componentProps: {
+                    conflicts
+                }
+            }).onOk(resolve).onCancel(() => resolve([]))
+        })
+    }
+
+    // Track changes in stores
+    const trackStoreChanges = () => {
+        // Settings changes
+        if (settingsStore.syncOptions.settings) {
+            syncManager.trackChange(
+                SyncType.SETTINGS,
+                'settings',
+                settingsStore.$state
+            )
         }
 
+        // Personas changes
+        if (settingsStore.syncOptions.personas) {
+            teamsStore.personas.forEach((persona, index) => {
+                syncManager.trackChange(
+                    SyncType.PERSONAS,
+                    `persona_${index}`,
+                    persona
+                )
+            })
+        }
+
+        // Conversations changes
+        if (settingsStore.syncOptions.conversations) {
+            teamsStore.history.forEach((conv, index) => {
+                syncManager.trackChange(
+                    SyncType.CONVERSATIONS,
+                    `conversation_${index}`,
+                    conv
+                )
+            })
+        }
+    }
+
+    // Process each type of sync
+    const processSyncOperation = async (type, data) => {
+        syncStatus.value = t(`icloud.sync.${type}.inProgress.message`)
+        
         try {
-            let notifyRef = $q.notify({
-                position: 'bottom-right',
-                timeout: 0,
-                spinner: true,
-                icon: 'mdi-cloud-sync',
-                message: t('icloud.sync.checking.message')
-            });
+            let latestData = null
+            
+            switch (type) {
+                case SyncType.SETTINGS:
+                    latestData = await iCloudService.getLatestSettings()
+                    break
+                case SyncType.PERSONAS:
+                    latestData = await iCloudService.getLatestPersonas()
+                    break
+                case SyncType.CONVERSATIONS:
+                    latestData = await iCloudService.getLatestConversations()
+                    break
+            }
 
-            // Define sync configurations
-            const syncConfigs = [
-                {
-                    type: 'settings',
-                    enabled: settingsStore.syncOptions.settings,
-                    getLatest: () => iCloudService.getLatestSettings(),
-                    sync: (data) => iCloudService.syncSettings(data, settingsStore.syncOptions),
-                    cleanup: () => iCloudService.cleanupOldSettings(5),
-                    store: settingsStore,
-                    getData: () => settingsStore.$state,
-                    applyData: (data) => {
-                        const newSettings = data.settings;
-                        if (!settingsStore.syncOptions.personas) {
-                            delete newSettings.personas;
+            if (latestData && (!settingsStore.lastSync || new Date(latestData.timestamp) > new Date(settingsStore.lastSync))) {
+                // Compare vector clocks to detect conflicts
+                const comparison = syncManager.compareVectorClocks(
+                    latestData.vectorClock || {},
+                    data.vectorClock || {}
+                )
+
+                if (comparison === 'concurrent') {
+                    // Handle conflicts
+                    const remoteData = latestData.data?.[type] || []
+                    const previousData = latestData.previousVersion?.[type]
+
+                    const resolutions = await handleConflict([
+                        {
+                            key: type,
+                            local: data || [],
+                            remote: remoteData,
+                            base: previousData || []
                         }
-                        settingsStore.$patch(newSettings);
-                    }
-                },
-                {
-                    type: 'personas',
-                    enabled: settingsStore.syncOptions.personas,
-                    getLatest: () => iCloudService.getLatestPersonas(),
-                    sync: (data) => iCloudService.syncPersonas(data),
-                    cleanup: () => iCloudService.cleanupOldPersonas(5),
-                    store: teamsStore,
-                    getData: () => teamsStore.personas,
-                    applyData: (data) => teamsStore.personas = data.personas
-                },
-                {
-                    type: 'conversations',
-                    enabled: settingsStore.syncOptions.conversations,
-                    getLatest: () => iCloudService.getLatestConversations(),
-                    sync: () => iCloudService.syncConversations(teamsStore),
-                    cleanup: () => iCloudService.cleanupOldConversations(5),
-                    store: teamsStore,
-                    getData: () => teamsStore.$state,
-                    applyData: () => {}
-                }
-            ];
+                    ])
 
-            // Handle sync for each enabled configuration
-            for (const config of syncConfigs) {
-                if (!config.enabled) continue;
-
-                try {
-                    const latestData = await config.getLatest();
-                    
-                    if (latestData && (!settingsStore.lastSync || new Date(latestData.timestamp) > new Date(settingsStore.lastSync))) {
-                        if (notifyRef) {
-                            notifyRef();  // Dismiss current notification
-                        }
-                        
-                        // Ask user to confirm sync
-                        await new Promise((resolve) => {
-                            $q.dialog({
-                                title: t(`icloud.sync.${config.type}.found.title`),
-                                message: t(`icloud.sync.${config.type}.found.message`),
-                                cancel: true,
-                                persistent: true,
-                                ok: {
-                                    label: t(`icloud.sync.${config.type}.actions.sync`),
-                                    color: 'primary'
-                                },
-                                cancel: {
-                                    label: t(`icloud.sync.${config.type}.actions.skip`),
-                                    color: 'primary',
-                                    flat: true
-                                }
-                            }).onOk(async () => {
-                                config.applyData(latestData);
-                                $q.notify({
-                                    position: 'bottom-right',
-                                    type: 'positive',
-                                    icon: 'mdi-cloud-check',
-                                    message: t(`icloud.sync.${config.type}.loaded.message`),
-                                    timeout: 2000
-                                });
-                                resolve();
-                            }).onCancel(() => resolve());
-                        });
+                    if (resolutions.length > 0) {
+                        const choice = resolutions[0].choice
+                        data = choice === 'local' ? data : remoteData
                     }
-
-                    // Show upload notification
-                    if (notifyRef) {
-                        notifyRef();  // Dismiss previous notification
-                    }
-                    notifyRef = $q.notify({
-                        position: 'bottom-right',
-                        timeout: 0,
-                        spinner: true,
-                        icon: 'mdi-cloud-upload',
-                        message: t('icloud.sync.inProgress.message')
-                    });
-
-                    // Sync current data
-                    const currentData = config.getData();
-                    if (currentData && (Array.isArray(currentData) ? currentData.length > 0 : true)) {
-                        await config.sync(currentData);
-                        await config.cleanup();
-                        
-                        if (notifyRef) {
-                            notifyRef();  // Dismiss upload notification
-                        }
-                        
-                        $q.notify({
-                            position: 'bottom-right',
-                            type: 'positive',
-                            icon: 'mdi-cloud-check',
-                            message: t(`icloud.sync.${config.type}.synced.message`),
-                            timeout: 2000
-                        });
-                    }
-                } catch (error) {
-                    if (notifyRef) {
-                        notifyRef();  // Dismiss any pending notification
-                    }
-                    
-                    logger.error(`[CloudSync] - Error syncing ${config.type}: ${error}`);
-                    $q.notify({
-                        position: 'bottom-right',
-                        type: 'negative',
-                        icon: 'mdi-cloud-alert',
-                        message: t(`icloud.sync.${config.type}.error.message`),
-                        timeout: 2000
-                    });
                 }
             }
 
-            // Update last sync timestamp
-            settingsStore.lastSync = new Date().toISOString();
+            // Sync the data
+            switch (type) {
+                case SyncType.SETTINGS:
+                    await iCloudService.syncSettings(data)
+                    break
+                case SyncType.PERSONAS:
+                    await iCloudService.syncPersonas(data)
+                    break
+                case SyncType.CONVERSATIONS:
+                    await iCloudService.syncConversations(data)
+                    break
+            }
 
-            // Show final success notification
-            notifyRef();
-            $q.notify({
-                position: 'bottom-right',
+            notifySync('success', `icloud.sync.${type}.synced.message`, {
                 type: 'positive',
                 icon: 'mdi-cloud-check',
-                message: t('icloud.sync.success.message'),
                 timeout: 2000
-            });
-
+            })
         } catch (error) {
-            logger.error(`[CloudSync] - iCloud sync error: ${error}`);
-            $q.notify({
-                position: 'bottom-right',
+            logger.error(`[CloudSync] - Error syncing ${type}: ${error}`)
+            notifySync('error', `icloud.sync.${type}.error.message`, {
                 type: 'negative',
                 icon: 'mdi-cloud-alert',
-                message: t('icloud.sync.error.message'),
-                caption: t('icloud.sync.error.caption'),
-                timeout: 3000
-            });
-        } finally {
-            syncing.value = false;
+                timeout: 2000
+            })
+            throw error
         }
-    };
+    }
+
+    // Sync to cloud with improved error handling and progress tracking
+    const syncToCloud = async () => {
+        if (syncing.value || !iCloudService.isAvailable()) {
+            return
+        }
+
+        try {
+            // Start sync process
+            syncProgress.value = 0
+            syncStatus.value = t('icloud.sync.checking.message')
+            
+            try {
+                // Track any pending changes
+                trackStoreChanges()
+                
+                if (!syncManager.hasLocalChanges()) {
+                    notifySync('info', 'icloud.sync.noChanges.message', {
+                        icon: 'mdi-cloud-check',
+                        timeout: 2000
+                    })
+                    return
+                }
+            } catch (error) {
+                logger.error(`[CloudSync] - Error tracking changes: ${error}`)
+                notifySync('error', 'icloud.sync.error.message', {
+                    type: 'negative',
+                    icon: 'mdi-cloud-alert',
+                    caption: 'Error tracking changes',
+                    timeout: 3000
+                })
+                return
+            }
+
+            // Queue sync operations
+            const syncConfigs = [
+                {
+                    type: SyncType.SETTINGS,
+                    enabled: settingsStore.syncOptions.settings,
+                    data: settingsStore.$state
+                },
+                {
+                    type: SyncType.PERSONAS,
+                    enabled: settingsStore.syncOptions.personas,
+                    data: teamsStore.personas
+                },
+                {
+                    type: SyncType.CONVERSATIONS,
+                    enabled: settingsStore.syncOptions.conversations,
+                    data: teamsStore.history
+                }
+            ]
+
+            const totalOperations = syncConfigs.filter(c => c.enabled).length
+            let completedOperations = 0
+
+            // Process each enabled sync config
+            for (const config of syncConfigs) {
+                if (!config.enabled) continue
+
+                syncStatus.value = t(`icloud.sync.${config.type}.inProgress.message`)
+                
+                try {
+                    await processSyncOperation(config.type, config.data)
+                    
+                    // Update progress
+                    completedOperations++
+                    syncProgress.value = (completedOperations / totalOperations) * 100
+                    
+                } catch (error) {
+                    if (error.message === 'SYNC_CONFLICT') {
+                        const resolutions = await handleConflict(
+                            iCloudService._conflictResolver.conflicts
+                        )
+                        if (resolutions.length > 0) {
+                            // Apply conflict resolutions
+                            const mergedData = iCloudService._conflictResolver.resolve(resolutions)
+                            // Retry sync with resolved data
+                            await processSyncOperation(config.type, mergedData)
+                        }
+                    } else {
+                        throw error
+                    }
+                }
+            }
+
+            // Update last sync timestamp after successful sync
+            settingsStore.lastSync = new Date().toISOString()
+            syncManager.clearCompleted()
+            
+            notifySync('success', 'icloud.sync.success.message', {
+                type: 'positive',
+                icon: 'mdi-cloud-check',
+                timeout: 2000
+            })
+
+        } catch (error) {
+            logger.error(`[CloudSync] - iCloud sync error: ${error}`)
+            notifySync('error', 'icloud.sync.error.message', {
+                type: 'negative',
+                icon: 'mdi-cloud-alert',
+                caption: error.message,
+                timeout: 3000
+            })
+        }
+    }
 
     return {
         syncing,
-        syncToCloud
-    };
+        syncToCloud,
+        hasUnsynced,
+        syncProgress,
+        syncStatus
+    }
 }

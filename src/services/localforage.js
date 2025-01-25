@@ -10,7 +10,7 @@ const defaultLocalForageConfiguration = {
 
 // Only create settingsDB if settings haven't been migrated to localStorage yet
 let settingsDB;
-if (!localStorage.getItem('dBVersion')) {
+if (localStorage.getItem('dBVersion') === null) {
     settingsDB = localforage.createInstance({
         ...defaultLocalForageConfiguration,
         storeName: 'settings',
@@ -48,10 +48,22 @@ const localForagePlugin = (({ store }) => {
     // Called at application start, when the plugin is registered for the store.
     let persistedState = {};
     storage.iterate((value, key, iterationNumber) => {
-        persistedState[key] = JSON.parse(value);
-        // Remove keys with empty values, so default values can be used instead
-        if (persistedState[key] == null || persistedState[key].length == 0) {
-            delete persistedState[key];
+        try {
+            const parsedValue = JSON.parse(value);
+            if (typeof parsedValue === 'undefined') {
+                logger.error(`[localforage] - Parsed value is undefined for key ${key} in store ${store.$id}`);
+                storage.removeItem(key);
+                return;
+            }
+            persistedState[key] = parsedValue;
+            // Remove keys with empty values, so default values can be used instead
+            if (persistedState[key] == null || persistedState[key].length == 0) {
+                delete persistedState[key];
+                storage.removeItem(key);
+            }
+        } catch (error) {
+            logger.error(`[localforage] - Error parsing value for key ${key} in store ${store.$id}: ${error}`);
+            storage.removeItem(key); // Remove invalid data
         }
 
         // Keep indexedDB clean from old and now unused persisted state keys.
@@ -73,7 +85,16 @@ const localForagePlugin = (({ store }) => {
         store.$subscribe((mutation, state) => {
             // Persist each state element separately
             for (const element in state) {
-                storage.setItem(element, JSON.stringify(state[element]));
+                try {
+                    const serializedValue = JSON.stringify(state[element]);
+                    if (typeof serializedValue === 'undefined') {
+                        logger.error(`[localforage] - Cannot serialize undefined value for key ${element} in store ${store.$id}`);
+                        continue;
+                    }
+                    storage.setItem(element, serializedValue);
+                } catch (error) {
+                    logger.error(`[localforage] - Error serializing value for key ${element} in store ${store.$id}: ${error}`);
+                }
             }
         });
     }

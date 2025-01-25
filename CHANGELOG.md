@@ -31,6 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When removing a persona; should check if it is used in messages and alert user.
 - When settings are restored from last message, personas with same name or id are duplicated if prompt or avatar has changed in persona settings compared to persona in message.
 
+## v2.2.13 - 2025-01-25
+- Added robust error handling for JSON operations in localforage service
+- Fixed JSON parsing issues by adding strict undefined checks and detailed error logging
+- Added automatic cleanup of invalid data in IndexedDB storage
+- Improved error messages with store context for better debugging
+- Fixed database version 9 upgrade which could get stuck in loading state
+- Fixed async operation handling in database upgrades to ensure sequential execution
+- Fixed settings database post migration cleanup to ensure that the database is in a clean state regardless of what happened in previous upgrade attempts
+
 ## v2.2.12 - 2025-01-24
 - Changed general application settings storage from IndexedDB to localStorage for improved performance
 - Added database upgrade (v9) to migrate existing settings from IndexedDB to localStorage

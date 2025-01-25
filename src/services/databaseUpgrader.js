@@ -1,5 +1,6 @@
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
+import localforage from 'localforage';
 import { imageDB, settingsDB, teamsDB } from '@/services/localforage.js';
 import { useSettingsStore } from '@/stores/settings-store.js';
 import storage from '@/services/localStorage.js';
@@ -59,7 +60,7 @@ const databaseUpgrader = () => {
             const version = await settingsDB.getItem('dBVersion');
             return version ? parseInt(JSON.parse(version)) : 0;
         } catch (error) {
-            logger.error(`[dbUpgrader] - Error getting version from IndexedDB: ${error}`);
+            logger.error(`[dbUpgrader] - Error getting version from IndexedDB: ${error.message}`);
             return 0;
         }
     };
@@ -71,10 +72,19 @@ const databaseUpgrader = () => {
 
     const isUpgradeNeed = async () => {
         logger.log("[dbUpgrader] - Checking if database upgrade is needed...");
+        
+        // First check if old settings database exists and needs cleanup
+        const hasOldSettings = await checkSettingsDatabase();
+        if (hasOldSettings) {
+            logger.log("[dbUpgrader] - Old settings database found, upgrade needed");
+            return true;
+        }
+
+        // Then check version number
         let currentVersion = await getDBVersion();
-        let isNeeded = currentVersion < LATEST_DB_VERSION ? true : false;
+        let isNeeded = currentVersion < LATEST_DB_VERSION;
         logger.log(`[dbUpgrader] - Current version is ${currentVersion}. Latest version is ${LATEST_DB_VERSION}.`)
-        logger.log(`[dbUpgrader] - Upgrade ${isNeeded ? "" : "not"} needed`);
+        logger.log(`[dbUpgrader] - Version upgrade ${isNeeded ? "" : "not"} needed`);
         return isNeeded;
     }
 
@@ -85,11 +95,11 @@ const databaseUpgrader = () => {
             
             if (!settingsStore.hasOwnProperty('modelOptions')) return;
             
-            settingsStore.modelOptions.value = modelOptions;
             const modelOptions = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-1106-preview'];
+            settingsStore.modelOptions.value = modelOptions;
             await settingsDB.setItem('modelOptions', JSON.stringify(modelOptions));
         } catch (error) {
-            logger.error(`[dbUpgrader][v7] - Error: ${JSON.stringify(error)}`);
+            logger.error(`[dbUpgrader][v7] - Error: ${error.message}`);
             throw error;
         }
     }
@@ -99,50 +109,108 @@ const databaseUpgrader = () => {
         try {
             await settingsDB.removeItem('modelOptions');
         } catch (error) {
-            logger.error(`[dbUpgrader][v8] - Error: ${JSON.stringify(error)}`);
+            logger.error(`[dbUpgrader][v8] - Error: ${error.message}`);
             throw error;
         }
     }
 
-    // Migrate settings from IndexedDB to localStorage
+    // Check if old settings database needs migration
+    const checkSettingsDatabase = async () => {
+        const tempSettingsDB = localforage.createInstance({
+            driver: localforage.INDEXEDDB,
+            name: 'TeamAI',
+            storeName: 'settings',
+            description: 'Application settings'
+        });
+
+        try {
+            const keys = await tempSettingsDB.keys();
+            await tempSettingsDB.clear(); // Clean up the temporary instance
+            return keys.length > 0;
+        } catch (error) {
+            logger.error(`[dbUpgrader] - Error checking settings database: ${error.message}`);
+            return false;
+        }
+    };
+
+    // Migrate settings from IndexedDB to localStorage and ensure cleanup
     const upgradeToVersion9 = async () => {
         try {
             logger.log("[dbUpgrader][v9] - Starting settings migration to localStorage");
             const settingsStore = useSettingsStore();
 
-            // Get all settings from IndexedDB
-            logger.log("[dbUpgrader][v9] - Reading settings from IndexedDB");
-            const settingsEntries = [];
-            await settingsDB.iterate((value, key) => {
-                if (key in settingsStore) { // Only migrate keys that exist in the store
-                    try {
-                        const parsedValue = JSON.parse(value);
-                        settingsEntries.push([key, parsedValue]);
-                        logger.log(`[dbUpgrader][v9] - Read ${key} from IndexedDB`);
-                    } catch (error) {
-                        logger.error(`[dbUpgrader][v9] - Error parsing ${key}: ${error}`);
+            // Since settingsDB might be null (if dBVersion already exists in localStorage),
+            // we need to create a temporary instance to check for any remaining data
+            const tempSettingsDB = localforage.createInstance({
+                driver: localforage.INDEXEDDB,
+                name: 'TeamAI',
+                storeName: 'settings',
+                description: 'Application settings'
+            });
+
+            try {
+                // Check if there's any data in IndexedDB to migrate
+                const keys = await tempSettingsDB.keys();
+                
+                if (keys.length > 0) {
+                    logger.log("[dbUpgrader][v9] - Found settings in IndexedDB to migrate");
+                    const settingsEntries = [];
+
+                    // Process each key sequentially
+                    for (const key of keys) {
+                        if (key in settingsStore) { // Only migrate keys that exist in the store
+                            try {
+                                const value = await tempSettingsDB.getItem(key);
+                                if (value !== null) {
+                                    const parsedValue = typeof value === 'string' ? JSON.parse(value) : value;
+                                    settingsEntries.push([key, parsedValue]);
+                                    logger.log(`[dbUpgrader][v9] - Read ${key} from IndexedDB`);
+                                }
+                            } catch (error) {
+                                logger.error(`[dbUpgrader][v9] - Error reading ${key}: ${error.message}`);
+                            }
+                        }
                     }
+
+                    // Update settings store with migrated values
+                    logger.log("[dbUpgrader][v9] - Updating settings store");
+                    for (const [key, value] of settingsEntries) {
+                        try {
+                            if (typeof settingsStore[key] === 'object' && 'value' in settingsStore[key]) {
+                                // Handle ref values
+                                settingsStore[key].value = value;
+                            } else {
+                                // Handle direct values
+                                settingsStore[key] = value;
+                            }
+                            logger.log(`[dbUpgrader][v9] - Updated ${key} in settings store`);
+                        } catch (error) {
+                            logger.error(`[dbUpgrader][v9] - Error updating ${key}: ${error.message}`);
+                        }
+                    }
+
+                    // Drop settings database store after successful migration
+                    logger.log("[dbUpgrader][v9] - Dropping settings database");
+                    try {
+                        await localforage.dropInstance({
+                            name: 'TeamAI',
+                            storeName: 'settings'
+                        });
+                        logger.log("[dbUpgrader][v9] - Settings database dropped");
+                    } catch (error) {
+                        logger.error(`[dbUpgrader][v9] - Error dropping database: ${error.message}`);
+                        // Continue even if drop fails - the data is still migrated to localStorage
+                    }
+                } else {
+                    logger.log("[dbUpgrader][v9] - No settings found in IndexedDB to migrate");
                 }
-            });
-
-            // Update settings store with migrated values
-            logger.log("[dbUpgrader][v9] - Updating settings store");
-            for (const [key, value] of settingsEntries) {
-                settingsStore[key] = value;
-                logger.log(`[dbUpgrader][v9] - Updated ${key} in settings store`);
+            } finally {
+                await tempSettingsDB.clear(); // Clean up any remaining data
             }
-
-            // All settings are migrated, drop settings database
-            logger.log("[dbUpgrader][v9] - All settings migrated, dropping settings database");
-            await settingsDB._dropInstance({
-                name: settingsDB._config.name,
-                storeName: settingsDB._config.storeName
-            });
-            logger.log("[dbUpgrader][v9] - Settings database dropped");
 
             logger.log("[dbUpgrader][v9] - Settings migration completed");
         } catch (error) {
-            logger.error(`[dbUpgrader][v9] - Error: ${JSON.stringify(error)}`);
+            logger.error(`[dbUpgrader][v9] - Error: ${error.message}`);
             throw error;
         }
     }
@@ -199,7 +267,7 @@ const databaseUpgrader = () => {
                                 }
 
                             } catch (error) {
-                                logger.error(`[dbUpgrader][v6] - Store image error: ${JSON.stringify(error)}`);
+                                logger.error(`[dbUpgrader][v6] - Store image error: ${error.message}`);
                                 throw error;
                             }
                         } else {
@@ -224,7 +292,7 @@ const databaseUpgrader = () => {
                 throw new Error("Error when upgrading messages.");
             }
         } catch (error) {
-            logger.error(`[dbUpgrader][v6] - Error: ${JSON.stringify(error)}`);
+            logger.error(`[dbUpgrader][v6] - Error: ${error.message}`);
             throw error;
         }
     }
@@ -243,40 +311,56 @@ const databaseUpgrader = () => {
         let dbVersionAfterUpgrade = 0;
 
         let dBUpgrades = dBVersions.filter(version => version.version > dbVersionBeforeUpgrade);
-        let progress = 1;
         let nbrUpgrades = dBUpgrades.length;
 
         try {
-            // Execute the needed upgrades
-            dBUpgrades.forEach(async (version) => {
-                logger.log(`[dbUpgrader] - Upgrading database to version: ${version.version}`);
-                upgradeDialog({ caption: `${progress++} of ${nbrUpgrades}` });
+            // Ensure version 9 upgrade runs if old settings database exists
+            const hasOldSettings = await checkSettingsDatabase();
+            if (hasOldSettings) {
+                logger.log("[dbUpgrader] - Found old settings database, running v9 upgrade");
+                upgradeDialog({ caption: "1 of 1" });
                 try {
-                    logger.log(`[dbUpgrader][v${version.version}] - Upgrading...`);
-                    await version.upgrade();
-                    logger.log(`[dbUpgrader][v${version.version}] - Upgrade finished`);
-
-                    await setDBVersion(version.version);
-                    dbVersionAfterUpgrade = await getDBVersion();
-                    logger.log(`[dbUpgrader][v${version.version}] - DB version set to ${dbVersionAfterUpgrade}`);
-
-                    // All upgrades are done
-                    upgradeDialog({
-                        icon: 'mdi-check',
-                        spinner: false,
-                        message: t('databaseUpgrade.completed.message'),
-                        caption: t('databaseUpgrade.completed.caption', { version: dbVersionAfterUpgrade }),
-                        timeout: 5000,
-                        actions: [{ label: t('databaseUpgrade.completed.action'), handler: () => { } }]
-                    });
+                    await upgradeToVersion9();
+                    await setDBVersion(9);
+                    dbVersionAfterUpgrade = 9;
                 } catch (error) {
-                    logger.error(`[dbUpgrader] - Upgrade error: ${JSON.stringify(error)}`);
+                    logger.error(`[dbUpgrader] - Settings migration error: ${error.message}`);
                     throw error;
                 }
+            } else {
+                // Execute regular version upgrades sequentially
+                for (let i = 0; i < dBUpgrades.length; i++) {
+                    const version = dBUpgrades[i];
+                    logger.log(`[dbUpgrader] - Upgrading database to version: ${version.version}`);
+                    upgradeDialog({ caption: `${i + 1} of ${nbrUpgrades}` });
+                    
+                    try {
+                        logger.log(`[dbUpgrader][v${version.version}] - Upgrading...`);
+                        await version.upgrade();
+                        logger.log(`[dbUpgrader][v${version.version}] - Upgrade finished`);
+
+                        await setDBVersion(version.version);
+                        dbVersionAfterUpgrade = version.version;
+                        logger.log(`[dbUpgrader][v${version.version}] - DB version set to ${dbVersionAfterUpgrade}`);
+                    } catch (error) {
+                        logger.error(`[dbUpgrader][v${version.version}] - Upgrade error: ${error.message}`);
+                        throw error;
+                    }
+                }
+            }
+
+            // Only show completion notification after all upgrades are done
+            upgradeDialog({
+                icon: 'mdi-check',
+                spinner: false,
+                message: t('databaseUpgrade.completed.message'),
+                caption: t('databaseUpgrade.completed.caption', { version: dbVersionAfterUpgrade }),
+                timeout: 5000,
+                actions: [{ label: t('databaseUpgrade.completed.action'), handler: () => { } }]
             });
 
         } catch (error) {
-            logger.error(`[dbUpgrader] - Upgrade error: ${JSON.stringify(error)}`);
+            logger.error(`[dbUpgrader] - Upgrade error: ${error.message}`);
 
             // Notify user of error
             $q.notify({

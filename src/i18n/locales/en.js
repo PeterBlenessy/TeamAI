@@ -541,12 +541,32 @@ export default {
             inProgress: {
                 message: 'Syncing settings...'
             },
+            noChanges: {
+                message: 'No changes to sync'
+            },
             success: {
                 message: 'Settings synced'
             },
             error: {
                 message: 'Sync failed',
                 caption: 'Unable to sync with iCloud'
+            },
+            conflict: {
+                title: 'Sync Conflict Detected',
+                subtitle: 'Choose which version to keep for each conflict',
+                choose: 'Choose which version to keep:',
+                local: 'Local Version',
+                remote: 'Remote Version',
+                useLocal: 'Use Local',
+                useRemote: 'Use Remote',
+                resolved: 'Conflict resolved'
+            },
+            status: {
+                processing: 'Processing sync operations...',
+                offline: 'Working offline',
+                pendingChanges: 'Changes pending sync',
+                retrying: 'Retrying sync...',
+                error: 'Sync error occurred'
             },
             settings: {
                 found: {
