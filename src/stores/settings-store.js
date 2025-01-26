@@ -24,6 +24,10 @@ export const useSettingsStore = defineStore('settings', () => {
         quickSettings: ref(loadFromStorage('quickSettings', true)),
         streamResponse: ref(loadFromStorage('streamResponse', true)),
 
+        // Logging settings
+        loggingEnabled: ref(loadFromStorage('loggingEnabled', true)),
+        logLevel: ref(loadFromStorage('logLevel', 'info')),
+
         // API settings
         apiProviders: ref(loadFromStorage('apiProviders', [])),
         defaultProvider: ref(loadFromStorage('defaultProvider', 'Ollama')),

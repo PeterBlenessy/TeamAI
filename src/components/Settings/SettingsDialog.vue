@@ -14,6 +14,7 @@
                 <q-tab name="text" :icon="mdiTooltipText" :label="t('settings.text.label')" />
                 <q-tab name="image" :icon="mdiTooltipImage" :label="t('settings.image.label')" />
                 <q-tab name="cloudSync" :icon="mdiCloudSync" :label="t('settings.cloud.label')" />
+                <q-tab name="advanced" :icon="mdiCogBox" :label="t('settings.advanced.label')" />
             </q-tabs>
 
             <q-separator />
@@ -44,6 +45,11 @@
                 <q-tab-panel name="cloudSync">
                     <CloudSyncSettings />
                 </q-tab-panel>
+
+                <!-- Advanced settings -->
+                <q-tab-panel name="advanced">
+                    <AdvancedSettings />
+                </q-tab-panel>
             </q-tab-panels>
         </q-card-section>
     </q-card>
@@ -54,13 +60,14 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { useHelpers } from '@/composables/useHelpers';
-import { mdiCogOutline, mdiWeb, mdiTooltipText, mdiTooltipImage, mdiCloudSync } from '@quasar/extras/mdi-v7';
+import { mdiCogOutline, mdiWeb, mdiTooltipText, mdiTooltipImage, mdiCloudSync, mdiCogBox } from '@quasar/extras/mdi-v7';
 import UserAvatarSettings from '@/components/Settings/UserAvatarSettings.vue';
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue';
 import ProviderSettings from "@/components/Settings/ProviderSettings.vue";
 import TextGenerationSettings from "@/components/Settings/TextGenerationSettings.vue";
 import ImageGenerationSettings from "@/components/Settings/ImageGenerationSettings.vue";
 import CloudSyncSettings from '@/components/Settings/CloudSyncSettings.vue';
+import AdvancedSettings from '@/components/Settings/AdvancedSettings.vue';
 
 const props = defineProps({
     initialTab: {

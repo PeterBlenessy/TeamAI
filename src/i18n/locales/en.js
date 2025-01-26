@@ -241,6 +241,41 @@ export default {
             }
         },
 
+        advanced: {
+            label: 'Advanced',
+            tooltip: 'Advanced settings',
+
+            logging: {
+                label: 'Application Logging',
+                caption: 'Configure application logging settings',
+                enabled: {
+                    label: 'Enable Logging',
+                    caption: 'Write application logs to file',
+                    tooltip: 'Enable or disable application logging'
+                },
+                level: {
+                    label: 'Log Level',
+                    caption: 'Set the minimum severity level for logging',
+                    tooltip: 'Select the minimum log level to record',
+                    levels: {
+                        trace: 'Trace - Very detailed debugging',
+                        debug: 'Debug - General debugging',
+                        info: 'Info - Normal operations',
+                        warn: 'Warning - Potential issues',
+                        error: 'Error - Serious problems'
+                    }
+                },
+                viewer: {
+                    label: 'View Logs',
+                    tooltip: 'Open log viewer',
+                    title: 'Application Logs',
+                    copy: 'Copy Logs',
+                    clear: 'Clear Logs',
+                    empty: 'No logs available'
+                }
+            }
+        },
+
         cloud: {
             label: 'Cloud Sync',
             tooltip: 'Cloud sync settings',

@@ -1,4 +1,13 @@
 import { trace, debug, info, warn, error } from "@tauri-apps/plugin-log";
+import { useSettingsStore } from '@/stores/settings-store';
+
+const logLevels = {
+    'trace': 0,
+    'debug': 1,
+    'info': 2,
+    'warn': 3,
+    'error': 4
+};
 
     // ---------------------------------------------------------------------------------------------
     // Print 'message' based on selected log level.
@@ -23,13 +32,66 @@ import { trace, debug, info, warn, error } from "@tauri-apps/plugin-log";
     //  - warn   - hazardous situations
     //  - error  - serious errors
     // ---------------------------------------------------------------------------------------------
+// Initialize store statically to avoid Pinia initialization issues
+let store = null;
+const getStore = () => {
+    if (!store) {
+        try {
+            store = useSettingsStore();
+        } catch (error) {
+            // Default values if store isn't available
+            return {
+                loggingEnabled: true,
+                logLevel: 'info'
+            };
+        }
+    }
+    return store;
+};
+
+const shouldLog = (level) => {
+    const settings = getStore();
+    if (!settings.loggingEnabled) return false;
+    return logLevels[level] >= logLevels[settings.logLevel];
+};
+
 const logger = {
-    info: (message) => { info(message.toString()); console.info(message.toString()); },
-    debug: (message) => { debug(message.toString()); console.debug(message.toString()); },
-    error: (message) => { error(message.toString()); console.error(message.toString()); },
-    log: (message) => { info(message.toString()); console.log(message.toString()); },
-    trace: (message) => { trace(message.toString()); console.trace(message.toString()); },
-    warn: (message) => { warn(message.toString()); console.warn(message.toString()); }
+    info: (message) => {
+        if (shouldLog('info')) {
+            info(message.toString());
+            console.info(message.toString());
+        }
+    },
+    debug: (message) => {
+        if (shouldLog('debug')) {
+            debug(message.toString());
+            console.debug(message.toString());
+        }
+    },
+    error: (message) => {
+        if (shouldLog('error')) {
+            error(message.toString());
+            console.error(message.toString());
+        }
+    },
+    log: (message) => {
+        if (shouldLog('info')) {
+            info(message.toString());
+            console.log(message.toString());
+        }
+    },
+    trace: (message) => {
+        if (shouldLog('trace')) {
+            trace(message.toString());
+            console.trace(message.toString());
+        }
+    },
+    warn: (message) => {
+        if (shouldLog('warn')) {
+            warn(message.toString());
+            console.warn(message.toString());
+        }
+    }
 };
 
 export default logger;
