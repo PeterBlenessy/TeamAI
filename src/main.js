@@ -18,26 +18,29 @@ import { createI18n } from 'vue-i18n';
 import messages from '@/i18n';
 
 // ---------------------------------------------------------------------------------------------
-// Add before creating the app
+// Resize handler to suppress only ResizeObserver errors while preserving other logging
 const resizeHandler = () => {
-  // Suppress specific ResizeObserver errors
+  // Track if we've already logged ResizeObserver errors to prevent spam
+  let hasLoggedResizeError = false;
+
+  // Only filter ResizeObserver console errors, preserve all other error logging
   const originalError = window.console.error;
   window.console.error = (...args) => {
-    if (args.length > 0 && typeof args[0] === 'string') {
-      if (args[0].includes('ResizeObserver') || 
-          args[0].includes('ResizeObserver loop completed with undelivered notifications.') ||
-          args[0].includes('ResizeObserver loop limit exceeded')) {
-        return;
+    if (args.length > 0 && typeof args[0] === 'string' && args[0].includes('ResizeObserver')) {
+      // Only log the first occurrence of ResizeObserver errors
+      if (!hasLoggedResizeError) {
+        originalError.apply(console, ['ResizeObserver errors suppressed to reduce noise']);
+        hasLoggedResizeError = true;
       }
+      return;
     }
     originalError.apply(console, args);
   };
 
+  // Handle ResizeObserver window errors
   window.addEventListener('error', (e) => {
     if (e.message.includes('ResizeObserver')) {
       e.stopImmediatePropagation();
-      e.stopPropagation();
-      e.preventDefault();
       return false;
     }
   }, true);

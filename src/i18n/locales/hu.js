@@ -251,6 +251,41 @@ export default {
                 natural: 'Természetes',
             }
         },
+        advanced: {
+            label: 'Haladó',
+            tooltip: 'Haladó beállítások',
+
+            logging: {
+                label: 'Alkalmazás naplózás',
+                caption: 'Alkalmazás naplózási beállítások konfigurálása',
+                enabled: {
+                    label: 'Naplózás engedélyezése',
+                    caption: 'Alkalmazás naplók írása fájlba',
+                    tooltip: 'Alkalmazás naplózás be/ki kapcsolása'
+                },
+                level: {
+                    label: 'Naplózási szint',
+                    caption: 'Minimális naplózási szint beállítása',
+                    tooltip: 'Válassza ki a minimális naplózási szintet',
+                    levels: {
+                        trace: 'Nyomkövetés - Nagyon részletes hibakeresés',
+                        debug: 'Hibakeresés - Általános hibakeresés',
+                        info: 'Információ - Normál műveletek',
+                        warn: 'Figyelmeztetés - Lehetséges problémák',
+                        error: 'Hiba - Súlyos problémák'
+                    }
+                },
+                viewer: {
+                    label: 'Naplók megtekintése',
+                    tooltip: 'Napló megjelenítő megnyitása',
+                    title: 'Alkalmazás naplók',
+                    copy: 'Naplók másolása',
+                    clear: 'Naplók törlése',
+                    empty: 'Nincsenek naplók'
+                }
+            }
+        },
+
         cloud: {
             syncNow: 'Szinkronizálj most'
         }

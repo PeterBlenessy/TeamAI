@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v2.2.15 - 2025-01-26
+- Fixed dynamic log level changes in backend by simplifying log level management
+- Added informative log messages when log level changes
+- Improved backend log level synchronization
+- Added missing log-related translations for Hungarian and Swedish locales
+- Improved separation of logging functionality between logger.js and useLogger.js
+
 ## v2.2.14 - 2025-01-26
 - Added Advanced settings pane to configure application logging and log levels
 - Added ability to view and clear log files

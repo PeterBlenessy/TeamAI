@@ -1,7 +1,7 @@
 {
   "name": "team-ai",
   "private": true,
-  "version": "2.2.14",
+  "version": "2.2.15",
   "type": "module",
   "license": "MIT",
   "author": "Péter Blénessy <peter.blenessy@gmail.com>",
@@ -25,7 +25,7 @@
     "@tauri-apps/cli": "^2.1.0",
     "@tauri-apps/plugin-fs": "~2",
     "@tauri-apps/plugin-http": "~2",
-    "@tauri-apps/plugin-log": "^2.2.0",
+    "@tauri-apps/plugin-log": "~2",
     "@tauri-apps/plugin-os": "~2",
     "@tauri-apps/plugin-process": "~2",
     "@tauri-apps/plugin-shell": "~2",

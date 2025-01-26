@@ -1,14 +1,6 @@
 import { trace, debug, info, warn, error } from "@tauri-apps/plugin-log";
 import { useSettingsStore } from '@/stores/settings-store';
 
-const logLevels = {
-    'trace': 0,
-    'debug': 1,
-    'info': 2,
-    'warn': 3,
-    'error': 4
-};
-
     // ---------------------------------------------------------------------------------------------
     // Print 'message' based on selected log level.
     //
@@ -32,9 +24,19 @@ const logLevels = {
     //  - warn   - hazardous situations
     //  - error  - serious errors
     // ---------------------------------------------------------------------------------------------
-// Initialize store statically to avoid Pinia initialization issues
+
+// Level priorities (lower number = higher priority)
+const logLevels = {
+    'trace': 0,
+    'debug': 1,
+    'info': 2,
+    'warn': 3,
+    'error': 4
+};
+
+// Initialize store and set up log level sync with backend
 let store = null;
-const getStore = () => {
+const initStore = () => {
     if (!store) {
         try {
             store = useSettingsStore();
@@ -49,10 +51,11 @@ const getStore = () => {
     return store;
 };
 
+// Check if message should be logged based on current level
 const shouldLog = (level) => {
-    const settings = getStore();
+    const settings = initStore();
     if (!settings.loggingEnabled) return false;
-    return logLevels[level] >= logLevels[settings.logLevel];
+    return logLevels[settings.logLevel] >= logLevels[level];
 };
 
 const logger = {

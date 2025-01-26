@@ -253,6 +253,41 @@ export default {
                 natural: 'Naturlig'
             }
         },
+        advanced: {
+            label: 'Avancerat',
+            tooltip: 'Avancerade inställningar',
+
+            logging: {
+                label: 'Applikationsloggning',
+                caption: 'Konfigurera inställningar för applikationsloggning',
+                enabled: {
+                    label: 'Aktivera loggning',
+                    caption: 'Skriv applikationsloggar till fil',
+                    tooltip: 'Aktivera eller inaktivera applikationsloggning'
+                },
+                level: {
+                    label: 'Loggnivå',
+                    caption: 'Ställ in lägsta allvarlighetsnivå för loggning',
+                    tooltip: 'Välj den lägsta loggnivån som ska registreras',
+                    levels: {
+                        trace: 'Spårning - Mycket detaljerad felsökning',
+                        debug: 'Felsökning - Allmän felsökning',
+                        info: 'Information - Normala operationer',
+                        warn: 'Varning - Potentiella problem',
+                        error: 'Fel - Allvarliga problem'
+                    }
+                },
+                viewer: {
+                    label: 'Visa loggar',
+                    tooltip: 'Öppna loggvisaren',
+                    title: 'Applikationsloggar',
+                    copy: 'Kopiera loggar',
+                    clear: 'Rensa loggar',
+                    empty: 'Inga loggar tillgängliga'
+                }
+            }
+        },
+
         cloud: {
             syncNow: 'Synkronisera nu'
         }

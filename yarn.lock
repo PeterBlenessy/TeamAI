@@ -568,7 +568,7 @@
   dependencies:
     "@tauri-apps/api" "^2.0.0"
 
-"@tauri-apps/plugin-log@^2.2.0":
+"@tauri-apps/plugin-log@~2":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-log/-/plugin-log-2.2.0.tgz#eb2b315f9768e547ff945baac067517271280c89"
   integrity sha512-g6CsQAR1lsm5ABSZZxpM/iCn86GrMDTTlhj7GPkZkYBRSm3+WczfOAl7SV7HDn77tOKCzhZffwI5uHfRoHutrw==
