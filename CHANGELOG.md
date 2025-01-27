@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v2.2.16 - 2025-01-27
+- Added support for syncing images with conversations, stored in images sub-folder
+- Added support for cleaning up images when no longer referenced by conversations
+
 ## v2.2.15 - 2025-01-26
 - Fixed dynamic log level changes in backend by simplifying log level management
 - Added informative log messages when log level changes

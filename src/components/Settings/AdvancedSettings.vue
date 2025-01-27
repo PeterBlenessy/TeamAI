@@ -1,9 +1,12 @@
 <template>
     <q-list>
         <!-- Logging Settings Section -->
-        <q-item-label header>{{ t('settings.advanced.logging.label') }}</q-item-label>
-        <q-item-label caption>{{ t('settings.advanced.logging.caption') }}</q-item-label>
-
+        <q-item>
+            <q-item-section>
+               <q-item-label>{{ t('settings.advanced.logging.label') }}</q-item-label>
+                <q-item-label caption>{{ t('settings.advanced.logging.caption') }}</q-item-label>
+            </q-item-section>
+        </q-item>
         <!-- Enable Logging Toggle -->
         <q-item>
             <q-item-section avatar>

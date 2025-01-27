@@ -1,9 +1,10 @@
 import { join } from '@tauri-apps/api/path'
 import { homeDir } from '@tauri-apps/api/path'
 import { platform } from '@tauri-apps/plugin-os'
-import { readFile, create, readDir, mkdir, remove } from '@tauri-apps/plugin-fs'
+import { readFile, writeFile, readDir, mkdir, remove } from '@tauri-apps/plugin-fs'
 import logger from '@/services/logger'
 import { syncStateManager } from './syncStateManager'
+import { imageDB } from '@/services/localforage'
 
 const iCloudService = {
     VERSION: '1.0',
@@ -28,6 +29,9 @@ const iCloudService = {
 
                 try {
                     await mkdir(this._container, { recursive: true })
+                    // Create images directory
+                    const imagesPath = await join(this._container, 'images')
+                    await mkdir(imagesPath, { recursive: true })
                     logger.info(`[iCloudService] - Directories created or already exist`)
                 } catch (dirError) {
                     logger.error(`[iCloudService] - Error creating directories: ${dirError}`)
@@ -62,9 +66,7 @@ const iCloudService = {
                     clientId: syncStateManager.getClientId(),
                     firstSeen: new Date().toISOString()
                 }
-                const file = await create(metadataPath)
-                await file.write(new TextEncoder().encode(JSON.stringify(metadata, null, 2)))
-                await file.close()
+                await writeFile(metadataPath, new TextEncoder().encode(JSON.stringify(metadata, null, 2)))
             }
             this._clientId = metadata.clientId
         } catch (error) {
@@ -102,9 +104,7 @@ const iCloudService = {
             }
         }
 
-        const file = await create(syncMetadataPath)
-        await file.write(new TextEncoder().encode(JSON.stringify(this._lastSyncMetadata, null, 2)))
-        await file.close()
+        await writeFile(syncMetadataPath, new TextEncoder().encode(JSON.stringify(this._lastSyncMetadata, null, 2)))
     },
 
     _isMacOS() {
@@ -148,8 +148,7 @@ const iCloudService = {
 
         try {
             const filePath = await join(this._container, fileName)
-            const file = await create(filePath)
-
+            
             this._sequenceNumber++
             const timestamp = new Date().toISOString()
             const timestampMs = Date.now()
@@ -169,9 +168,7 @@ const iCloudService = {
                 } : null
             }
 
-            const contents = JSON.stringify(contentToSave, null, 2)
-            await file.write(new TextEncoder().encode(contents))
-            await file.close()
+            await writeFile(filePath, new TextEncoder().encode(JSON.stringify(contentToSave, null, 2)))
             logger.info(`[iCloudService] - Saved file: ${fileName}`)
             return true
         } catch (error) {
@@ -371,7 +368,55 @@ const iCloudService = {
     async syncConversations(teamsStore) {
         const teamsState = JSON.parse(JSON.stringify(teamsStore.$state))
         const history = Array.isArray(teamsState?.history) ? teamsState.history : []
+
+        // First sync conversations
         await this.handleFileOperations('sync', 'conversations', history)
+
+        // Then sync associated images
+        const imageRefs = new Set()
+        teamsState.messages?.forEach(message => {
+            if (message.choices) {
+                message.choices.forEach(choice => {
+                    if (choice.content.startsWith('image-')) {
+                        imageRefs.add(choice.content)
+                    }
+                })
+            }
+        })
+
+        // Save images to cloud
+        const imagesPath = await join(this._container, 'images')
+        for (const imageName of imageRefs) {
+            const imageBlob = await imageDB.getItem(imageName)
+            if (imageBlob) {
+                try {
+                    const imagePath = await join(imagesPath, imageName)
+                    await writeFile(imagePath, imageBlob)
+                    logger.info(`[iCloudService] - Saved image to cloud: ${imageName}`)
+                } catch (error) {
+                    logger.error(`[iCloudService] - Error saving image ${imageName}: ${error}`)
+                }
+            }
+        }
+
+        // Load any missing images from cloud
+        try {
+            const cloudImages = await readDir(imagesPath)
+            for (const file of cloudImages) {
+                if (!await imageDB.getItem(file.name)) {
+                    try {
+                        const imagePath = await join(imagesPath, file.name)
+                        const imageBlob = await readFile(imagePath)
+                        await imageDB.setItem(file.name, imageBlob)
+                        logger.info(`[iCloudService] - Loaded image from cloud: ${file.name}`)
+                    } catch (error) {
+                        logger.error(`[iCloudService] - Error loading image ${file.name}: ${error}`)
+                    }
+                }
+            }
+        } catch (error) {
+            logger.error(`[iCloudService] - Error reading cloud images directory: ${error}`)
+        }
     },
 
     async getLatestConversations() {
@@ -384,6 +429,46 @@ const iCloudService = {
 
     async cleanupOldConversations(keepCount = 5) {
         await this.handleFileOperations('cleanupOld', 'conversations', null, keepCount)
+    },
+
+    async cleanupOrphanedImages() {
+        try {
+            const imagesPath = await join(this._container, 'images')
+            const cloudImages = await readDir(imagesPath)
+            
+            // Get all image references from latest conversations
+            const result = await this.getLatestConversations()
+            const imageRefs = new Set()
+            const conversations = result?.data?.conversations || []
+            conversations.forEach(conversation => {
+                if (conversation.messages) {
+                    conversation.messages.forEach(message => {
+                        if (message.choices) {
+                            message.choices.forEach(choice => {
+                                if (choice.content.startsWith('image-')) {
+                                    imageRefs.add(choice.content)
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+
+            // Remove any images that aren't referenced in conversations
+            for (const file of cloudImages) {
+                if (!imageRefs.has(file.name)) {
+                    try {
+                        const imagePath = await join(imagesPath, file.name)
+                        await remove(imagePath)
+                        logger.info(`[iCloudService] - Deleted orphaned image: ${file.name}`)
+                    } catch (error) {
+                        logger.error(`[iCloudService] - Error deleting orphaned image ${file.name}: ${error}`)
+                    }
+                }
+            }
+        } catch (error) {
+            logger.error(`[iCloudService] - Error cleaning up orphaned images: ${error}`)
+        }
     }
 }
 
