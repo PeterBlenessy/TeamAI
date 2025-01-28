@@ -55,7 +55,6 @@ export const useSettingsStore = defineStore('settings', () => {
         cloudSync: ref(loadFromStorage('cloudSync', false)),
         cloudProvider: ref(loadFromStorage('cloudProvider', 'iCloud')),
         syncOptions: ref(loadFromStorage('syncOptions', {
-            settings: true,
             personas: true,
             conversations: false
         })),

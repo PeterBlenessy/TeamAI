@@ -45,15 +45,6 @@ export function useCloudSync() {
 
     // Track changes in stores
     const trackStoreChanges = () => {
-        // Settings changes
-        if (settingsStore.syncOptions.settings) {
-            syncManager.trackChange(
-                SyncType.SETTINGS,
-                'settings',
-                settingsStore.$state
-            )
-        }
-
         // Personas changes
         if (settingsStore.syncOptions.personas) {
             teamsStore.personas.forEach((persona, index) => {
@@ -85,9 +76,6 @@ export function useCloudSync() {
             let latestData = null
             
             switch (type) {
-                case SyncType.SETTINGS:
-                    latestData = await iCloudService.getLatestSettings()
-                    break
                 case SyncType.PERSONAS:
                     latestData = await iCloudService.getLatestPersonas()
                     break
@@ -126,9 +114,6 @@ export function useCloudSync() {
 
             // Sync the data
             switch (type) {
-                case SyncType.SETTINGS:
-                    await iCloudService.syncSettings(data)
-                    break
                 case SyncType.PERSONAS:
                     await iCloudService.syncPersonas(data)
                     break
@@ -188,11 +173,6 @@ export function useCloudSync() {
 
             // Queue sync operations
             const syncConfigs = [
-                {
-                    type: SyncType.SETTINGS,
-                    enabled: settingsStore.syncOptions.settings,
-                    data: settingsStore.$state
-                },
                 {
                     type: SyncType.PERSONAS,
                     enabled: settingsStore.syncOptions.personas,

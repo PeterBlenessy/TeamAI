@@ -12,7 +12,6 @@ export const SyncState = {
 
 // Sync item types
 export const SyncType = {
-    SETTINGS: 'settings',
     PERSONAS: 'personas',
     CONVERSATIONS: 'conversations'
 }

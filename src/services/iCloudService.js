@@ -337,10 +337,6 @@ const iCloudService = {
         }
     },
 
-    async syncSettings(settings) {
-        await this.handleFileOperations('sync', 'settings', settings)
-    },
-
     async syncPersonas(personas) {
         await this.handleFileOperations('sync', 'personas', Array.isArray(personas) ? personas : [])
     },
@@ -355,14 +351,6 @@ const iCloudService = {
 
     async cleanupOldPersonas(keepCount = 5) {
         await this.handleFileOperations('cleanupOld', 'personas', null, keepCount)
-    },
-
-    async getLatestSettings() {
-        return await this.handleFileOperations('getLatest', 'settings')
-    },
-
-    async cleanupOldSettings(keepCount = 5) {
-        await this.handleFileOperations('cleanupOld', 'settings', null, keepCount)
     },
 
     async syncConversations(teamsStore) {

@@ -58,28 +58,6 @@
             </q-item-section>
         </q-item>
 
-        <!-- Settings Sync Option -->
-        <q-item>
-            <q-item-section avatar>
-                <q-icon :name="mdiCogSync" :color="iconColor" />
-            </q-item-section>
-            <q-item-section>
-                <q-item-label>{{ t('settings.cloud.options.settings') }}</q-item-label>
-                <q-item-label caption>
-                    {{ t('settings.cloud.options.settingsCaption') }}
-                </q-item-label>
-            </q-item-section>
-            <q-item-section side>
-                <q-toggle
-                    v-model="syncOptions.settings"
-                    :disable="!isMacOS || !cloudSync"
-                    flat
-                    dense
-                    round
-                />
-            </q-item-section>
-        </q-item>
-
         <!-- Personas Sync Option -->
         <q-item>
             <q-item-section avatar>
@@ -164,7 +142,6 @@ import { useCloudSync } from '@/composables/useCloudSync';
 import { 
     mdiCloudSync,
     mdiCloud,
-    mdiCogSync, 
     mdiAccountSync,
     mdiMessageTextClock,
     mdiClockOutline,
