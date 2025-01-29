@@ -64,9 +64,9 @@
                 <q-icon :name="mdiAccountSync" :color="iconColor" />
             </q-item-section>
             <q-item-section>
-                <q-item-label>{{ t('settings.cloud.options.personas') }}</q-item-label>
+                <q-item-label>{{ t('settings.cloud.options.personas.label') }}</q-item-label>
                 <q-item-label caption>
-                    {{ t('settings.cloud.options.personasCaption') }}
+                    {{ t('settings.cloud.options.personas.caption') }}
                 </q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -76,31 +76,67 @@
                     flat
                     dense
                     round
-                />
+                >
+                <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                    {{ t('settings.cloud.options.personas.tooltip') }}
+                </q-tooltip>
+
+                </q-toggle>
             </q-item-section>
         </q-item>
 
-        <!-- Conversations Sync Option -->
-        <q-item>
-            <q-item-section avatar>
-                <q-icon :name="mdiMessageTextClock" :color="iconColor" />
-            </q-item-section>
-            <q-item-section>
-                <q-item-label>{{ t('settings.cloud.options.conversations') }}</q-item-label>
-                <q-item-label caption>
-                    {{ t('settings.cloud.options.conversationsCaption') }}
-                </q-item-label>
-            </q-item-section>
-            <q-item-section side>
-                <q-toggle
-                    v-model="syncOptions.conversations"
-                    :disable="!isMacOS || !cloudSync"
-                    flat
-                    dense
-                    round
-                />
-            </q-item-section>
-        </q-item>
+            <!-- Conversations Sync Option -->
+            <q-item>
+                <q-item-section avatar>
+                    <q-icon :name="mdiMessageTextClock" :color="iconColor" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label>{{ t('settings.cloud.options.conversations.label') }}</q-item-label>
+                    <q-item-label caption>
+                        {{ t('settings.cloud.options.conversations.caption') }}
+                    </q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                    <q-toggle
+                        v-model="syncOptions.conversations"
+                        :disable="!isMacOS || !cloudSync"
+                        flat
+                        dense
+                        round
+                    >
+                        <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.cloud.options.conversations.tooltip') }}
+                        </q-tooltip>
+                    </q-toggle>
+
+                </q-item-section>
+            </q-item>
+
+            <!-- Images Sync Option -->
+            <q-item>
+                <q-item-section avatar>
+                    <q-icon :name="mdiImage" :color="iconColor" />
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label>{{ t('settings.cloud.options.images.label') }}</q-item-label>
+                    <q-item-label caption>
+                        {{ t('settings.cloud.options.images.caption') }}
+                    </q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                    <q-toggle
+                        v-model="syncOptions.images"
+                        :disable="!isMacOS || !cloudSync"
+                        flat
+                        dense
+                        round
+                    >
+                        <q-tooltip :delay="750" max-width="300px" transition-show="scale" transition-hide="scale">
+                            {{ t('settings.cloud.options.images.tooltip') }}
+                        </q-tooltip>
+                    </q-toggle>
+                </q-item-section>
+            </q-item>
 
         <q-separator spaced />
 
@@ -146,7 +182,8 @@ import {
     mdiMessageTextClock,
     mdiClockOutline,
     mdiSync,
-    mdiSyncAlert
+    mdiSyncAlert,
+    mdiImage
 } from '@quasar/extras/mdi-v7';
 
 const { t } = useI18n();

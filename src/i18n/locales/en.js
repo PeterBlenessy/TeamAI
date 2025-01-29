@@ -305,13 +305,23 @@ export default {
             },
             options: {
                 label: 'Sync Options',
-                caption: 'Choose what to sync',
-                settings: 'Application Settings',
-                settingsCaption: 'Sync application preferences and configuration',
-                personas: 'AI Personas',
-                personasCaption: 'Sync your custom AI personas across devices',
-                conversations: 'Chat History',
-                conversationsCaption: 'Sync conversation history and messages'
+                caption: 'Choose what to sync across your devices',
+                tooltip: 'Configure which items to synchronize between your devices',
+                personas: {
+                    label: 'AI Personas',
+                    caption: 'Keep your personas in sync across devices',
+                    tooltip: 'Enable to sync your AI personas between devices'
+                },
+                conversations: {
+                    label: 'Chat History',
+                    caption: 'Keep your chat history in sync',
+                    tooltip: 'Enable to sync conversation history between devices'
+                },
+                images: {
+                    label: 'Generated Images',
+                    caption: 'Keep your AI generated images in sync',
+                    tooltip: 'Enable to sync AI generated images between devices'
+                }
             },
             syncNow: 'Sync now'
         }
@@ -580,7 +590,7 @@ export default {
                 message: 'No changes to sync'
             },
             success: {
-                message: 'Settings synced'
+                message: 'Sync completed'
             },
             error: {
                 message: 'Sync failed',
@@ -658,6 +668,28 @@ export default {
                 },
                 error: {
                     message: 'Failed to sync conversations'
+                }
+            },
+            images: {
+            inProgress: {
+                message: 'Syncing with iCloud...'
+            },
+                found: {
+                    title: 'Newer Images Found',
+                    message: 'Newer images were found in iCloud. Would you like to sync them now?'
+                },
+                loaded: {
+                    message: 'Images updated from iCloud'
+                },
+                actions: {
+                    sync: 'Sync Now',
+                    skip: 'Skip'
+                },
+                synced: {
+                    message: 'Images uploaded to iCloud'
+                },
+                error: {
+                    message: 'Failed to sync images'
                 }
             }
         }

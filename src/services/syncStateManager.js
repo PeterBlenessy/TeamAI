@@ -13,7 +13,8 @@ export const SyncState = {
 // Sync item types
 export const SyncType = {
     PERSONAS: 'personas',
-    CONVERSATIONS: 'conversations'
+    CONVERSATIONS: 'conversations',
+    IMAGES: 'images'
 }
 
 class SyncStateManager {
@@ -22,6 +23,13 @@ class SyncStateManager {
         this._clientId = null
         this._changes = new Map()
         this.syncState = SyncState.IDLE
+    }
+
+    clearCompleted() {
+        if (this.syncState === SyncState.COMPLETED || this.syncState === SyncState.FAILED) {
+            this._changes.clear()
+            this.syncState = SyncState.IDLE
+        }
     }
 
     init() {
@@ -60,13 +68,26 @@ class SyncStateManager {
 
     // Track changes
     trackChange(type, itemId, change) {
-        const key = `${type}:${itemId}`
-        this._changes.set(key, {
-            ...change,
-            timestamp: Date.now(),
-            vectorClock: this.incrementVectorClock()
-        })
-        logger.info(`[SyncManager] Tracked change for ${key}`)
+        if (!type || !itemId || !change) {
+            logger.error(`[SyncManager] Invalid parameters for trackChange: type=${type}, itemId=${itemId}`)
+            this.syncState = SyncState.FAILED
+            throw new Error('Invalid parameters for tracking change')
+        }
+
+        try {
+            const key = `${type}:${itemId}`
+            this._changes.set(key, {
+                ...change,
+                timestamp: Date.now(),
+                vectorClock: this.incrementVectorClock()
+            })
+            this.syncState = SyncState.PENDING
+            logger.info(`[SyncManager] Tracked change for ${key}`)
+        } catch (error) {
+            logger.error(`[SyncManager] Error tracking change: ${error}`)
+            this.syncState = SyncState.FAILED
+            throw error
+        }
     }
 
     // Get changes for type
@@ -98,6 +119,10 @@ class SyncStateManager {
         const newId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         window?.localStorage?.setItem('sync_client_id', newId)
         return newId
+    }
+
+    hasLocalChanges() {
+        return this._changes.size > 0
     }
 
     hasChanges(type) {

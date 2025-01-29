@@ -289,6 +289,52 @@ export default {
         },
 
         cloud: {
+            label: 'Molnsynkronisering',
+            tooltip: 'Inställningar för molnsynkronisering',
+            title: 'Molnsynkronisering',
+            sync: {
+                label: 'Aktivera molnsynkronisering',
+                caption: 'Synkronisera dina inställningar mellan enheter',
+                unavailable: 'Molnsynkronisering är endast tillgänglig på macOS-enheter',
+                tooltip: 'Aktivera eller inaktivera molnsynkronisering'
+            },
+            provider: {
+                label: 'Molnleverantör',
+                caption: 'Välj din molnlagringstjänst',
+                hint: 'Välj din molnlagringstjänst',
+                unavailable: 'Molnleverantörer är endast tillgängliga på macOS',
+                tooltip: 'Välj vilken molntjänst som ska användas för synkronisering'
+            },
+            lastSync: {
+                label: 'Senaste synkronisering',
+                caption: 'Senast synkroniserad: {date}'
+            },
+            enableDialog: {
+                title: 'Molnsynkronisering inaktiverad',
+                message: 'Molnsynkronisering är för närvarande inaktiverad. Vill du aktivera den i inställningarna?',
+                ok: 'Öppna inställningar',
+                cancel: 'Avbryt'
+            },
+            options: {
+                label: 'Synkroniseringsalternativ',
+                caption: 'Välj vad som ska synkroniseras mellan dina enheter',
+                tooltip: 'Konfigurera vilka objekt som ska synkroniseras mellan dina enheter',
+                personas: {
+                    label: 'AI-personas',
+                    caption: 'Håll dina personas synkroniserade',
+                    tooltip: 'Aktivera för att synkronisera dina AI-personas mellan enheter'
+                },
+                conversations: {
+                    label: 'Chatthistorik',
+                    caption: 'Håll din chatthistorik synkroniserad',
+                    tooltip: 'Aktivera för att synkronisera chatthistorik mellan enheter'
+                },
+                images: {
+                    label: 'Genererade bilder',
+                    caption: 'Håll dina AI-genererade bilder synkroniserade',
+                    tooltip: 'Aktivera för att synkronisera AI-genererade bilder mellan enheter'
+                }
+            },
             syncNow: 'Synkronisera nu'
         }
     },
@@ -539,10 +585,10 @@ export default {
                 message: 'Kontrollerar uppdateringar...'
             },
             inProgress: {
-                message: 'Synkroniserar inställningar...'
+                message: 'Synkroniserar med iCloud...'
             },
             success: {
-                message: 'Inställningar synkroniserade'
+                message: 'Synkronisering slutförd'
             },
             error: {
                 message: 'Synkronisering misslyckades',
@@ -603,6 +649,28 @@ export default {
                 },
                 error: {
                     message: 'Misslyckades med att synkronisera konversationer'
+                }
+            },
+            images: {
+                inProgress: {
+                    message: 'Synkroniserar bilder...'
+                },
+                found: {
+                    title: 'Nyare bilder hittade',
+                    message: 'Nyare bilder hittades i iCloud. Vill du synkronisera dem nu?'
+                },
+                loaded: {
+                    message: 'Bilder uppdaterade från iCloud'
+                },
+                actions: {
+                    sync: 'Synkronisera nu',
+                    skip: 'Hoppa över'
+                },
+                synced: {
+                    message: 'Bilder uppladdade till iCloud'
+                },
+                error: {
+                    message: 'Misslyckades med att synkronisera bilder'
                 }
             }
         }

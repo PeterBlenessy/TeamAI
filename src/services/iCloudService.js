@@ -343,8 +343,9 @@ const iCloudService = {
 
     async getLatestPersonas() {
         const result = await this.handleFileOperations('getLatest', 'personas')
-        if (!result?.data?.personas) {
-            return { data: { personas: [] } }
+        // If there's no result (empty folder) or no data, don't treat it as having personas
+        if (!result || !result.data || !result.data.personas || result.data.personas.length === 0) {
+            return null
         }
         return result
     },
@@ -356,54 +357,19 @@ const iCloudService = {
     async syncConversations(teamsStore) {
         const teamsState = JSON.parse(JSON.stringify(teamsStore.$state))
         const history = Array.isArray(teamsState?.history) ? teamsState.history : []
-
-        // First sync conversations
         await this.handleFileOperations('sync', 'conversations', history)
+    },
 
-        // Then sync associated images
-        const imageRefs = new Set()
-        teamsState.messages?.forEach(message => {
-            if (message.choices) {
-                message.choices.forEach(choice => {
-                    if (choice.content.startsWith('image-')) {
-                        imageRefs.add(choice.content)
-                    }
-                })
-            }
-        })
-
-        // Save images to cloud
-        const imagesPath = await join(this._container, 'images')
-        for (const imageName of imageRefs) {
-            const imageBlob = await imageDB.getItem(imageName)
-            if (imageBlob) {
-                try {
-                    const imagePath = await join(imagesPath, imageName)
-                    await writeFile(imagePath, imageBlob)
-                    logger.info(`[iCloudService] - Saved image to cloud: ${imageName}`)
-                } catch (error) {
-                    logger.error(`[iCloudService] - Error saving image ${imageName}: ${error}`)
-                }
-            }
-        }
-
-        // Load any missing images from cloud
+    async syncImage(imageName, imageBlob) {
         try {
-            const cloudImages = await readDir(imagesPath)
-            for (const file of cloudImages) {
-                if (!await imageDB.getItem(file.name)) {
-                    try {
-                        const imagePath = await join(imagesPath, file.name)
-                        const imageBlob = await readFile(imagePath)
-                        await imageDB.setItem(file.name, imageBlob)
-                        logger.info(`[iCloudService] - Loaded image from cloud: ${file.name}`)
-                    } catch (error) {
-                        logger.error(`[iCloudService] - Error loading image ${file.name}: ${error}`)
-                    }
-                }
-            }
+            const imagesPath = await join(this._container, 'images')
+            const imagePath = await join(imagesPath, imageName)
+            await writeFile(imagePath, imageBlob)
+            logger.info(`[iCloudService] - Synced image to cloud: ${imageName}`)
+            return true
         } catch (error) {
-            logger.error(`[iCloudService] - Error reading cloud images directory: ${error}`)
+            logger.error(`[iCloudService] - Error syncing image ${imageName}: ${error}`)
+            throw error
         }
     },
 
@@ -417,6 +383,29 @@ const iCloudService = {
 
     async cleanupOldConversations(keepCount = 5) {
         await this.handleFileOperations('cleanupOld', 'conversations', null, keepCount)
+    },
+
+    async importCloudImages() {
+        try {
+            const imagesPath = await join(this._container, 'images')
+            const cloudImages = await readDir(imagesPath)
+            
+            // Import missing images from cloud
+            for (const file of cloudImages) {
+                try {
+                    if (!await imageDB.getItem(file.name)) {
+                        const imagePath = await join(imagesPath, file.name)
+                        const imageBlob = await readFile(imagePath)
+                        await imageDB.setItem(file.name, imageBlob)
+                        logger.info(`[iCloudService] - Imported image from cloud: ${file.name}`)
+                    }
+                } catch (error) {
+                    logger.error(`[iCloudService] - Error importing image ${file.name}: ${error}`)
+                }
+            }
+        } catch (error) {
+            logger.error(`[iCloudService] - Error importing cloud images: ${error}`)
+        }
     },
 
     async cleanupOrphanedImages() {

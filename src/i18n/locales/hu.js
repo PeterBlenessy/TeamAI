@@ -287,6 +287,52 @@ export default {
         },
 
         cloud: {
+            label: 'Felhő szinkronizálás',
+            tooltip: 'Felhő szinkronizálási beállítások',
+            title: 'Felhő szinkronizálás',
+            sync: {
+                label: 'Felhő szinkronizálás engedélyezése',
+                caption: 'Beállítások szinkronizálása az eszközök között',
+                unavailable: 'A felhő szinkronizálás csak macOS eszközökön érhető el',
+                tooltip: 'Felhő szinkronizálás be/ki kapcsolása'
+            },
+            provider: {
+                label: 'Felhő szolgáltató',
+                caption: 'Válassza ki a felhőtárhely szolgáltatót',
+                hint: 'Válassza ki a felhőtárhely szolgáltatót',
+                unavailable: 'A felhő szolgáltatók csak macOS-en érhetők el',
+                tooltip: 'Válassza ki a szinkronizáláshoz használt felhő szolgáltatót'
+            },
+            lastSync: {
+                label: 'Utolsó szinkronizálás',
+                caption: 'Utolsó szinkronizálás: {date}'
+            },
+            enableDialog: {
+                title: 'Felhő szinkronizálás letiltva',
+                message: 'A felhő szinkronizálás jelenleg le van tiltva. Szeretné engedélyezni a beállításokban?',
+                ok: 'Beállítások megnyitása',
+                cancel: 'Mégsem'
+            },
+            options: {
+                label: 'Szinkronizálási beállítások',
+                caption: 'Válassza ki, mit szeretne szinkronizálni az eszközei között',
+                tooltip: 'Konfigurálja, mely elemek szinkronizálódjanak az eszközei között',
+                personas: {
+                    label: 'AI személyiségek',
+                    caption: 'Tartsa szinkronban személyiségeit',
+                    tooltip: 'Engedélyezze AI személyiségek szinkronizálását az eszközök között'
+                },
+                conversations: {
+                    label: 'Beszélgetések',
+                    caption: 'Tartsa szinkronban beszélgetési előzményeit',
+                    tooltip: 'Engedélyezze beszélgetések szinkronizálását az eszközök között'
+                },
+                images: {
+                    label: 'Generált képek',
+                    caption: 'Tartsa szinkronban AI által generált képeit',
+                    tooltip: 'Engedélyezze AI által generált képek szinkronizálását az eszközök között'
+                }
+            },
             syncNow: 'Szinkronizálj most'
         }
     },
@@ -541,10 +587,10 @@ export default {
                 message: 'Frissítések ellenőrzése...'
             },
             inProgress: {
-                message: 'Beállítások szinkronizálása...'
+                message: 'Szinkronizálás iCloud-al...'
             },
             success: {
-                message: 'Beállítások szinkronizálva'
+                message: 'Szinkronizálás befejezve'
             },
             error: {
                 message: 'Szinkronizálás sikertelen',
@@ -605,6 +651,28 @@ export default {
                 },
                 error: {
                     message: 'A beszélgetések szinkronizálása sikertelen'
+                }
+            },
+            images: {
+                inProgress: {
+                    message: 'Képek szinkronizálása...'
+                },
+                found: {
+                    title: 'Újabb képek találhatók',
+                    message: 'Újabb képek találhatók az iCloud-ban. Szeretné szinkronizálni őket most?'
+                },
+                loaded: {
+                    message: 'Képek frissítve az iCloud-ból'
+                },
+                actions: {
+                    sync: 'Szinkronizálás most',
+                    skip: 'Kihagyás'
+                },
+                synced: {
+                    message: 'Képek feltöltve az iCloud-ra'
+                },
+                error: {
+                    message: 'A képek szinkronizálása sikertelen'
                 }
             }
         }

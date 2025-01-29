@@ -101,12 +101,12 @@ import Information from '@/components/Information.vue';
 import Personas from '@/components/Personas.vue';
 import DatabaseUpgrader from '@/services/databaseUpgrader.js';
 import logger from '@/services/logger';
-import iCloudService from '@/services/iCloudService';
+import { useCloudSync } from '@/composables/useCloudSync';
 import Updater from '@/components/Updater.vue';
 import { 
     mdiMenu, mdiMenuOpen, mdiChatPlusOutline, mdiHistory, mdiCardAccountDetailsOutline, 
     mdiTune, mdiUpdate, mdiInformationOutline, mdiArrowUp, mdiArrowDown,
-    mdiCloudSync, mdiCloudOff, mdiCloudCheck, mdiCloudAlert, mdiCloudUpload
+    mdiCloudSync
 } from '@quasar/extras/mdi-v7';
 import { useUpdater } from '@/composables/useUpdater';
 
@@ -117,6 +117,7 @@ const { appMode, darkMode, quickSettings, userLocale, chatDirection, isDBUpgrade
 
 const teamsStore = useTeamsStore();
 const { newConversation } = teamsStore;
+const { syncToCloud } = useCloudSync();
 
 const showSettings = ref(false);
 const showInformation = ref(false);
@@ -194,44 +195,7 @@ const toolbar = ref([
         appMode: 'basic'
     },
     {
-        action: async () => {
-            if (!iCloudService.isAvailable()) {
-                $q.notify({
-                    position: 'top',
-                    icon: mdiCloudOff,
-                    type: 'warning',
-                    message: t('cloud.sync.unavailable.message'),
-                    caption: t('cloud.sync.unavailable.caption'),
-                    timeout: 3000
-                });
-                return;
-            }
-
-            if (!settingsStore.cloudSync) {
-                $q.dialog({
-                    title: t('settings.cloud.enableDialog.title'),
-                    message: t('settings.cloud.enableDialog.message'),
-                    cancel: true,
-                    color: 'primary',
-                    persistent: true,
-                    ok: {
-                        label: t('settings.cloud.enableDialog.ok'),
-                        color: 'primary'
-                    },
-                    cancel: {
-                        label: t('settings.cloud.enableDialog.cancel'),
-                        color: 'primary',
-                        flat: true
-                    }
-                }).onOk(() => {
-                    settingsTab.value = 'cloudSync';
-                    showSettings.value = true;
-                });
-                return;
-            }
-
-            await cloudSync();
-        },
+        action: syncToCloud,
         icon: mdiCloudSync,
         tooltip: 'toolbar.tooltip.iCloudSync',
         appMode: 'advanced'
@@ -275,185 +239,6 @@ watch(isUpdateAvailable, async (newValue) => {
 async function handleCheckForUpdates() {
     await updaterRef.value?.checkForUpdates();
 }
-
-async function cloudSync() {
-    logger.log('[App] - iCloud sync requested');
-    
-    if (!iCloudService.isAvailable()) {
-        $q.notify({
-            position: 'bottom-right',
-            icon: mdiCloudOff,
-            type: 'warning',
-            message: t('icloud.sync.unavailable.message'),
-            caption: t('icloud.sync.unavailable.caption'),
-            timeout: 3000
-        });
-        return;
-    }
-
-    try {
-        let notifyRef = $q.notify({
-            position: 'bottom-right',
-            timeout: 0,
-            spinner: true,
-            icon: mdiCloudSync,
-            message: t('icloud.sync.checking.message')
-        });
-
-        // Define sync configurations
-        const syncConfigs = [
-            {
-                type: 'settings',
-                enabled: settingsStore.syncOptions.settings,
-                getLatest: () => iCloudService.getLatestSettings(),
-                sync: (data) => iCloudService.syncSettings(data, settingsStore.syncOptions),
-                cleanup: () => iCloudService.cleanupOldSettings(5),
-                store: settingsStore,
-                getData: () => settingsStore.$state,
-                applyData: (data) => {
-                    const newSettings = data.settings;
-                    if (!settingsStore.syncOptions.personas) {
-                        delete newSettings.personas;
-                    }
-                    settingsStore.$patch(newSettings);
-                }
-            },
-            {
-                type: 'personas',
-                enabled: settingsStore.syncOptions.personas,
-                getLatest: () => iCloudService.getLatestPersonas(),
-                sync: (data) => iCloudService.syncPersonas(data),
-                cleanup: () => iCloudService.cleanupOldPersonas(5),
-                store: teamsStore,
-                getData: () => teamsStore.personas,
-                applyData: (data) => teamsStore.personas = data.personas
-            },
-            {
-                type: 'conversations',
-                enabled: settingsStore.syncOptions.conversations,
-                getLatest: () => iCloudService.getLatestConversations(),
-                sync: () => iCloudService.syncConversations(teamsStore),
-                cleanup: () => iCloudService.cleanupOldConversations(5),
-                store: teamsStore,
-                getData: () => teamsStore.$state,
-                applyData: () => {}
-            }
-        ];
-
-        // Handle sync for each enabled configuration
-        for (const config of syncConfigs) {
-            if (!config.enabled) continue;
-
-            try {
-                const latestData = await config.getLatest();
-                
-                if (latestData && (!settingsStore.lastSync || new Date(latestData.timestamp) > new Date(settingsStore.lastSync))) {
-                    if (notifyRef) {
-                        notifyRef();  // Dismiss current notification
-                    }
-                    
-                    // Ask user to confirm sync
-                    await new Promise((resolve) => {
-                        $q.dialog({
-                            title: t(`icloud.sync.${config.type}.found.title`),
-                            message: t(`icloud.sync.${config.type}.found.message`),
-                            cancel: true,
-                            persistent: true,
-                            ok: {
-                                label: t(`icloud.sync.${config.type}.actions.sync`),
-                                color: 'primary'
-                            },
-                            cancel: {
-                                label: t(`icloud.sync.${config.type}.actions.skip`),
-                                color: 'primary',
-                                flat: true
-                            }
-                        }).onOk(async () => {
-                            config.applyData(latestData);
-                            $q.notify({
-                                position: 'bottom-right',
-                                type: 'positive',
-                                icon: mdiCloudCheck,
-                                message: t(`icloud.sync.${config.type}.loaded.message`),
-                                timeout: 2000
-                            });
-                            resolve();
-                        }).onCancel(() => resolve());
-                    });
-                }
-
-                // Show upload notification
-                if (notifyRef) {
-                    notifyRef();  // Dismiss previous notification
-                }
-                notifyRef = $q.notify({
-                    position: 'bottom-right',
-                    timeout: 0,
-                    spinner: true,
-                    icon: mdiCloudUpload,
-                    message: t('icloud.sync.inProgress.message')
-                });
-
-                // Sync current data
-                const currentData = config.getData();
-                if (currentData && (Array.isArray(currentData) ? currentData.length > 0 : true)) {
-                    await config.sync(currentData);
-                    await config.cleanup();
-                    
-                    if (notifyRef) {
-                        notifyRef();  // Dismiss upload notification
-                    }
-                    
-                    $q.notify({
-                        position: 'bottom-right',
-                        type: 'positive',
-                        icon: mdiCloudCheck,
-                        message: t(`icloud.sync.${config.type}.synced.message`),
-                        timeout: 2000
-                    });
-                }
-            } catch (error) {
-                if (notifyRef) {
-                    notifyRef();  // Dismiss any pending notification
-                }
-                
-                logger.error(`[App] - Error syncing ${config.type}: ${error}`);
-                $q.notify({
-                    position: 'bottom-right',
-                    type: 'negative',
-                    icon: mdiCloudAlert,
-                    message: t(`icloud.sync.${config.type}.error.message`),
-                    timeout: 2000
-                });
-            }
-        }
-
-        // Update last sync timestamp
-        settingsStore.lastSync = new Date().toISOString();
-
-        // Show final success notification
-        notifyRef();
-        $q.notify({
-            position: 'bottom-right',
-            type: 'positive',
-            icon: mdiCloudCheck,
-            message: t('icloud.sync.success.message'),
-            timeout: 2000
-        });
-
-    } catch (error) {
-        logger.error(`[App] - iCloud sync error: ${error}`);
-        $q.notify({
-            position: 'bottom-right',
-            type: 'negative',
-            icon: mdiCloudAlert,
-            message: t('icloud.sync.error.message'),
-            caption: t('icloud.sync.error.caption'),
-            timeout: 3000
-        });
-    }
-}
-
 </script>
 
 <style>
