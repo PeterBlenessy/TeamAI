@@ -1,10 +1,13 @@
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import localforage from 'localforage';
-import { imageDB, settingsDB, teamsDB } from '@/services/localforage.js';
+import { settingsDB } from '@/services/localforage.js';
 import { useSettingsStore } from '@/stores/settings-store.js';
-import storage from '@/services/localStorage.js';
 import logger from '@/services/logger.js';
+import { upgradeToVersion6 } from './upgrades/v6';
+import { upgradeToVersion7 } from './upgrades/v7';
+import { upgradeToVersion8 } from './upgrades/v8';
+import { upgradeToVersion9 } from './upgrades/v9';
 
 const databaseUpgrader = () => {
     const { t } = useI18n();
