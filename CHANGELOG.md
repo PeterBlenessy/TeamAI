@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v2.2.17 - 2025-02-02
+- Removed cloud sync of application settings to avoid inconcistencies caused.
+- Added support syncing images to cloud drive separately from conversations.
+- Fixed issue where user was notified that settings has been synced when intention was to indicate that the overall sync process was done.
+- Fixed issue where only conversation titles were included in sync, not the actual messages.
+- Refactored databaseUpgrader.js, split out specific version upgraders to separate files. 
+- Updated the cloud sync to track message changes in conversations, like new or deleted messages.
+- Fixed sync validation issues where personas and images would not sync as expected.
+- Updated package dependencies.
+
 ## v2.2.16 - 2025-01-27
 - Added support for syncing images with conversations, stored in images sub-folder
 - Added support for cleaning up images when no longer referenced by conversations
