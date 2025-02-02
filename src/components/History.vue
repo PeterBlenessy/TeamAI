@@ -27,7 +27,7 @@
                             <q-input borderless standout dense style="width: 100%;"
                                 :input-style="item.readonly ? { cursor: 'pointer' } : { cursor: 'text' }"
                                 :readonly="item.readonly" focus="item.readonly" v-model="item.title"
-                                @blur="item.readonly = true">
+                                @blur="updateConversation(item)">
 
                                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                     {{ $t('history.tooltip.show') }}
@@ -159,6 +159,11 @@ const showConversation = (id) => conversationId.value = id;
 const copyConversation = (id) => navigator.clipboard.writeText(exportConversation(id));
 const deleteConversation = (id) => teamsStore.deleteConversation(id);
 const shareConversation = (id) => { try { navigator.share({ text: exportConversation(id) }) } catch (e) { } };
+
+const updateConversation = (item) => {
+    item.readonly = true;
+    teamsStore.updateConversation(item.conversationId, { title: item.title });
+};
 </script>
 
 <style></style>

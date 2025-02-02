@@ -58,41 +58,52 @@ const shouldLog = (level) => {
     return logLevels[settings.logLevel] >= logLevels[level];
 };
 
+function formatArg(arg) {
+    if (typeof arg === 'object' && arg !== null) {
+        try {
+            return JSON.stringify(arg);
+        } catch {
+            return '[object]';
+        }
+    }
+    return String(arg);
+}
+
 const logger = {
-    info: (message) => {
+    info: (...args) => {
         if (shouldLog('info')) {
-            info(message.toString());
-            console.info(message.toString());
+            info(args.map(formatArg).join(' '));
+            console.info(...args);
         }
     },
-    debug: (message) => {
+    debug: (...args) => {
         if (shouldLog('debug')) {
-            debug(message.toString());
-            console.debug(message.toString());
+            debug(args.map(formatArg).join(' '));
+            console.debug(...args);
         }
     },
-    error: (message) => {
+    error: (...args) => {
         if (shouldLog('error')) {
-            error(message.toString());
-            console.error(message.toString());
+            error(args.map(formatArg).join(' '));
+            console.error(...args);
         }
     },
-    log: (message) => {
+    log: (...args) => {
         if (shouldLog('info')) {
-            info(message.toString());
-            console.log(message.toString());
+            info(args.map(formatArg).join(' '));
+            console.log(...args);
         }
     },
-    trace: (message) => {
+    trace: (...args) => {
         if (shouldLog('trace')) {
-            trace(message.toString());
-            console.trace(message.toString());
+            trace(args.map(formatArg).join(' '));
+            console.trace(...args);
         }
     },
-    warn: (message) => {
+    warn: (...args) => {
         if (shouldLog('warn')) {
-            warn(message.toString());
-            console.warn(message.toString());
+            warn(args.map(formatArg).join(' '));
+            console.warn(...args);
         }
     }
 };

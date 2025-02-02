@@ -584,10 +584,13 @@ export default {
     icloud: {
         sync: {
             checking: {
-                message: 'Frissítések ellenőrzése...'
+                message: 'Felhő változások ellenőrzése...'
             },
             inProgress: {
                 message: 'Szinkronizálás iCloud-al...'
+            },
+            noChanges: {
+                message: 'Nincs szinkronizálandó változás'
             },
             success: {
                 message: 'Szinkronizálás befejezve'
@@ -596,83 +599,72 @@ export default {
                 message: 'Szinkronizálás sikertelen',
                 caption: 'Nem sikerült szinkronizálni az iCloud-dal'
             },
-            settings: {
-                found: {
-                    title: 'Újabb beállítások találhatók',
-                    message: 'Újabb beállítások találhatók az iCloud-ban. Szeretné szinkronizálni őket most?'
-                },
-                loaded: {
-                    message: 'Beállítások frissítve az iCloud-ból'
-                },
-                actions: {
-                    sync: 'Szinkronizálás most',
-                    skip: 'Kihagyás'
-                },
-                synced: {
-                    message: 'Beállítások feltöltve az iCloud-ra'
-                },
-                error: {
-                    message: 'A beállítások szinkronizálása sikertelen'
-                }
+            conflict: {
+                title: 'Szinkronizációs konfliktus észlelve',
+                subtitle: 'Válassza ki, melyik verziót szeretné megtartani minden konfliktus esetén',
+                choose: 'Válassza ki a megtartandó verziót:',
+                local: 'Helyi verzió',
+                remote: 'Felhő verzió',
+                useLocal: 'Helyi használata',
+                useRemote: 'Felhő használata',
+                resolved: 'Konfliktus megoldva'
+            },
+            status: {
+                processing: 'Szinkronizációs műveletek feldolgozása...',
+                offline: 'Offline működés',
+                pendingChanges: 'Szinkronizálásra váró változások',
+                retrying: 'Újrapróbálkozás szinkronizálással...',
+                error: 'Szinkronizációs hiba történt'
             },
             personas: {
-                found: {
-                    title: 'Újabb személyiségek találhatók',
-                    message: 'Újabb személyiségek találhatók az iCloud-ban. Szeretné szinkronizálni őket most?'
+                uploading: {
+                    message: 'Personák feltöltése...'
                 },
-                loaded: {
-                    message: 'Személyiségek frissítve az iCloud-ból'
+                downloading: {
+                    message: 'Personák letöltése...'
                 },
-                actions: {
-                    sync: 'Szinkronizálás most',
-                    skip: 'Kihagyás'
+                uploaded: {
+                    message: 'Personák szinkronizálva a felhővel'
                 },
-                synced: {
-                    message: 'Személyiségek feltöltve az iCloud-ra'
+                downloaded: {
+                    message: 'Personák frissítve a felhőből'
                 },
                 error: {
-                    message: 'A személyiségek szinkronizálása sikertelen'
+                    message: 'Nem sikerült szinkronizálni a personákat'
                 }
             },
             conversations: {
-                found: {
-                    title: 'Újabb beszélgetések találhatók',
-                    message: 'Újabb beszélgetések találhatók az iCloud-ban. Szeretné szinkronizálni őket most?'
+                uploading: {
+                    message: 'Beszélgetések feltöltése...'
                 },
-                loaded: {
-                    message: 'Beszélgetések frissítve az iCloud-ból'
+                downloading: {
+                    message: 'Beszélgetések letöltése...'
                 },
-                actions: {
-                    sync: 'Szinkronizálás most',
-                    skip: 'Kihagyás'
+                uploaded: {
+                    message: 'Beszélgetések szinkronizálva a felhővel'
                 },
-                synced: {
-                    message: 'Beszélgetések feltöltve az iCloud-ra'
+                downloaded: {
+                    message: 'Beszélgetések frissítve a felhőből'
                 },
                 error: {
-                    message: 'A beszélgetések szinkronizálása sikertelen'
+                    message: 'Nem sikerült szinkronizálni a beszélgetéseket'
                 }
             },
             images: {
-                inProgress: {
-                    message: 'Képek szinkronizálása...'
+                uploading: {
+                    message: 'Képek feltöltése...'
                 },
-                found: {
-                    title: 'Újabb képek találhatók',
-                    message: 'Újabb képek találhatók az iCloud-ban. Szeretné szinkronizálni őket most?'
+                downloading: {
+                    message: 'Képek letöltése...'
                 },
-                loaded: {
-                    message: 'Képek frissítve az iCloud-ból'
+                uploaded: {
+                    message: 'Képek szinkronizálva a felhővel'
                 },
-                actions: {
-                    sync: 'Szinkronizálás most',
-                    skip: 'Kihagyás'
-                },
-                synced: {
-                    message: 'Képek feltöltve az iCloud-ra'
+                downloaded: {
+                    message: 'Képek frissítve a felhőből'
                 },
                 error: {
-                    message: 'A képek szinkronizálása sikertelen'
+                    message: 'Nem sikerült szinkronizálni a képeket'
                 }
             }
         }

@@ -80,13 +80,17 @@ watch(userInput, () => {
     }
 
     // Add user input to messages
+    const timestamp = Date.now().toString();
+    const messageId = `${timestamp}_user`;
     messages.value.push({
+        id: messageId,
         role: 'user',
         content: userInput.value,
-        timestamp: Date.now().toString(),
+        timestamp: timestamp,
         conversationId: conversationId.value,
         model: 0
     });
+    teamsStore.trackMessageAddition(conversationId.value, messageId);
 
     askQuestion(userInput.value);
     userInput.value = '';
@@ -177,12 +181,15 @@ const askQuestion = async (question) => {
             assistantMessage.settings.speechLanguage = speechLanguage.value;
             const timestamp = Date.now().toString();
             // Add response to messages. This will trigger an update of the UI.
+            const messageId = `${timestamp}_assistant`;
             messages.value.push({
-                timestamp: timestamp, //Date.now().toString(), // Keep here to make timestamp unique
+                id: messageId,
+                timestamp: timestamp,
                 conversationId: conversationId.value,
                 ...assistantMessage,
                 systemMessages: systemMessages
             });
+            teamsStore.trackMessageAddition(conversationId.value, messageId);
 
             // Wait for Vue to update the DOM and make the new message element available, before continuing
             await nextTick();

@@ -8,6 +8,7 @@ import { upgradeToVersion6 } from './upgrades/v6';
 import { upgradeToVersion7 } from './upgrades/v7';
 import { upgradeToVersion8 } from './upgrades/v8';
 import { upgradeToVersion9 } from './upgrades/v9';
+import { upgradeToVersion10 } from './upgrades/v10';
 
 const databaseUpgrader = () => {
     const { t } = useI18n();
@@ -43,13 +44,19 @@ const databaseUpgrader = () => {
             description: 'Migrated application settings from IndexedDB to localStorage.',
             caption: t('databaseUpgrade.inProgress.caption', { version: '9' }),
             upgrade: async () => upgradeToVersion9()
+        },
+        {
+            version: 10,
+            description: 'Added message tracking for cloud sync.',
+            caption: t('databaseUpgrade.inProgress.caption', { version: '10' }),
+            upgrade: async () => upgradeToVersion10()
         }
     ];
 
     // =================================================================================================
     // Update latest database version here when needed
     // -------------------------------------------------------------------------------------------------
-    const LATEST_DB_VERSION = 9;
+    const LATEST_DB_VERSION = 10;
 
     // =================================================================================================
     const getDBVersion = async () => {

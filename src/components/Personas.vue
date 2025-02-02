@@ -76,14 +76,14 @@
         </q-card-section>
 
         <!-- Show the table if there is something to show -->
-        <div v-if="awesomePrompts.length != 0">
+        <div v-if="validAwesomePrompts.length > 0">
 
             <q-separator inset />
 
             <q-card-section>
 
                 <q-table dense wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
-                    :columns="columns" :rows="awesomePrompts" row-key="id" :filter="awesomePromptsfilter"
+                    :columns="columns" :rows="validAwesomePrompts" row-key="id" :filter="awesomePromptsfilter"
                     title="Awesome ChatGPT prompts">
 
                     <template v-slot:top-right>
@@ -122,7 +122,7 @@
 
             <!-- Personas table -->
             <q-table dense wrap-cells :rows-per-page-options="[0]" :rowsPerPage="0" class="my-sticky-header-table"
-                :columns="columns" :rows="personas" row-key="id" :filter="personasFilter" :title="t('personas.title')">
+                :columns="columns" :rows="validPersonas" row-key="id" :filter="personasFilter" :title="t('personas.title')">
 
                 <template v-slot:top-right>
                     <!-- File picker input (hidden). Put here to avoid being created for each table row. -->
@@ -175,7 +175,7 @@
 
                                         <template v-slot:append>
                                             <q-btn size="sm" flat dense color="primary" :icon="mdiContentSaveOutline"
-                                                :disabled="props.row.id == 0" @click="savePersona(props.row)">
+                                                :disabled="props.row.id === 'default'" @click="savePersona(props.row)">
                                                 <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                                     {{ props.row.readonly ? $t('personas.actions.edit.tooltip') :
                                                         $t('personas.actions.save.tooltip')
@@ -187,7 +187,7 @@
                                 </div>
                                 <div class="col-auto">
                                     <q-btn size="sm" dense flat :icon="mdiDeleteOutline" :color="iconColor"
-                                        :disabled="props.row.id == 0" @click="deletePersona(props.row)">
+                                        :disabled="props.row.id === 'default'" @click="deletePersona(props.row)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('personas.actions.delete.tooltip') }}
                                         </q-tooltip>
@@ -200,13 +200,13 @@
                                 <div class="col">{{ props.row.prompt }}</div>
                                 <div class="col-auto">
                                     <q-btn size="sm" dense flat :icon="mdiPencilOutline" :color="iconColor"
-                                        :disabled="props.row.id == 0" @click="props.row.readonly = false">
+                                        :disabled="props.row.id === 'default'" @click="savePersona(props.row)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('personas.actions.add.tooltip') }}
                                         </q-tooltip>
                                     </q-btn>
                                     <q-btn size="sm" dense flat :icon="mdiDeleteOutline" :color="iconColor"
-                                        :disabled="props.row.id == 0" @click="deletePersona(props.row)">
+                                        :disabled="props.row.id === 'default'" @click="deletePersona(props.row)">
                                         <q-tooltip :delay="750" transition-show="scale" transition-hide="scale">
                                             {{ $t('personas.actions.delete.tooltip') }}
                                         </q-tooltip>
@@ -223,7 +223,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useHelpers } from '@/composables/useHelpers';
 import { storeToRefs } from 'pinia';
@@ -248,11 +248,58 @@ const teamsStore = useTeamsStore();
 const { personas } = storeToRefs(teamsStore);
 const awesomePrompts = ref([]);
 
+// Add validation for table data
+const validateTableData = (data) => {
+    return data && typeof data === 'object' && 'name' in data && 'prompt' in data;
+};
+
+// Ensure personas array is initialized and valid
+const validPersonas = computed(() => {
+    if (!Array.isArray(personas.value)) {
+        logger.error('[Personas] Personas is not an array');
+        return [];
+    }
+    return personas.value.filter(validateTableData);
+});
+
+// Ensure awesome prompts are valid
+const validAwesomePrompts = computed(() => {
+    return awesomePrompts.value.filter(validateTableData);
+});
+
+// Update table configurations to use computed properties
 const columns = [
-    { name: 'avatar', align: 'left', label: t('personas.tableHeading.avatar'), field: 'avatar', sortable: false, style: 'width: 50px' },
-    { name: 'name', align: 'left', label: t('personas.tableHeading.name'), field: 'name', sortable: true, style: 'width: 150px' },
-    { name: 'prompt', align: 'left', label: t('personas.tableHeading.prompt'), field: 'prompt', sortable: true }
+    { 
+        name: 'avatar', 
+        align: 'left', 
+        label: t('personas.tableHeading.avatar'), 
+        field: row => row.avatar || null,
+        sortable: false, 
+        style: 'width: 50px' 
+    },
+    { 
+        name: 'name', 
+        align: 'left', 
+        label: t('personas.tableHeading.name'), 
+        field: row => row.name || '',
+        sortable: true, 
+        style: 'width: 150px' 
+    },
+    { 
+        name: 'prompt', 
+        align: 'left', 
+        label: t('personas.tableHeading.prompt'), 
+        field: row => row.prompt || '',
+        sortable: true 
+    }
 ];
+
+// Update template refs and handlers
+const avatarPicker = ref(null);
+const avatarImage = ref(null);
+const awesomePromptsfilter = ref('');
+const personasFilter = ref('');
+let selectedPersonaId = '';
 
 const newPersona = ref({
     name: t('personas.actions.create.name'),
@@ -260,52 +307,97 @@ const newPersona = ref({
     expanded: false
 });
 
-const avatarPicker = ref(null);
-const avatarImage = ref(null);
-const awesomePromptsfilter = ref('');
-const personasFilter = ref('');
-let selectedPersonaId = '';
-
 const fetchAwesomePrompts = (source = "AwesomeChatGPTPrompts") => {
     const awesomeSources = {
         "AwesomeChatGPTPrompts": "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv",
         "ExamplePersonas": "https://raw.githubusercontent.com//PeterBlenessy/team-ai-examples/main/personas.json",
     }
-    if (source == "AwesomeChatGPTPrompts") {
+    
+    awesomePrompts.value = []
+    
+    const handleError = (error, context) => {
+        const errorStr = String(error || `Unknown error fetching ${context}`)
+        logger.error(`[Personas] - ${errorStr}`)
+        awesomePrompts.value = []
+    }
+    
+    const normalizePromptData = (data, index) => {
+        return teamsStore.normalizePersona({
+            id: `${Date.now()}-${index}`,
+            name: data.name || `Prompt ${index + 1}`,
+            prompt: data.prompt || data.content || data.description || 'No prompt provided',
+            readonly: true,
+            lastModified: Date.now()
+        });
+    };
+
+    if (source === "AwesomeChatGPTPrompts") {
         fetch(awesomeSources[source])
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+                return response.text()
+            })
             .then(data => {
-                awesomePrompts.value = data.toString()
+                const parsed = data.toString()
                     .trim()
                     .split("\n")
                     .map((row, index) => {
-                        let id = Date.now().toString() + index.toString();
-                        let readonly = true;
-                        let [name, prompt] = row.split('","').map(item => item.trim().replace(/^"|"$/g, ''));
-                        return { id, name, prompt, readonly };
-                    });
-                awesomePrompts.value.shift();
+                        try {
+                            const [name, prompt] = row.split('","').map(item => 
+                                item.trim().replace(/^"|"$/g, ''));
+                            return normalizePromptData({ name, prompt }, index);
+                        } catch (e) {
+                            logger.warn(`[Personas] Skipping malformed row: ${row}`);
+                            return null;
+                        }
+                    })
+                    .filter(Boolean);
+                
+                if (parsed.length > 0) {
+                    awesomePrompts.value = parsed.slice(1);
+                    logger.info(`[Personas] Successfully loaded ${awesomePrompts.value.length} prompts`);
+                }
             })
-            .catch(error => logger.error(`[Personas] - ${error}`))
-            .finally(() => logger.log("[Personas] - fetch awesome prompts done"));
-    } else if (source == "ExamplePersonas") {
+            .catch(error => handleError(error, 'prompts'))
+    } else if (source === "ExamplePersonas") {
         fetch(awesomeSources[source])
-            .then(response => response.json())
-            .then(data => {
-                awesomePrompts.value = data.map((item, index) => {
-                    let id = Date.now().toString() + index.toString();
-                    let readonly = true;
-                    return { id, ...item, readonly };
-                });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+                return response.json()
             })
-            .catch(error => logger.error(`[Personas] - ${error}`))
-            .finally(() => logger.log("[Personas] - fetch example personas done"));
+            .then(data => {
+                if (!Array.isArray(data)) {
+                    throw new Error('Invalid data format')
+                }
+                
+                awesomePrompts.value = data.map((item, index) => 
+                    normalizePromptData(item, index)
+                );
+                logger.info(`[Personas] Successfully loaded ${awesomePrompts.value.length} example personas`);
+            })
+            .catch(error => handleError(error, 'examples'))
     }
-};
+}
 
 const addAwesomePrompt = (persona) => {
-    awesomePrompts.value = awesomePrompts.value.filter(item => item.id != persona.id);
-    personas.value.push(persona);
+    try {
+        // Normalize data before adding
+        const normalizedPersona = teamsStore.normalizePersona(persona);
+        
+        // Remove from awesome prompts
+        awesomePrompts.value = awesomePrompts.value.filter(item => item.id != persona.id);
+        
+        // Add to personas
+        personas.value.push(normalizedPersona);
+        
+        logger.info(`[Personas] Successfully added persona: ${normalizedPersona.name}`);
+    } catch (error) {
+        logger.error(`[Personas] Error adding persona:`, { error, persona });
+    }
 };
 
 const handleAvatarPicker = (personaId) => {
@@ -320,6 +412,7 @@ const handleAvatarSelected = () => {
             personas.value = personas.value.map(item => {
                 if (item.id == selectedPersonaId) {
                     item.avatar = reader.result;
+                    item.lastModified = Date.now();
                 }
                 return item;
             });
@@ -335,16 +428,77 @@ const saveNewPersona = () => {
         id: Date.now().toString(),
         name: newPersona.value.name,
         prompt: newPersona.value.prompt,
-        readonly: true
+        readonly: true,
+        lastModified: Date.now()
     });
     newPersona.value.name = t('personas.actions.create.name');
     newPersona.value.prompt = t('personas.actions.create.prompt');
     newPersona.value.expanded = false;
 };
 
-const savePersona = (persona) => persona.readonly = !persona.readonly;
+const savePersona = (persona) => {
+    try {
+        if (!persona || !persona.id) {
+            logger.error('[Personas] Cannot save persona: Invalid persona data', persona);
+            return;
+        }
+
+        const index = personas.value.findIndex(p => p.id === persona.id);
+        if (index === -1) {
+            logger.error('[Personas] Cannot save persona: Persona not found', persona.id);
+            return;
+        }
+
+        // Create new persona object to trigger reactivity
+        personas.value[index] = {
+            ...persona,
+            readonly: !persona.readonly,
+            lastModified: Date.now()
+        };
+        
+        logger.info(`[Personas] Successfully saved persona: ${persona.name}`);
+    } catch (error) {
+        const errorStr = String(error || 'Unknown error');
+        logger.error('[Personas] Error saving persona:', {
+            error: errorStr,
+            persona: persona?.id,
+            stack: error?.stack
+        });
+    }
+};
+
 const deleteAwesomePrompts = () => awesomePrompts.value = [];
-const deletePersona = (persona) => personas.value = personas.value.filter(item => item.id != persona.id);
+
+const deletePersona = (persona) => {
+    try {
+        if (!persona || !persona.id) {
+            logger.error('[Personas] Cannot delete persona: Invalid persona data', persona);
+            return;
+        }
+
+        // Check if persona exists before deleting
+        const personaExists = personas.value.some(p => p.id === persona.id);
+        if (!personaExists) {
+            logger.error('[Personas] Cannot delete persona: Persona not found', persona.id);
+            return;
+        }
+
+        logger.debug('[Personas] Deleting persona:', {
+            id: persona.id,
+            name: persona.name
+        });
+
+        personas.value = personas.value.filter(item => item.id !== persona.id);
+        logger.info(`[Personas] Successfully deleted persona: ${persona.name}`);
+    } catch (error) {
+        const errorStr = String(error || 'Unknown error');
+        logger.error('[Personas] Error deleting persona:', {
+            error: errorStr,
+            persona: persona?.id,
+            stack: error?.stack
+        });
+    }
+};
 </script>
 
 <style>

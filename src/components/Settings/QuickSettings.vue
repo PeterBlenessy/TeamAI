@@ -100,7 +100,7 @@
             <!-- Persona selection -->
             <q-select v-if="appMode == 'advanced' && !isCreateImageSelected" dense options-dense use-chips multiple
                 borderless :option-label="(item) => item === null ? 'Null value' : item.name" v-model="personas"
-                :options="personaOptions" @filter="personaFilterFn">
+                :options="filteredPersonas" @filter="personaFilterFn">
 
                 <template v-slot:selected-item="scope">
                     <q-chip dense size="sm" removable @remove="scope.removeAtIndex(scope.index)">
@@ -244,19 +244,29 @@ const {
 
 const teamsStore = useTeamsStore();
 const { conversationId, isCreateImageSelected, isTeamWorkActivated, messages } = storeToRefs(teamsStore);
-const personaOptions = ref(teamsStore.personas);
 const { availableModels, isOllamaRunning, isOllamaProvider } = useOllama();
 
-// Filters personas based on input characters in the select box
-function personaFilterFn(val, update) {
-    if (val === '') {
-        update(() => personaOptions.value = teamsStore.personas);
-        return;
+const personaOptions = computed(() => {
+    if (!Array.isArray(teamsStore.personas)) {
+        logger.error('[QuickSettings] Personas is not an array:', teamsStore.personas);
+        return [];
     }
+    return teamsStore.personas.filter(p => p && typeof p === 'object');
+});
 
+// Use a local ref for filtering
+const filteredPersonas = ref([]);
+
+function personaFilterFn(val, update) {
     update(() => {
-        const needle = val.toLowerCase();
-        personaOptions.value = teamsStore.personas.filter(v => v.name.toLowerCase().indexOf(needle) > -1);
+        if (val === '') {
+            filteredPersonas.value = personaOptions.value;
+        } else {
+            const needle = val.toLowerCase();
+            filteredPersonas.value = personaOptions.value.filter(v => 
+                v.name.toLowerCase().includes(needle)
+            );
+        }
     });
 }
 

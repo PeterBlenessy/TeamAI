@@ -582,10 +582,13 @@ export default {
     icloud: {
         sync: {
             checking: {
-                message: 'Kontrollerar uppdateringar...'
+                message: 'Kontrollerar molnändringar...'
             },
             inProgress: {
                 message: 'Synkroniserar med iCloud...'
+            },
+            noChanges: {
+                message: 'Inga ändringar att synkronisera'
             },
             success: {
                 message: 'Synkronisering slutförd'
@@ -594,83 +597,72 @@ export default {
                 message: 'Synkronisering misslyckades',
                 caption: 'Kunde inte synkronisera med iCloud'
             },
-            settings: {
-                found: {
-                    title: 'Nyare inställningar hittade',
-                    message: 'Nyare inställningar hittades i iCloud. Vill du synkronisera dem nu?'
-                },
-                loaded: {
-                    message: 'Inställningar uppdaterade från iCloud'
-                },
-                actions: {
-                    sync: 'Synkronisera nu',
-                    skip: 'Hoppa över'
-                },
-                synced: {
-                    message: 'Inställningar uppladdade till iCloud'
-                },
-                error: {
-                    message: 'Misslyckades med att synkronisera inställningar'
-                }
+            conflict: {
+                title: 'Synkroniseringskonflikt upptäckt',
+                subtitle: 'Välj vilken version som ska behållas för varje konflikt',
+                choose: 'Välj vilken version som ska behållas:',
+                local: 'Lokal version',
+                remote: 'Molnversion',
+                useLocal: 'Använd lokal',
+                useRemote: 'Använd moln',
+                resolved: 'Konflikt löst'
+            },
+            status: {
+                processing: 'Bearbetar synkroniseringsåtgärder...',
+                offline: 'Arbetar offline',
+                pendingChanges: 'Ändringar väntar på synkronisering',
+                retrying: 'Försöker synkronisera igen...',
+                error: 'Synkroniseringsfel inträffade'
             },
             personas: {
-                found: {
-                    title: 'Nyare personas hittade',
-                    message: 'Nyare personas hittades i iCloud. Vill du synkronisera dem nu?'
+                uploading: {
+                    message: 'Laddar upp personas...'
                 },
-                loaded: {
-                    message: 'Personas uppdaterade från iCloud'
+                downloading: {
+                    message: 'Laddar ner personas...'
                 },
-                actions: {
-                    sync: 'Synkronisera nu',
-                    skip: 'Hoppa över'
+                uploaded: {
+                    message: 'Personas synkade till molnet'
                 },
-                synced: {
-                    message: 'Personas uppladdade till iCloud'
+                downloaded: {
+                    message: 'Personas uppdaterade från molnet'
                 },
                 error: {
-                    message: 'Misslyckades med att synkronisera personas'
+                    message: 'Kunde inte synkronisera personas'
                 }
             },
             conversations: {
-                found: {
-                    title: 'Nyare konversationer hittade',
-                    message: 'Nyare konversationer hittades i iCloud. Vill du synkronisera dem nu?'
+                uploading: {
+                    message: 'Laddar upp konversationer...'
                 },
-                loaded: {
-                    message: 'Konversationer uppdaterade från iCloud'
+                downloading: {
+                    message: 'Laddar ner konversationer...'
                 },
-                actions: {
-                    sync: 'Synkronisera nu',
-                    skip: 'Hoppa över'
+                uploaded: {
+                    message: 'Konversationer synkade till molnet'
                 },
-                synced: {
-                    message: 'Konversationer uppladdade till iCloud'
+                downloaded: {
+                    message: 'Konversationer uppdaterade från molnet'
                 },
                 error: {
-                    message: 'Misslyckades med att synkronisera konversationer'
+                    message: 'Kunde inte synkronisera konversationer'
                 }
             },
             images: {
-                inProgress: {
-                    message: 'Synkroniserar bilder...'
+                uploading: {
+                    message: 'Laddar upp bilder...'
                 },
-                found: {
-                    title: 'Nyare bilder hittade',
-                    message: 'Nyare bilder hittades i iCloud. Vill du synkronisera dem nu?'
+                downloading: {
+                    message: 'Laddar ner bilder...'
                 },
-                loaded: {
-                    message: 'Bilder uppdaterade från iCloud'
+                uploaded: {
+                    message: 'Bilder synkade till molnet'
                 },
-                actions: {
-                    sync: 'Synkronisera nu',
-                    skip: 'Hoppa över'
-                },
-                synced: {
-                    message: 'Bilder uppladdade till iCloud'
+                downloaded: {
+                    message: 'Bilder uppdaterade från molnet'
                 },
                 error: {
-                    message: 'Misslyckades med att synkronisera bilder'
+                    message: 'Kunde inte synkronisera bilder'
                 }
             }
         }

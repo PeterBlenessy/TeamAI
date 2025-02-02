@@ -323,7 +323,11 @@ export default {
                     tooltip: 'Enable to sync AI generated images between devices'
                 }
             },
-            syncNow: 'Sync now'
+            syncNow: 'Sync now',
+            unavailable: {
+                message: 'Cloud sync is not available',
+                caption: 'Cloud sync is only available on macOS'
+            }
         }
     },
 
@@ -581,115 +585,78 @@ export default {
     icloud: {
         sync: {
             checking: {
-                message: 'Checking for updates...'
+                message: 'Checking for cloud changes...'
             },
-            inProgress: {
-                message: 'Syncing settings...'
-            },
-            noChanges: {
-                message: 'No changes to sync'
-            },
-            success: {
-                message: 'Sync completed'
-            },
-            error: {
-                message: 'Sync failed',
-                caption: 'Unable to sync with iCloud'
-            },
-            conflict: {
-                title: 'Sync Conflict Detected',
-                subtitle: 'Choose which version to keep for each conflict',
-                choose: 'Choose which version to keep:',
-                local: 'Local Version',
-                remote: 'Remote Version',
-                useLocal: 'Use Local',
-                useRemote: 'Use Remote',
-                resolved: 'Conflict resolved'
-            },
-            status: {
-                processing: 'Processing sync operations...',
-                offline: 'Working offline',
-                pendingChanges: 'Changes pending sync',
-                retrying: 'Retrying sync...',
-                error: 'Sync error occurred'
-            },
-            settings: {
-                found: {
-                    title: 'Newer Settings Found',
-                    message: 'Newer settings were found in iCloud. Would you like to sync them now?'
-                },
-                loaded: {
-                    message: 'Settings updated from iCloud'
-                },
-                actions: {
-                    sync: 'Sync Now',
-                    skip: 'Skip'
-                },
-                synced: {
-                    message: 'Settings uploaded to iCloud'
-                },
-                error: {
-                    message: 'Failed to sync settings'
-                }
-            },
-            personas: {
-                found: {
-                    title: 'Newer Personas Found',
-                    message: 'Newer personas were found in iCloud. Would you like to sync them now?'
-                },
-                loaded: {
-                    message: 'Personas updated from iCloud'
-                },
-                actions: {
-                    sync: 'Sync Now',
-                    skip: 'Skip'
-                },
-                synced: {
-                    message: 'Personas uploaded to iCloud'
-                },
-                error: {
-                    message: 'Failed to sync personas'
-                }
-            },
-            conversations: {
-                found: {
-                    title: 'Newer Conversations Found',
-                    message: 'Newer conversations were found in iCloud. Would you like to sync them now?'
-                },
-                loaded: {
-                    message: 'Conversations updated from iCloud'
-                },
-                actions: {
-                    sync: 'Sync Now',
-                    skip: 'Skip'
-                },
-                synced: {
-                    message: 'Conversations uploaded to iCloud'
-                },
-                error: {
-                    message: 'Failed to sync conversations'
-                }
-            },
-            images: {
             inProgress: {
                 message: 'Syncing with iCloud...'
             },
-                found: {
-                    title: 'Newer Images Found',
-                    message: 'Newer images were found in iCloud. Would you like to sync them now?'
+            noChanges: {
+                message: 'No changes to sync',
+                caption: 'Everything is up to date'
+            },
+            noPersonas: {
+                caption: 'Create or import personas to start syncing'
+            },
+            success: {
+                message: 'Sync completed successfully'
+            },
+            error: {
+                message: 'Sync failed',
+                filesystem: {
+                    message: 'Failed to write to cloud storage',
+                    caption: 'Please check your iCloud settings and permissions'
                 },
-                loaded: {
-                    message: 'Images updated from iCloud'
+                personas: {
+                    message: 'Failed to sync personas',
+                    caption: 'Please check your cloud storage permissions'
                 },
-                actions: {
-                    sync: 'Sync Now',
-                    skip: 'Skip'
+                conversations: {
+                    message: 'Failed to sync conversations'
                 },
-                synced: {
-                    message: 'Images uploaded to iCloud'
-                },
-                error: {
+                images: {
                     message: 'Failed to sync images'
+                }
+            },
+            personas: {
+                uploading: {
+                    message: 'Uploading personas...'
+                },
+                downloading: {
+                    message: 'Downloading personas...'
+                },
+                uploaded: {
+                    message: 'Personas synced to cloud'
+                },
+                downloaded: {
+                    message: 'Personas updated from cloud'
+                }
+            },
+            conversations: {
+                uploading: {
+                    message: 'Uploading conversations...'
+                },
+                downloading: {
+                    message: 'Downloading conversations...'
+                },
+                uploaded: {
+                    message: 'Conversations synced to cloud'
+                },
+                downloaded: {
+                    message: 'Conversations updated from cloud'
+                }
+            },
+            images: {
+                uploading: {
+                    message: 'Uploading images...'
+                },
+                downloading: {
+                    message: 'Downloading images...'
+                },
+                uploaded: {
+                    message: 'Images synced to cloud'
+                },
+                downloaded: {
+                    message: 'Images updated from cloud'
                 }
             }
         }

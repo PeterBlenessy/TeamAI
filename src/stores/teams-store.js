@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { imageDB } from '@/services/localforage';
 import logger from '@/services/logger';
+import { syncStateManager } from '@/services/syncStateManager';
 
 // The teams-store holds the teams creeated by the user in a list. A team is a list of AI assistants, bots
 // Each team object has an array of team member objects and an array of messages.
@@ -20,7 +21,14 @@ export const useTeamsStore = defineStore('teams', () => {
     // Long term state properties
     const messages = ref([]);   // { conversationId, timestamp, role, content | choices: [{index, content}], object, usage, settings: { (model, maxTokens, temperature) | (choices, imageSize), personas, speechLanguage, conversationMode } ]
     const history = ref([]);    // { conversationId, timestamp, created, updated, title }
-    const personas = ref([{ id: 0, name: "Default assistant", prompt: "You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.", avatar: null, readonly: true }]);   // { id, name, prompt, avatar, readonly }
+    const personas = ref([{ 
+        id: 'default',
+        name: "Default assistant", 
+        prompt: "You are a helpful assistant. Format your response in markdown format using GitHub flavor. Do not comment about markdown. Do not explain that you are an AI model.", 
+        avatar: null, 
+        readonly: true,
+        lastModified: Date.now()
+    }]);   // { id, name, prompt, avatar, readonly, lastModified }
     const teams = ref([]);
 
     // Active conversation states
@@ -40,11 +48,90 @@ export const useTeamsStore = defineStore('teams', () => {
     // ---------------------------------------------------------------------------------------------
 
     // Delete message identified by 'timestamp'
+    function updateConversation(id, changes = {}) {
+        const index = history.value.findIndex(c => c.conversationId === id);
+        if (index !== -1) {
+            const updated = Date.now().toString();
+            history.value[index] = {
+                ...history.value[index],
+                ...changes,
+                updated
+            };
+            
+            // Track conversation changes for sync
+            const conv = history.value[index];
+            const convData = {
+                history: conv,
+                messages: messages.value.filter(msg => msg.conversationId === id)
+            };
+            logger.debug(`[teams-store] Tracking conversation update for sync:`, {
+                id,
+                changes,
+                updated
+            });
+            syncStateManager.trackChange(
+                'conversations',
+                id,
+                convData,
+                'update'
+            );
+        }
+    }
+
+    function initMessageLog(conversationId) {
+        const conv = history.value.find(c => c.conversationId === conversationId);
+        if (conv && !conv.messageLog) {
+            conv.messageLog = {
+                added: [],
+                deleted: [],
+                lastSyncedMessageCount: 0
+            };
+        }
+    }
+
+    function trackMessageAddition(conversationId, messageId) {
+        const conv = history.value.find(c => c.conversationId === conversationId);
+        if (conv) {
+            initMessageLog(conversationId);
+            conv.messageLog.added.push(messageId);
+            updateConversation(conversationId);
+        }
+    }
+
+    function trackMessageDeletion(conversationId, messageId) {
+        const conv = history.value.find(c => c.conversationId === conversationId);
+        if (conv) {
+            initMessageLog(conversationId);
+            const addedIndex = conv.messageLog.added.indexOf(messageId);
+            if (addedIndex !== -1) {
+                conv.messageLog.added.splice(addedIndex, 1);
+            } else {
+                conv.messageLog.deleted.push(messageId);
+            }
+            updateConversation(conversationId);
+        }
+    }
+
+    function clearMessageLogs(conversationId) {
+        const conv = history.value.find(c => c.conversationId === conversationId);
+        if (conv && conv.messageLog) {
+            conv.messageLog.lastSyncedMessageCount = messages.value.filter(
+                m => m.conversationId === conversationId
+            ).length;
+            conv.messageLog.added = [];
+            conv.messageLog.deleted = [];
+        }
+    }
+
     function deleteMessage(timestamp, role) {
+        const messageId = `${timestamp}_${role}`;
         messages.value = messages.value.filter(message => {
             if (!(message.timestamp == timestamp && message.role == role)) {
                 return message;
             } else {
+                // Track message deletion
+                trackMessageDeletion(message.conversationId, messageId);
+                
                 // Delete image from image storage
                 if (message.hasOwnProperty("choices")) {
                     message.choices.forEach(choice => {
@@ -212,15 +299,82 @@ export const useTeamsStore = defineStore('teams', () => {
     }
 
     function getPersona(id) {
-        return personas.value.filter(persona => persona.id == id)[0];
+        if (!id) return null;
+        return personas.value.find(persona => persona.id === id) || null;
     }
 
     function getPersonasFromConversation(id) {
-        return history.value.filter(conversation => conversation.conversationId == id)[0].personas;
+        const conversation = history.value.find(conv => conv.conversationId === id);
+        return conversation?.personas || [];
     }
 
     function getPersonaFromConversation(personaId, conversationId) {
-        return getPersonasFromConversation(conversationId).filter(persona => persona.id == personaId)[0];
+        if (!personaId || !conversationId) return null;
+        const personas = getPersonasFromConversation(conversationId);
+        return personas.find(persona => persona.id === personaId) || null;
+    }
+
+    // Update validation to be more forgiving and fix data
+    function validatePersona(persona) {
+        // Basic validation and data normalization
+        if (!persona || typeof persona !== 'object') {
+            logger.error('[TeamsStore] Invalid persona: not an object', persona);
+            return false;
+        }
+
+        // Ensure required fields with defaults
+        const validatedPersona = {
+            id: persona.id || `persona_${Date.now()}`,
+            name: persona.name || 'Unnamed Persona',
+            prompt: persona.prompt || 'You are a helpful assistant.',
+            readonly: typeof persona.readonly === 'boolean' ? persona.readonly : true,
+            avatar: persona.avatar || null,
+            lastModified: persona.lastModified || Date.now()
+        };
+
+        // Update the persona with validated data
+        Object.assign(persona, validatedPersona);
+        return true;
+    }
+
+    // Add method to normalize persona data
+    function normalizePersona(data) {
+        return {
+            id: data.id || `persona_${Date.now()}`,
+            name: data.name || 'Unnamed Persona',
+            prompt: data.prompt || 'You are a helpful assistant.',
+            readonly: typeof data.readonly === 'boolean' ? data.readonly : true,
+            avatar: data.avatar || null,
+            lastModified: data.lastModified || Date.now()
+        };
+    }
+
+    // Add method to safely update personas
+    function updatePersonas(newPersonas) {
+        if (!Array.isArray(newPersonas)) {
+            logger.error('[TeamsStore] Attempted to update personas with non-array:', newPersonas);
+            return;
+        }
+
+        try {
+            // Always keep default persona
+            const defaultPersona = personas.value.find(p => p.id === 'default');
+            if (!defaultPersona) {
+                logger.error('[TeamsStore] Default persona not found');
+                return;
+            }
+
+            // Filter and validate new personas
+            const validPersonas = newPersonas
+                .filter(p => p && typeof p === 'object')
+                .filter(p => p.id !== 'default')
+                .map(p => normalizePersona(p));
+
+            personas.value = [defaultPersona, ...validPersonas];
+            logger.debug(`[TeamsStore] Updated personas array with ${validPersonas.length} valid personas`);
+        } catch (error) {
+            logger.error('[TeamsStore] Error updating personas:', error);
+        }
     }
 
     return {
@@ -259,6 +413,17 @@ export const useTeamsStore = defineStore('teams', () => {
         getOrphanedMessages,
         getSettingsFromLastMessage,
         getPersona,
-        getPersonaFromConversation
+        getPersonaFromConversation,
+
+        // Message tracking methods
+        trackMessageAddition,
+        trackMessageDeletion,
+        clearMessageLogs,
+        updateConversation,
+
+        // New methods
+        updatePersonas,
+        validatePersona,
+        normalizePersona
     }
 });

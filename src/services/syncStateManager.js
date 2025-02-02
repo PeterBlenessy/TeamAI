@@ -17,11 +17,19 @@ export const SyncType = {
     IMAGES: 'images'
 }
 
+// Change types
+export const ChangeType = {
+    CREATE: 'create',
+    UPDATE: 'update',
+    DELETE: 'delete'
+}
+
 class SyncStateManager {
     constructor() {
         this._vectorClock = {}
         this._clientId = null
-        this._changes = new Map()
+        this._itemVersions = new Map() // Track versions per item
+        this._changes = new Map() // Track changes per item
         this.syncState = SyncState.IDLE
     }
 
@@ -66,8 +74,8 @@ class SyncStateManager {
         return 'equal'
     }
 
-    // Track changes
-    trackChange(type, itemId, change) {
+    // Track changes for individual items
+    trackChange(type, itemId, change, changeType = ChangeType.UPDATE) {
         if (!type || !itemId || !change) {
             logger.error(`[SyncManager] Invalid parameters for trackChange: type=${type}, itemId=${itemId}`)
             this.syncState = SyncState.FAILED
@@ -76,13 +84,20 @@ class SyncStateManager {
 
         try {
             const key = `${type}:${itemId}`
+            const currentVersion = this._itemVersions.get(key) || 0
+            const newVersion = currentVersion + 1
+
             this._changes.set(key, {
                 ...change,
+                changeType,
+                version: newVersion,
                 timestamp: Date.now(),
                 vectorClock: this.incrementVectorClock()
             })
+
+            this._itemVersions.set(key, newVersion)
             this.syncState = SyncState.PENDING
-            logger.info(`[SyncManager] Tracked change for ${key}`)
+            logger.info(`[SyncManager] Tracked ${changeType} for ${key} (v${newVersion})`)
         } catch (error) {
             logger.error(`[SyncManager] Error tracking change: ${error}`)
             this.syncState = SyncState.FAILED
@@ -90,25 +105,50 @@ class SyncStateManager {
         }
     }
 
-    // Get changes for type
+    // Get specific item change
+    getItemChange(type, itemId) {
+        const key = `${type}:${itemId}`
+        return this._changes.get(key)
+    }
+
+    // Get all pending changes for type
     getChanges(type) {
-        const changes = {}
+        const changes = new Map()
         for (const [key, value] of this._changes.entries()) {
             if (key.startsWith(`${type}:`)) {
                 const itemId = key.split(':')[1]
-                changes[itemId] = value
+                changes.set(itemId, value)
             }
         }
         return changes
     }
 
-    // Clear tracked changes for type
-    clearChanges(type) {
-        for (const key of this._changes.keys()) {
+    // Get list of changed item IDs for type
+    getChangedItems(type) {
+        const items = []
+        for (const [key] of this._changes.entries()) {
             if (key.startsWith(`${type}:`)) {
-                this._changes.delete(key)
+                items.push(key.split(':')[1])
             }
         }
+        return items
+    }
+
+    // Clear tracked changes for specific item
+    clearItemChanges(type, itemId) {
+        const key = `${type}:${itemId}`
+        this._changes.delete(key)
+    }
+
+    // Clear all tracked changes for type
+    clearChanges(type) {
+        const keysToDelete = []
+        for (const key of this._changes.keys()) {
+            if (key.startsWith(`${type}:`)) {
+                keysToDelete.push(key)
+            }
+        }
+        keysToDelete.forEach(key => this._changes.delete(key))
     }
 
     // Utility functions

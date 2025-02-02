@@ -1,6 +1,7 @@
 import { ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import storage from '@/services/localStorage.js';
+import logger from '@/services/logger.js';
 
 // Load initial state from localStorage
 const loadFromStorage = (key, defaultValue) => {
@@ -67,10 +68,17 @@ export const useSettingsStore = defineStore('settings', () => {
     for (const [key, value] of Object.entries(store)) {
         if (key !== 'downloadingModels') {
             watch(value, (newValue) => {
+                // Debug log to verify the values being saved
+                logger.debug(`[SettingsStore] Saving ${key}: ${JSON.stringify(newValue)}`);
                 storage.setItem(key, newValue);
+            }, {
+                deep: true // Watch nested objects
             });
         }
     }
+
+    // Verify syncOptions is loaded correctly on initialization
+    logger.debug('[SettingsStore] Initial syncOptions:', store.syncOptions.value);
 
     return store;
 });
