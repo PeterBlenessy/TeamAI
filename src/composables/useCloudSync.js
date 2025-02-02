@@ -88,56 +88,87 @@ export function useCloudSync() {
         // Track personas changes
         if (syncOptions.value?.personas && Array.isArray(personas.value)) {
             logger.info('[CloudSync] Processing personas for sync')
-            const validPersonas = personas.value.filter(persona => {
-                const isValid = teamsStore.validatePersona(persona) && persona.id !== 'default'
-                if (!isValid) {
-                    logger.error('[CloudSync] Invalid persona:', {
+
+            for (const persona of personas.value) {
+                // Skip default and invalid personas
+                if (!persona || !persona.id || persona.id === 'default') {
+                    logger.error('[CloudSync] Invalid persona or default:', {
                         id: persona?.id,
-                        hasName: !!persona?.name,
-                        hasPrompt: !!persona?.prompt,
-                        isReadonly: typeof persona?.readonly === 'boolean'
-                    })
+                        isDefault: persona?.id === 'default'
+                    });
+                    continue;
                 }
-                return isValid
-            });
 
-            logger.debug(`[CloudSync] Found ${validPersonas.length} valid personas to sync`)
-
-            for (const persona of validPersonas) {
                 try {
-                    const shouldSync = !persona.lastModified || 
-                        !lastSyncTime || 
-                        persona.lastModified > lastSyncTime;
+                    // Validate persona
+                    if (!teamsStore.validatePersona(persona)) {
+                        logger.error('[CloudSync] Invalid persona structure:', {
+                            id: persona.id,
+                            hasName: !!persona.name,
+                            hasPrompt: !!persona.prompt,
+                            isReadonly: typeof persona.readonly === 'boolean'
+                        });
+                        continue;
+                    }
+
+                    // Check if we should sync
+                    let shouldSync = false;
+                    try {
+                        const cloudPersona = await iCloudService.getPersona(persona.id);
+                        const cloudModified = cloudPersona?.data?.lastModified;
+                        const localModified = persona.lastModified || Date.now();
+
+                        // Should sync if:
+                        // 1. No cloud version exists
+                        // 2. Local version is newer than cloud version
+                        // 3. Local version has different modified timestamp
+                        shouldSync = !cloudPersona || 
+                                   !cloudModified ||
+                                   localModified > cloudModified ||
+                                   localModified !== cloudModified;
+
+                        logger.debug(`[CloudSync] Checking persona sync:`, {
+                            id: persona.id,
+                            localModified,
+                            cloudModified,
+                            shouldSync
+                        });
+                    } catch (error) {
+                        logger.error(`[CloudSync] Error checking cloud persona: ${error}`);
+                        // If we can't check cloud version, assume we should sync
+                        shouldSync = true;
+                    }
 
                     if (shouldSync) {
                         const syncData = {
                             id: persona.id,
-                            name: persona.name,
-                            prompt: persona.prompt,
-                            avatar: persona.avatar,
+                            name: persona.name || 'Unnamed',
+                            prompt: persona.prompt || '',
+                            avatar: persona.avatar || null,
                             readonly: persona.readonly || false,
                             lastModified: persona.lastModified || Date.now()
-                        }
+                        };
 
-                        logger.debug(`[CloudSync] Preparing to sync persona:`, {
-                            persona: {
-                                id: syncData.id,
-                                name: syncData.name,
-                                lastModified: syncData.lastModified,
-                                hasPrompt: !!syncData.prompt,
-                                hasAvatar: !!syncData.avatar
-                            }
+                        logger.debug(`[CloudSync] Syncing persona:`, {
+                            id: syncData.id,
+                            name: syncData.name,
+                            lastModified: syncData.lastModified,
+                            hasPrompt: !!syncData.prompt,
+                            hasAvatar: !!syncData.avatar
                         });
 
-                        await trackItemChange(
+                        const success = await trackItemChange(
                             SyncType.PERSONAS,
                             persona.id,
                             syncData
-                        )
+                        );
+
+                        if (!success) {
+                            logger.error(`[CloudSync] Failed to track changes for persona ${persona.id}`);
+                        }
                     }
                 } catch (error) {
-                    const errorStr = String(error || 'Unknown error')
-                    logger.error(`[CloudSync] Failed to process persona ${persona.id}: ${errorStr}`)
+                    logger.error(`[CloudSync] Error processing persona ${persona.id}:`, error);
                 }
             }
         }
@@ -246,17 +277,73 @@ export function useCloudSync() {
         // Track image changes
         if (syncOptions.value.images) {
             try {
+                // Get all images from local DB
+                const allImages = [];
                 await imageDB.iterate((value, key) => {
-                    if (!value.lastModified || value.lastModified > lastSyncTime) {
-                        trackItemChange(
-                            SyncType.IMAGES,  
-                            key,
-                            value
-                        )
+                    allImages.push({ key, value });
+                });
+
+                logger.info(`[CloudSync] Processing ${allImages.length} images for sync`);
+
+                // Process each image
+                for (const { key, value } of allImages) {
+                    try {
+                        if (!key || !value) {
+                            logger.error('[CloudSync] Invalid image data:', { key, hasValue: !!value });
+                            continue;
+                        }
+
+                        // Check if we should sync
+                        let shouldSync = false;
+                        try {
+                            const cloudImage = await iCloudService.getItem('images', key);
+                            const cloudModified = cloudImage?.data?.lastModified;
+                            const localModified = value.lastModified || Date.now();
+
+                            // Should sync if:
+                            // 1. No cloud version exists
+                            // 2. Local version is newer than cloud version
+                            // 3. Local version has different modified timestamp
+                            shouldSync = !cloudImage || 
+                                       !cloudModified ||
+                                       localModified > cloudModified ||
+                                       localModified !== cloudModified;
+
+                            logger.debug(`[CloudSync] Checking image sync:`, {
+                                key,
+                                localModified,
+                                cloudModified,
+                                shouldSync
+                            });
+                        } catch (error) {
+                            logger.error(`[CloudSync] Error checking cloud image: ${error}`);
+                            // If we can't check cloud version, assume we should sync
+                            shouldSync = true;
+                        }
+
+                        if (shouldSync) {
+                            logger.debug(`[CloudSync] Syncing image:`, {
+                                key,
+                                size: value.byteLength || value.length,
+                                hasModified: !!value.lastModified
+                            });
+
+                            const success = await trackItemChange(
+                                SyncType.IMAGES,
+                                key,
+                                value
+                            );
+
+                            if (!success) {
+                                logger.error(`[CloudSync] Failed to track changes for image ${key}`);
+                            }
+                        }
+                    } catch (error) {
+                        logger.error(`[CloudSync] Error processing image ${key}:`, error);
                     }
-                })
+                }
             } catch (error) {
-                logger.error(`[CloudSync] Error tracking image changes: ${error}`)
+                logger.error(`[CloudSync] Error tracking image changes: ${error}`);
             }
         }
 
