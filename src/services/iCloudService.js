@@ -959,14 +959,31 @@ const iCloudService = {
             throw new Error('iCloud is not available');
         }
 
+        // Validate image data
+        if (!key || !value) {
+            throw new Error(`Invalid image data: key=${key}, value=${!!value}`);
+        }
+
+        // Verify we have valid binary data
+        if (!(value instanceof Blob || value instanceof ArrayBuffer)) {
+            throw new Error(`Invalid image data type: ${value?.constructor?.name}`);
+        }
+
         const imagesPath = await join(this._container, 'images')
         const imagePath = await join(imagesPath, key)
 
         logger.debug(`[iCloudService] Starting image sync:`, {
             key,
             path: imagePath,
-            size: value.byteLength || value.length
+            type: value.constructor.name,
+            size: value.byteLength || value.size || 0,
+            hasData: value.byteLength > 0 || value.size > 0
         });
+
+        // Ensure we have valid binary data with content
+        if (value.byteLength === 0 && value.size === 0) {
+            throw new Error('Image data is empty');
+        }
 
         // Retry logic for file operations (reusing pattern from syncItem)
         const retry = async (operation, description, maxAttempts = 3) => {
@@ -978,7 +995,11 @@ const iCloudService = {
                     return result
                 } catch (error) {
                     if (attempt === maxAttempts) throw error
-                    logger.warn(`[iCloudService] - Failed ${description} (attempt ${attempt}/${maxAttempts}):`, String(error))
+                    logger.warn(`[iCloudService] - Failed ${description} (attempt ${attempt}/${maxAttempts}):`, {
+                        error: String(error),
+                        type: error?.constructor?.name,
+                        stack: error?.stack
+                    })
                     await new Promise(resolve => setTimeout(resolve, 1000 * attempt)) // Exponential backoff
                 }
             }

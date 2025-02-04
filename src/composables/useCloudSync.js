@@ -274,54 +274,66 @@ export function useCloudSync() {
             }
         }
 
-        // Track image changes
-        if (syncOptions.value.images) {
-            try {
-                // Get all images from local DB
-                const allImages = [];
-                await imageDB.iterate((value, key) => {
-                    allImages.push({ key, value });
-                });
-
-                logger.info(`[CloudSync] Processing ${allImages.length} images for sync`);
-
-                // Process each image
-                for (const { key, value } of allImages) {
-                    try {
-                        if (!key || !value) {
-                            logger.error('[CloudSync] Invalid image data:', { key, hasValue: !!value });
-                            continue;
-                        }
-
-                        // Check if we should sync
-                        let shouldSync = false;
-                        try {
-                            const cloudImage = await iCloudService.getItem('images', key);
-                            const cloudModified = cloudImage?.data?.lastModified;
-                            const localModified = value.lastModified || Date.now();
-
-                            // Should sync if:
-                            // 1. No cloud version exists
-                            // 2. Local version is newer than cloud version
-                            // 3. Local version has different modified timestamp
-                            shouldSync = !cloudImage || 
-                                       !cloudModified ||
-                                       localModified > cloudModified ||
-                                       localModified !== cloudModified;
-
-                            logger.debug(`[CloudSync] Checking image sync:`, {
+            // Track image changes
+            if (syncOptions.value.images) {
+                try {
+                    // Get all images from local DB
+                    const allImages = [];
+                    await imageDB.iterate((value, key) => {
+                        // Only add if we have both key and valid binary data
+                        if (key && value && (value instanceof Blob || value instanceof ArrayBuffer)) {
+                            allImages.push({ key, value });
+                        } else {
+                            logger.warn('[CloudSync] Skipping invalid image:', {
                                 key,
-                                localModified,
-                                cloudModified,
-                                shouldSync
+                                hasValue: !!value,
+                                type: value ? value.constructor.name : 'undefined'
                             });
-                        } catch (error) {
-                            logger.error(`[CloudSync] Error checking cloud image: ${error}`);
-                            // If we can't check cloud version, assume we should sync
-                            shouldSync = true;
                         }
+                    });
 
-                        if (shouldSync) {
+                    logger.info(`[CloudSync] Processing ${allImages.length} valid images for sync`);
+
+                    // Process each image
+                    for (const { key, value } of allImages) {
+                        try {
+
+                            // Verify image data is valid before checking sync status
+                            if (!(value instanceof Blob || value instanceof ArrayBuffer)) {
+                                throw new Error(`Invalid image data type: ${value?.constructor?.name}`);
+                            }
+
+                            // Check if we should sync
+                            let shouldSync = false;
+                            try {
+                                const cloudImage = await iCloudService.getItem('images', key);
+                                const cloudModified = cloudImage?.data?.lastModified;
+                                const localModified = value.lastModified || Date.now();
+
+                                // Should sync if:
+                                // 1. No cloud version exists
+                                // 2. Local version is newer than cloud version
+                                // 3. Local version has different modified timestamp
+                                shouldSync = !cloudImage || 
+                                           !cloudModified ||
+                                           localModified > cloudModified ||
+                                           localModified !== cloudModified;
+
+                                logger.debug(`[CloudSync] Checking image sync:`, {
+                                    key,
+                                    localModified,
+                                    cloudModified,
+                                    shouldSync,
+                                    dataType: value.constructor.name,
+                                    byteLength: value.byteLength || value.size
+                                });
+                            } catch (error) {
+                                logger.error(`[CloudSync] Error checking cloud image: ${error}`);
+                                // If we can't check cloud version, assume we should sync
+                                shouldSync = true;
+                            }
+
+                            if (shouldSync) {
                             logger.debug(`[CloudSync] Syncing image:`, {
                                 key,
                                 size: value.byteLength || value.length,
