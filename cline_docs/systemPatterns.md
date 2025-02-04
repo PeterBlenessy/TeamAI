@@ -24,6 +24,9 @@
    - Settings: Hierarchical settings management
    - Messages: Realtime chat interface
    - History: Local conversation management
+     - Timestamp-based conversation sorting (updated/created)
+     - Smart date-based grouping
+     - Cross-device sync compatibility
    - Personas: AI personality configuration
    - Quasar v2: UI framework integration
 
