@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v2.2.18 - 2025-02-04
+- Added comprehensive project documentation in cline_docs:
+  - productContext.md: Core product purpose and functionality
+  - techContext.md: Technical stack and constraints
+  - systemPatterns.md: Architecture patterns and decisions
+  - progress.md: Feature completion and development status
+  - activeContext.md: Current development focus and priorities
+- Fixed bug where synced conversations appeared at the top of history despite having older timestamps
+- Fixed bug where images failed to sync with "undefined" error by improving image data validation
+
 ## v2.2.17 - 2025-02-02
 - Removed cloud sync of application settings to avoid inconcistencies caused.
 - Added support syncing images to cloud drive separately from conversations.
