@@ -135,9 +135,17 @@ function getDateGroup(timestamp) {
 
 const groupedHistory = computed(() => {
     const grouped = {};
-    const reversedHistory = [...history.value].reverse();
-    reversedHistory.forEach(item => {
-        const date = getDateGroup(item.timestamp);
+    // Sort by updated timestamp (most recent first) before grouping
+    const sortedHistory = [...history.value].sort((a, b) => {
+        // Use updated timestamp if available, fall back to timestamp
+        const aTime = parseInt(a.updated || a.timestamp);
+        const bTime = parseInt(b.updated || b.timestamp);
+        return bTime - aTime;
+    });
+    
+    sortedHistory.forEach(item => {
+        // Use updated timestamp for grouping if available
+        const date = getDateGroup(item.updated || item.timestamp);
         item.readonly = true;
         if (!grouped[date]) {
             grouped[date] = [];
