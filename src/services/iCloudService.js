@@ -964,9 +964,22 @@ const iCloudService = {
             throw new Error(`Invalid image data: key=${key}, value=${!!value}`);
         }
 
+        // Convert ArrayBuffer to Blob if needed
+        let imageData = value;
+        if (value instanceof ArrayBuffer) {
+            imageData = new Blob([value]);
+            logger.debug('[iCloudService] Converted ArrayBuffer to Blob:', {
+                key,
+                originalSize: value.byteLength,
+                newSize: imageData.size
+            });
+        } else if (!(value instanceof Blob)) {
+            throw new Error(`Invalid image data type: ${value?.constructor?.name}. Expected Blob or ArrayBuffer.`);
+        }
+
         // Verify we have valid binary data
-        if (!(value instanceof Blob || value instanceof ArrayBuffer)) {
-            throw new Error(`Invalid image data type: ${value?.constructor?.name}`);
+        if (imageData.size === 0) {
+            throw new Error('Image data is empty (zero bytes)');
         }
 
         const imagesPath = await join(this._container, 'images')

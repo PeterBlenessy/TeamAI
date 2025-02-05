@@ -279,15 +279,49 @@ export function useCloudSync() {
                 try {
                     // Get all images from local DB
                     const allImages = [];
-                    await imageDB.iterate((value, key) => {
-                        // Only add if we have both key and valid binary data
-                        if (key && value && (value instanceof Blob || value instanceof ArrayBuffer)) {
-                            allImages.push({ key, value });
-                        } else {
+                    await imageDB.iterate(async (value, key) => {
+                        try {
+                            // Ensure we have both key and value
+                            if (!key || !value) {
+                                logger.warn('[CloudSync] Skipping empty image:', {
+                                    key,
+                                    hasValue: !!value
+                                });
+                                return;
+                            }
+
+                            // Convert to Blob if necessary
+                            let imageData = value;
+                            if (!(value instanceof Blob)) {
+                                if (value instanceof ArrayBuffer) {
+                                    imageData = new Blob([value]);
+                                } else {
+                                    // Try to extract any binary data
+                                    const binaryData = value.data || value.buffer || value;
+                                    if (binaryData instanceof ArrayBuffer) {
+                                        imageData = new Blob([binaryData]);
+                                    } else {
+                                        throw new Error(`Cannot convert ${value?.constructor?.name} to Blob`);
+                                    }
+                                }
+                                logger.debug('[CloudSync] Converted image data to Blob:', {
+                                    key,
+                                    originalType: value?.constructor?.name,
+                                    size: imageData.size
+                                });
+                            }
+
+                            // Verify we have valid binary data
+                            if (imageData.size === 0) {
+                                throw new Error('Empty image data');
+                            }
+
+                            allImages.push({ key, value: imageData });
+                        } catch (error) {
                             logger.warn('[CloudSync] Skipping invalid image:', {
                                 key,
-                                hasValue: !!value,
-                                type: value ? value.constructor.name : 'undefined'
+                                error: String(error),
+                                type: value?.constructor?.name
                             });
                         }
                     });
@@ -298,9 +332,9 @@ export function useCloudSync() {
                     for (const { key, value } of allImages) {
                         try {
 
-                            // Verify image data is valid before checking sync status
-                            if (!(value instanceof Blob || value instanceof ArrayBuffer)) {
-                                throw new Error(`Invalid image data type: ${value?.constructor?.name}`);
+                            // Image data validation already done during collection
+                            if (!value || value.size === 0) {
+                                throw new Error('Invalid or empty image data');
                             }
 
                             // Check if we should sync
