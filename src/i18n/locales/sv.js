@@ -567,6 +567,7 @@ export default {
             caption: 'Detta kan ta några sekunder.'
         },
         inProgress: {
+            message: 'Databasen uppgradering pågår',
             caption: 'Uppgraderar databas till version {version}...'
         },
         completed: {

@@ -569,6 +569,7 @@ export default {
             caption: "Kérjük, várjon."
         },
         inProgress: {
+            message: 'Adatbázis frissítés',
             caption: "Adatbázis frissítése a {version} verzióra..."
         },
         completed: {

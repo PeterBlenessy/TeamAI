@@ -570,6 +570,7 @@ export default {
             caption: 'Please wait.'
         },
         inProgress: {
+            message: 'Database upgrade in progress',
             caption: 'Upgrading database to version {version}...'
         },
         completed: {
