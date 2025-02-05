@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v2.2.19 - 2025-02-05
+- Fixed image sync issue by implementing proper type handling and validation for images
+- Fixed database upgrade issue where upgrading could get stuck when version was really old.
+- Added missing locale 'databaseUpgrade.inProgress.message'
+
 ## v2.2.18 - 2025-02-04
 - Added comprehensive project documentation in cline_docs:
   - productContext.md: Core product purpose and functionality
