@@ -1,7 +1,12 @@
-import { readFile, writeFile } from '@tauri-apps/plugin-fs';
+import { readFile, writeFile, readDir } from '@tauri-apps/plugin-fs';
+import { join } from '@tauri-apps/api/path';
 import logger from '@/services/logger';
 import { updateSyncMetadata } from './metadata';
 import { validatePersona } from './validation';
+import { syncStateManager } from '../syncStateManager';
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 /**
  * Retry operation with exponential backoff
@@ -62,7 +67,7 @@ export const syncPersona = async (service, personaId, data, changeType) => {
 
         // Write and verify file with retries
         await retry(async () => {
-            const content = new TextEncoder().encode(JSON.stringify(metadata, null, 2));
+            const content = encoder.encode(JSON.stringify(metadata, null, 2));
             await writeFile(itemPath, content);
             await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -115,7 +120,7 @@ export const getPersona = async (service, personaId) => {
             if (!content) {
                 throw new Error('Empty file');
             }
-            const parsed = JSON.parse(new TextDecoder().decode(content));
+            const parsed = JSON.parse(decoder.decode(content));
             
             logger.debug(`[iCloudService] Read persona:`, {
                 path: itemPath,

@@ -3,6 +3,10 @@ import { readFile, writeFile } from '@tauri-apps/plugin-fs';
 import logger from '@/services/logger';
 import { syncStateManager } from '../syncStateManager';
 
+// Initialize encoder/decoder once for better performance
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
 /**
  * Retry operation with exponential backoff
  */
@@ -16,7 +20,7 @@ const retry = async (operation, description, maxAttempts = 3) => {
         } catch (error) {
             if (attempt === maxAttempts) throw error;
             logger.warn(`[iCloudService] - Failed ${description} (attempt ${attempt}/${maxAttempts}):`, String(error));
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
         }
     }
 };
@@ -38,7 +42,7 @@ const initializeClientId = async (service) => {
                 return content;
             }, 'read client metadata');
 
-            metadata = JSON.parse(new TextDecoder().decode(contents));
+            metadata = JSON.parse(decoder.decode(contents));
             logger.debug(`[iCloudService] - Loaded existing client metadata:`, {
                 clientId: metadata.clientId,
                 firstSeen: metadata.firstSeen
@@ -53,7 +57,7 @@ const initializeClientId = async (service) => {
 
             // Write new metadata file with retries
             await retry(async () => {
-                const content = new TextEncoder().encode(JSON.stringify(metadata, null, 2));
+                const content = encoder.encode(JSON.stringify(metadata, null, 2));
                 await writeFile(metadataPath, content);
                 await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -91,12 +95,12 @@ const loadSyncMetadata = async (service) => {
                 const content = await readFile(syncMetadataPath);
                 if (!content) {
                     // Return default metadata for empty file
-                    return new TextEncoder().encode(JSON.stringify({ clients: {}, vectorClock: {} }));
+                    return encoder.encode(JSON.stringify({ clients: {}, vectorClock: {} }));
                 }
                 return content;
             }, 'read sync metadata');
 
-            service._lastSyncMetadata = JSON.parse(new TextDecoder().decode(contents));
+            service._lastSyncMetadata = JSON.parse(decoder.decode(contents));
             logger.debug(`[iCloudService] - Loaded sync metadata:`, {
                 clientCount: Object.keys(service._lastSyncMetadata.clients || {}).length,
                 hasVectorClock: !!service._lastSyncMetadata.vectorClock
@@ -108,7 +112,7 @@ const loadSyncMetadata = async (service) => {
 
             // Write new metadata file with retries
             await retry(async () => {
-                const content = new TextEncoder().encode(JSON.stringify(service._lastSyncMetadata, null, 2));
+                const content = encoder.encode(JSON.stringify(service._lastSyncMetadata, null, 2));
                 await writeFile(syncMetadataPath, content);
                 await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -165,7 +169,7 @@ export const updateSyncMetadata = async (service, fileType, syncInfo) => {
     try {
         // Write metadata file with retries
         await retry(async () => {
-            const content = new TextEncoder().encode(JSON.stringify(service._lastSyncMetadata, null, 2));
+            const content = encoder.encode(JSON.stringify(service._lastSyncMetadata, null, 2));
             await writeFile(syncMetadataPath, content);
             await new Promise(resolve => setTimeout(resolve, 100));
 

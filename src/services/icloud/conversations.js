@@ -5,6 +5,9 @@ import { updateSyncMetadata } from './metadata';
 import { validateConversation } from './validation';
 import { syncStateManager } from '../syncStateManager';
 
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
 /**
  * Retry operation with exponential backoff
  */
@@ -66,7 +69,7 @@ export const syncConversation = async (service, conversationId, data, changeType
 
         // Write and verify file with retries
         await retry(async () => {
-            const content = new TextEncoder().encode(JSON.stringify(metadata, null, 2));
+            const content = encoder.encode(JSON.stringify(metadata, null, 2));
             await writeFile(itemPath, content);
             await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -119,7 +122,7 @@ export const getConversation = async (service, conversationId) => {
             if (!content) {
                 throw new Error('Empty file');
             }
-            const parsed = JSON.parse(new TextDecoder().decode(content));
+            const parsed = JSON.parse(decoder.decode(content));
             
             logger.debug(`[iCloudService] Read conversation:`, {
                 path: itemPath,

@@ -6,6 +6,7 @@ import { setupMetadata } from './metadata';
 import { syncPersona, getPersona, getChangedPersonas } from './personas';
 import { syncConversation, getConversation, getChangedConversations } from './conversations';
 import { syncImage, importCloudImages, cleanupOrphanedImages } from './images';
+import { syncStateManager } from '../syncStateManager';
 
 class ICloudService {
     VERSION = '1.0';
@@ -20,12 +21,27 @@ class ICloudService {
     _container = null;
     _initialized = false;
 
+    constructor() {
+        // Bind methods to ensure proper 'this' context
+        this.syncPersona = syncPersona.bind(null, this);
+        this.getPersona = getPersona.bind(null, this);
+        this.getChangedPersonas = getChangedPersonas.bind(null, this);
+        
+        this.syncConversation = syncConversation.bind(null, this);
+        this.getConversation = getConversation.bind(null, this);
+        this.getChangedConversations = getChangedConversations.bind(null, this);
+        
+        this.syncImage = syncImage.bind(null, this);
+        this.importCloudImages = importCloudImages.bind(null, this);
+        this.cleanupOrphanedImages = cleanupOrphanedImages.bind(null, this);
+    }
+
     async init() {
         try {
             const platformName = await platform();
             logger.info(`[iCloudService] - Initializing with platform: ${platformName}`);
             
-            if (this._isMacOS()) {
+            if (await this._isMacOS()) {
                 const home = await homeDir();
                 const iCloudPath = await join(home, 'Library', 'Mobile Documents');
                 const iCloudDocsPath = await join(iCloudPath, 'com~apple~CloudDocs');
@@ -71,8 +87,8 @@ class ICloudService {
         }
     }
 
-    _isMacOS() {
-        const platformName = platform();
+    async _isMacOS() {
+        const platformName = await platform();
         logger.info(`[iCloudService] - Current platform name: ${platformName}`);
         return platformName === 'macos';
     }
@@ -99,23 +115,10 @@ class ICloudService {
         await this._ensureInitialized();
         return join(this._container, type, `${itemId}.json`);
     }
-
-    // Re-export functionality from other modules
-    syncPersona = syncPersona;
-    getPersona = getPersona;
-    getChangedPersonas = getChangedPersonas;
-
-    syncConversation = syncConversation;
-    getConversation = getConversation;
-    getChangedConversations = getChangedConversations;
-
-    syncImage = syncImage;
-    importCloudImages = importCloudImages;
-    cleanupOrphanedImages = cleanupOrphanedImages;
 }
 
 // Create and initialize singleton instance
 const iCloudService = new ICloudService();
-iCloudService.init();
+await iCloudService.init();
 
 export default iCloudService;

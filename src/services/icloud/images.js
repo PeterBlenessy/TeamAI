@@ -1,7 +1,8 @@
-import { readFile, writeFile, readDir, remove } from '@tauri-apps/plugin-fs';
+import { readFile, writeFile, readDir, remove, mkdir } from '@tauri-apps/plugin-fs';
 import { join } from '@tauri-apps/api/path';
 import logger from '@/services/logger';
 import { imageDB } from '@/services/localforage';
+import { validateImage } from './validation';
 
 /**
  * Retry operation with exponential backoff
@@ -30,28 +31,12 @@ export const syncImage = async (service, imageId, value) => {
         throw new Error('iCloud is not available');
     }
 
-    // Validate image data
-    if (!imageId || !value) {
-        throw new Error(`Invalid image data: key=${imageId}, value=${!!value}`);
+    // Validate and normalize image data
+    if (!imageId) {
+        throw new Error('Image ID is required');
     }
 
-    // Convert ArrayBuffer to Blob if needed
-    let imageData = value;
-    if (value instanceof ArrayBuffer) {
-        imageData = new Blob([value]);
-        logger.debug('[iCloudService] Converted ArrayBuffer to Blob:', {
-            key: imageId,
-            originalSize: value.byteLength,
-            newSize: imageData.size
-        });
-    } else if (!(value instanceof Blob)) {
-        throw new Error(`Invalid image data type: ${value?.constructor?.name}. Expected Blob or ArrayBuffer.`);
-    }
-
-    // Verify we have valid binary data
-    if (imageData.size === 0) {
-        throw new Error('Image data is empty');
-    }
+    const imageData = validateImage(value);
 
     const imagesPath = await join(service._container, 'images');
     const imagePath = await join(imagesPath, imageId);
@@ -70,12 +55,12 @@ export const syncImage = async (service, imageId, value) => {
         // Write and verify file with retries
         await retry(async () => {
             // Write the file
-            await writeFile(imagePath, value);
+            await writeFile(imagePath, imageData);
             await new Promise(resolve => setTimeout(resolve, 100));
 
             // Verify file was written correctly
             const verifyContent = await readFile(imagePath);
-            if (!verifyContent || verifyContent.byteLength !== value.byteLength) {
+            if (!verifyContent || verifyContent.byteLength !== imageData.size) {
                 throw new Error('Image verification failed - size mismatch or file empty');
             }
 
