@@ -27,6 +27,9 @@ const requiredMethods = {
     getMetadata: async (path) => {}
 };
 
+// List of synchronous methods that shouldn't be wrapped with async error handling
+const syncMethods = ['isAvailable'];
+
 /**
  * Validates that all required methods are implemented
  */
@@ -50,7 +53,7 @@ export function createProvider(implementation, options = {}) {
     try {
         validateImplementation(implementation);
         
-        // Add error handling wrapper
+        // Add error handling wrapper for async methods
         const withErrorHandling = (fn, name) => async (...args) => {
             try {
                 return await fn.apply(implementation, args);
@@ -69,10 +72,31 @@ export function createProvider(implementation, options = {}) {
             }
         };
 
-        // Wrap all methods with error handling
+        // Add sync error handling wrapper
+        const withSyncErrorHandling = (fn, name) => (...args) => {
+            try {
+                return fn.apply(implementation, args);
+            } catch (error) {
+                logger.error(`[CloudStorage] ${name} failed:`, {
+                    args,
+                    error: String(error),
+                    stack: error?.stack
+                });
+                throw error instanceof CloudError ? error : 
+                    new CloudError(`Provider operation failed: ${name}`, {
+                        cause: error,
+                        operation: name,
+                        args
+                    });
+            }
+        };
+
+        // Wrap methods with appropriate error handling
         const wrapped = Object.keys(requiredMethods).reduce((acc, method) => ({
             ...acc,
-            [method]: withErrorHandling(implementation[method], method)
+            [method]: syncMethods.includes(method) 
+                ? withSyncErrorHandling(implementation[method], method)
+                : withErrorHandling(implementation[method], method)
         }), {});
         
         return {
@@ -80,7 +104,7 @@ export function createProvider(implementation, options = {}) {
             
             // Add common utilities
             async validateConnection() {
-                if (!await this.isAvailable()) {
+                if (!this.isAvailable()) {
                     throw new CloudError('Storage provider is not available');
                 }
             },
