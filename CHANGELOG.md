@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v2.2.20 - 2025-02-09
+- Fixed issue where multiple notifications were displayed during cloud sync making the UX jumpy.
+
 ## v2.2.19 - 2025-02-05
 - Fixed image sync issue by implementing proper type handling and validation for images
 - Fixed database upgrade issue where upgrading could get stuck when version was really old.

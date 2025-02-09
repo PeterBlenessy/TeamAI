@@ -10,6 +10,9 @@ import SettingsDialog from '@/components/Settings/SettingsDialog.vue';
 import { createPersonasHandler } from './handlers/personas';
 import { createConversationsHandler } from './handlers/conversations';
 import { createImagesHandler } from './handlers/images';
+import { 
+    mdiCloudCheck
+} from '@quasar/extras/mdi-v7';
 
 export function useCloudSync() {
     const { t } = useI18n();
@@ -33,6 +36,8 @@ export function useCloudSync() {
         [SyncType.IMAGES]: createImagesHandler()
     };
 
+    const syncNotification = ref(null);
+
     // Notify user about sync status
     const notifyAndLogger = (type, message, options = {}) => {
         const logTypeMap = {
@@ -50,12 +55,28 @@ export function useCloudSync() {
             caption: options?.caption || 'no details',
         });
 
-        return $q.notify({
+        if (!syncNotification.value) {
+            syncNotification.value = $q.notify({
+                group: false,   // Required to be updatable
+                timeout: 0,     // we want to be in control when it gets dismissed
+                type: 'info',
+                position: 'bottom-right',
+                spinner: false
+            });
+        }
+
+        syncNotification.value({
             type,
-            position: 'bottom-right',
             ...options,
             message
         });
+
+        // return $q.notify({
+        //     type,
+        //     position: 'bottom-right',
+        //     ...options,
+        //     message
+        // });
     };
 
     // Track individual item changes
@@ -147,8 +168,9 @@ export function useCloudSync() {
             syncManager.syncState = SyncState.IN_PROGRESS;
             logger.info('[CloudSync] Starting sync process');
 
-            currentNotification = notifyAndLogger('info', t('icloud.sync.checking.message'), {
-                timeout: 0,
+            notifyAndLogger('info', t('icloud.sync.checking.message'), {
+                group: false, // required to be updatable
+                timeout: 0, // we want to be in control when it gets dismissed
                 spinner: true,
                 icon: 'mdi-cloud-sync'
             });
@@ -165,8 +187,8 @@ export function useCloudSync() {
                     if (!change) continue;
 
                     try {
-                        if (currentNotification) currentNotification();
-                        currentNotification = notifyAndLogger('info', 
+                        // if (currentNotification) currentNotification();
+                        notifyAndLogger('info', 
                             t(`icloud.sync.${type.toLowerCase()}.uploading.message`), {
                             timeout: 0,
                             spinner: true,
@@ -176,8 +198,8 @@ export function useCloudSync() {
                         await handler.sync(itemId, change, change.changeType);
                         syncManager.clearItemChanges(type, itemId);
 
-                        if (currentNotification) currentNotification();
-                        currentNotification = notifyAndLogger('success',
+                        // if (currentNotification) currentNotification();
+                        notifyAndLogger('success',
                             t(`icloud.sync.${type.toLowerCase()}.uploaded.message`), {
                             type: 'positive',
                             icon: 'mdi-cloud-check',
@@ -194,8 +216,8 @@ export function useCloudSync() {
             for (const [type, handler] of Object.entries(handlers)) {
                 if (!handler.enabled()) continue;
 
-                if (currentNotification) currentNotification();
-                currentNotification = notifyAndLogger('info', t('icloud.sync.checking.message'), {
+                // if (currentNotification) currentNotification();
+                notifyAndLogger('info', t('icloud.sync.checking.message'), {
                     timeout: 0,
                     spinner: true,
                     icon: 'mdi-cloud-download'
@@ -215,11 +237,12 @@ export function useCloudSync() {
                 }
             }
 
-            if (currentNotification) currentNotification();
+            // if (currentNotification) currentNotification();
 
             notifyAndLogger('success', t('icloud.sync.success.message'), {
                 type: 'positive',
-                icon: 'mdi-cloud-check',
+                icon: mdiCloudCheck,
+                spinner: false,
                 timeout: 2000
             });
 
@@ -230,7 +253,7 @@ export function useCloudSync() {
         } catch (error) {
             logger.error('[CloudSync] Sync failed:', error);
 
-            if (currentNotification) currentNotification();
+            // if (currentNotification) currentNotification();
 
             notifyAndLogger('error', t('icloud.sync.error.message'), {
                 type: 'negative',
@@ -240,6 +263,8 @@ export function useCloudSync() {
             });
 
             syncManager.syncState = SyncState.FAILED;
+        } finally {
+            syncNotification.value = null;
         }
     };
 
