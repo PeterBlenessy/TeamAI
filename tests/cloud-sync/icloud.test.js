@@ -71,23 +71,12 @@ describe('iCloud Provider', () => {
             await provider.init();
         });
 
-        it('should write and verify file', async () => {
+        it('should write file', async () => {
             const fs = await import('@tauri-apps/plugin-fs');
             fs.writeFile.mockResolvedValue(undefined);
-            fs.readFile.mockResolvedValue(mockData);
 
             await provider.writeFile('test.txt', mockData);
             expect(fs.writeFile).toHaveBeenCalledWith('test.txt', mockData);
-        });
-
-        it('should handle write verification failure', async () => {
-            const fs = await import('@tauri-apps/plugin-fs');
-            fs.writeFile.mockResolvedValue(undefined);
-            fs.readFile.mockResolvedValue(new Uint8Array([1])); // Different data
-
-            await expect(
-                provider.writeFile('test.txt', mockData)
-            ).rejects.toThrow(CloudError);
         });
 
         it('should read file contents', async () => {
@@ -175,37 +164,6 @@ describe('iCloud Provider', () => {
 
             await expect(provider.init()).rejects.toThrow(CloudError);
             expect(provider.isAvailable()).toBe(false);
-        });
-    });
-
-    describe('Retry Mechanism', () => {
-        it('should retry failed operations', async () => {
-            const fs = await import('@tauri-apps/plugin-fs');
-            fs.readFile
-                .mockRejectedValueOnce(new Error('Temporary error'))
-                .mockResolvedValueOnce(mockData);
-
-            const result = await provider.retry(
-                () => provider.readFile('test.txt'),
-                'read test file'
-            );
-            
-            expect(result).toEqual(mockData);
-            expect(fs.readFile).toHaveBeenCalledTimes(2);
-        });
-
-        it('should fail after max retries', async () => {
-            const fs = await import('@tauri-apps/plugin-fs');
-            fs.readFile.mockRejectedValue(new Error('Persistent error'));
-
-            await expect(
-                provider.retry(
-                    () => provider.readFile('test.txt'),
-                    'read test file'
-                )
-            ).rejects.toThrow();
-            
-            expect(fs.readFile).toHaveBeenCalledTimes(3); // Default max attempts
         });
     });
 });

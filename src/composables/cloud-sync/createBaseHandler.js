@@ -34,13 +34,41 @@ export const createBaseHandler = (implementation = {}) => {
             return JSON.stringify(local) !== JSON.stringify(remote);
         },
         
+        // Get changes between local and remote data
+        getChanges: async (localData = [], remoteData = []) => {
+            const changes = [];
+            
+            // Find items to upload (new or modified local items)
+            for (const localItem of localData) {
+                const remoteItem = remoteData.find(r => r.id === localItem.id);
+                if (!remoteItem || baseHandler.compareItems(localItem, remoteItem)) {
+                    changes.push({
+                        type: 'upload',
+                        data: localItem,
+                        reason: remoteItem ? 'modified' : 'new'
+                    });
+                }
+            }
+            
+            // Find items to download (new remote items)
+            for (const remoteItem of remoteData) {
+                const localItem = localData.find(l => l.id === remoteItem.id);
+                if (!localItem) {
+                    changes.push({
+                        type: 'download',
+                        data: remoteItem,
+                        reason: 'new'
+                    });
+                }
+            }
+            
+            return changes;
+        },
+        
         // Sync an item to cloud
         sync: async () => {
             throw new Error('Sync method must be implemented');
         },
-        
-        // Get changed items from cloud
-        getChanges: async () => [],
         
         // Apply a change from cloud
         applyChange: async () => {

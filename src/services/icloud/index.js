@@ -6,7 +6,6 @@ import { setupMetadata } from './metadata';
 import { syncPersona, getPersona, getChangedPersonas } from './personas';
 import { syncConversation, getConversation, getChangedConversations } from './conversations';
 import { syncImage, importCloudImages, cleanupOrphanedImages } from './images';
-import { syncStateManager } from '../syncStateManager';
 
 class ICloudService {
     VERSION = '1.0';
@@ -20,6 +19,7 @@ class ICloudService {
     _isAvailable = false;
     _container = null;
     _initialized = false;
+    _initPromise = null;
 
     constructor() {
         // Bind methods to ensure proper 'this' context
@@ -37,45 +37,59 @@ class ICloudService {
     }
 
     async init() {
+        // Return existing initialization if in progress
+        if (this._initPromise) {
+            return this._initPromise;
+        }
+
+        this._initPromise = this._initialize();
+        return this._initPromise;
+    }
+
+    async _initialize() {
         try {
-            const platformName = await platform();
+            const platformName = platform();
             logger.info(`[iCloudService] - Initializing with platform: ${platformName}`);
             
-            if (await this._isMacOS()) {
-                const home = await homeDir();
-                const iCloudPath = await join(home, 'Library', 'Mobile Documents');
-                const iCloudDocsPath = await join(iCloudPath, 'com~apple~CloudDocs');
-                this._container = await join(iCloudDocsPath, 'TeamAI');
-
-                try {
-                    logger.info(`[iCloudService] - Setting up iCloud container at: ${this._container}`);
-                    
-                    // Create main container
-                    await mkdir(this._container, { recursive: true });
-                    const containerExists = await readDir(this._container);
-                    logger.info(`[iCloudService] - Container created with ${containerExists.length} items`);
-
-                    // Create and validate subdirectories
-                    const dirs = ['personas', 'conversations', 'images'];
-                    for (const dir of dirs) {
-                        const path = await join(this._container, dir);
-                        await mkdir(path, { recursive: true });
-                        logger.info(`[iCloudService] - Created directory: ${path}`);
-                    }
-
-                    await setupMetadata(this);
-
-                    this._isAvailable = true;
-                    this._initialized = true;
-                    logger.info('[iCloudService] - Initialized successfully');
-
-                } catch (error) {
-                    logger.error(`[iCloudService] - Error setting up container: ${error}`);
-                    throw error;
-                }
-            } else {
+            if (platformName !== 'macos') {
                 logger.warn(`[iCloudService] - iCloud is only supported on macOS (detected: ${platformName})`);
                 this._isAvailable = false;
+                this._initialized = true;
+                return;
+            }
+
+            const home = await homeDir();
+            const iCloudPath = await join(home, 'Library', 'Mobile Documents');
+            const iCloudDocsPath = await join(iCloudPath, 'com~apple~CloudDocs');
+            this._container = await join(iCloudDocsPath, 'TeamAI');
+
+            try {
+                logger.info(`[iCloudService] - Setting up iCloud container at: ${this._container}`);
+                
+                // Create main container
+                await mkdir(this._container, { recursive: true });
+                const containerExists = await readDir(this._container);
+                logger.info(`[iCloudService] - Container created with ${containerExists.length} items`);
+
+                // Create and validate subdirectories
+                const dirs = ['personas', 'conversations', 'images'];
+                for (const dir of dirs) {
+                    const path = await join(this._container, dir);
+                    await mkdir(path, { recursive: true });
+                    logger.info(`[iCloudService] - Created directory: ${path}`);
+                }
+
+                await setupMetadata(this);
+
+                this._isAvailable = true;
+                this._initialized = true;
+                logger.info('[iCloudService] - Initialized successfully');
+
+            } catch (error) {
+                logger.error(`[iCloudService] - Error setting up container: ${error}`);
+                this._isAvailable = false;
+                this._initialized = true;
+                throw error;
             }
         } catch (error) {
             logger.error(`[iCloudService] - Initialization failed:`, {
@@ -84,13 +98,9 @@ class ICloudService {
                 type: error.constructor.name
             });
             this._isAvailable = false;
+            this._initialized = true;
+            throw error;
         }
-    }
-
-    async _isMacOS() {
-        const platformName = await platform();
-        logger.info(`[iCloudService] - Current platform name: ${platformName}`);
-        return platformName === 'macos';
     }
 
     async _ensureInitialized() {
@@ -100,6 +110,10 @@ class ICloudService {
     }
 
     isAvailable() {
+        if (!this._initialized) {
+            const platformName = platform();
+            return platformName === 'macos';
+        }
         return this._isAvailable;
     }
 
@@ -117,8 +131,7 @@ class ICloudService {
     }
 }
 
-// Create and initialize singleton instance
+// Create singleton instance
 const iCloudService = new ICloudService();
-await iCloudService.init();
 
 export default iCloudService;

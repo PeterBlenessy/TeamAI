@@ -27,13 +27,13 @@ const requiredMethods = {
     getMetadata: async (path) => {}
 };
 
-// List of synchronous methods that shouldn't be wrapped with async error handling
 const syncMethods = ['isAvailable'];
 
 /**
- * Validates that all required methods are implemented
+ * Creates a storage provider with validation and error logging
  */
-function validateImplementation(implementation) {
+export function createProvider(implementation) {
+    // Validate implementation has all required methods
     const missing = Object.keys(requiredMethods).filter(
         method => typeof implementation[method] !== 'function'
     );
@@ -44,103 +44,67 @@ function validateImplementation(implementation) {
             required: Object.keys(requiredMethods)
         });
     }
-}
 
-/**
- * Creates a storage provider with validated interface and error handling
- */
-export function createProvider(implementation, options = {}) {
-    try {
-        validateImplementation(implementation);
-        
-        // Add error handling wrapper for async methods
-        const withErrorHandling = (fn, name) => async (...args) => {
-            try {
-                return await fn.apply(implementation, args);
-            } catch (error) {
-                logger.error(`[CloudStorage] ${name} failed:`, {
-                    args,
-                    error: String(error),
-                    stack: error?.stack
+    // Add error logging wrapper for async methods
+    const withErrorLogging = (fn, name) => async (...args) => {
+        try {
+            return await fn.apply(implementation, args);
+        } catch (error) {
+            logger.error(`[CloudStorage] ${name} failed:`, {
+                args,
+                error: String(error),
+                stack: error?.stack
+            });
+            throw error instanceof CloudError ? error : 
+                new CloudError(`Provider operation failed: ${name}`, {
+                    cause: error,
+                    operation: name,
+                    args
                 });
-                throw error instanceof CloudError ? error : 
-                    new CloudError(`Provider operation failed: ${name}`, {
-                        cause: error,
-                        operation: name,
-                        args
-                    });
-            }
-        };
+        }
+    };
 
-        // Add sync error handling wrapper
-        const withSyncErrorHandling = (fn, name) => (...args) => {
-            try {
-                return fn.apply(implementation, args);
-            } catch (error) {
-                logger.error(`[CloudStorage] ${name} failed:`, {
-                    args,
-                    error: String(error),
-                    stack: error?.stack
+    // Add sync error logging wrapper
+    const withSyncErrorLogging = (fn, name) => (...args) => {
+        try {
+            return fn.apply(implementation, args);
+        } catch (error) {
+            logger.error(`[CloudStorage] ${name} failed:`, {
+                args,
+                error: String(error),
+                stack: error?.stack
+            });
+            throw error instanceof CloudError ? error : 
+                new CloudError(`Provider operation failed: ${name}`, {
+                    cause: error,
+                    operation: name,
+                    args
                 });
-                throw error instanceof CloudError ? error : 
-                    new CloudError(`Provider operation failed: ${name}`, {
-                        cause: error,
-                        operation: name,
-                        args
-                    });
-            }
-        };
+        }
+    };
 
-        // Wrap methods with appropriate error handling
-        const wrapped = Object.keys(requiredMethods).reduce((acc, method) => ({
-            ...acc,
-            [method]: syncMethods.includes(method) 
-                ? withSyncErrorHandling(implementation[method], method)
-                : withErrorHandling(implementation[method], method)
-        }), {});
+    // Wrap methods with appropriate error logging
+    const wrapped = Object.keys(requiredMethods).reduce((acc, method) => ({
+        ...acc,
+        [method]: syncMethods.includes(method) 
+            ? withSyncErrorLogging(implementation[method], method)
+            : withErrorLogging(implementation[method], method)
+    }), {});
+
+    return {
+        ...wrapped,
         
-        return {
-            ...wrapped,
-            
-            // Add common utilities
-            async validateConnection() {
-                if (!this.isAvailable()) {
-                    throw new CloudError('Storage provider is not available');
-                }
-            },
-
-            async ensureInitialized() {
-                if (!this._initialized) {
-                    await this.init();
-                    this._initialized = true;
-                }
-            },
-
-            // Add retry utility
-            async retry(operation, description, maxAttempts = options.retryAttempts || 3) {
-                for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-                    try {
-                        logger.debug(`[CloudStorage] Attempting ${description} (${attempt}/${maxAttempts})`);
-                        const result = await operation();
-                        logger.debug(`[CloudStorage] Successfully completed ${description}`);
-                        return result;
-                    } catch (error) {
-                        if (attempt === maxAttempts) throw error;
-                        logger.warn(`[CloudStorage] Failed ${description} (attempt ${attempt}/${maxAttempts}):`, 
-                            String(error)
-                        );
-                        await new Promise(resolve => 
-                            setTimeout(resolve, (options.retryDelay || 1000) * attempt)
-                        );
-                    }
-                }
+        async validateConnection() {
+            if (!this.isAvailable()) {
+                throw new CloudError('Storage provider is not available');
             }
-        };
-    } catch (error) {
-        logger.error('[CloudStorage] Provider creation failed:', {
-            error: String(error),
-            stack: error?.stack
-        });
-        throw error;
-    }
+        },
+
+        async ensureInitialized() {
+            if (!this._initialized) {
+                await this.init();
+                this._initialized = true;
+            }
+        }
+    };
 }

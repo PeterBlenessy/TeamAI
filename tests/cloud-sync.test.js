@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { createProvider } from '../src/services/cloud-storage/create-provider';
 import { baseOperations } from '../src/services/cloud-storage/base-operations';
 import { createSync } from '../src/composables/cloud-sync/create-sync';
-import { createHandler } from '../src/composables/cloud-sync/create-handler';
+import { createHandler } from '@/composables/cloud-sync/create-handler';
+import { CloudError } from '@/services/cloud-storage/types';
 
 describe('Cloud Storage Provider', () => {
     const mockImplementation = {
@@ -58,16 +59,24 @@ describe('Sync Core', () => {
 
 describe('Handler Factory', () => {
     it('should require handler type', () => {
-        expect(() => createHandler()).toThrow();
+        expect(() => createHandler()).toThrow('Handler type is required');
         expect(() => createHandler({ type: 'test' })).not.toThrow();
     });
 
     it('should detect changes correctly', async () => {
         const handler = createHandler({ type: 'test' });
-        const changes = await handler.getChanges(
+        const { changes } = await handler.getChanges(
             [{ id: 1, data: 'local' }],
             [{ id: 2, data: 'remote' }]
         );
         expect(changes).toHaveLength(2); // One upload, one download
+        
+        const upload = changes.find(c => c.type === 'upload');
+        const download = changes.find(c => c.type === 'download');
+        
+        expect(upload).toBeDefined();
+        expect(download).toBeDefined();
+        expect(upload.data.id).toBe(1);
+        expect(download.data.id).toBe(2);
     });
 });
