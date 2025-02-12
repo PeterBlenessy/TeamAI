@@ -55,7 +55,7 @@ const initStore = () => {
 const shouldLog = (level) => {
     const settings = initStore();
     if (!settings.loggingEnabled) return false;
-    return logLevels[settings.logLevel] >= logLevels[level];
+    return logLevels[level] >= logLevels[settings.logLevel];
 };
 
 function formatArg(arg) {
