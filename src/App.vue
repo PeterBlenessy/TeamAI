@@ -70,6 +70,9 @@
                     <q-btn round dense :icon="mdiArrowDown" color="primary" />
                 </q-page-scroller>
 
+                <!-- Cloud Sync Progress -->
+                <CloudSyncProgress ref="cloudSyncRef" @resolveConflict="handleConflictResolution" @cancelConflict="handleConflictCancel" />
+
             </q-page>
 
             <!-- Conditional placement of UserInput -->
@@ -99,9 +102,9 @@ import OpenAI from '@/components/OpenAI.vue';
 import History from '@/components/History.vue';
 import Information from '@/components/Information.vue';
 import Personas from '@/components/Personas.vue';
-import DatabaseUpgrader from '@/services/databaseUpgrader.js';
+import databaseUpgrader from '@/services/databaseUpgrader.js';
 import logger from '@/services/logger';
-import { useCloudSync } from '@/composables/useCloudSync';
+import { useCloudSync } from '@/composables/useCloudSync.js';
 import Updater from '@/components/Updater.vue';
 import { 
     mdiMenu, mdiMenuOpen, mdiChatPlusOutline, mdiHistory, mdiCardAccountDetailsOutline, 
@@ -109,6 +112,9 @@ import {
     mdiCloudSync
 } from '@quasar/extras/mdi-v7';
 import { useUpdater } from '@/composables/useUpdater';
+import CloudSyncProgress from '@/components/CloudSyncProgress.vue';
+import { cloudSyncService } from '@/services/cloudSyncService';
+import iCloudDrive from '@/services/cloudSync/iCloudDrive';
 
 const { t, locale } = useI18n();
 const $q = useQuasar();
@@ -127,7 +133,7 @@ const settingsTab = ref('general');
 const miniDrawer = ref(true);
 const iconColor = computed(() => $q.dark.isActive ? 'grey-4' : 'grey-8');
 
-const dbUpgrader = DatabaseUpgrader();
+const dbUpgrader = databaseUpgrader();
 const updaterRef = ref(null);
 const { isUpdateAvailable, checkForUpdates } = useUpdater();
 let updateInterval;
@@ -150,6 +156,43 @@ watch(miniDrawer, () => {
     toolbar.value[0].icon = miniDrawer.value === true ? mdiMenu : mdiMenuOpen;
     toolbar.value[0].tooltip = miniDrawer.value === true ? 'toolbar.tooltip.showDrawer' : 'toolbar.tooltip.hideDrawer';
 });
+
+// Cloud sync handling
+const cloudSyncRef = ref(null);
+
+// Initialize cloud sync service
+const initializeCloudSync = async () => {
+    try {
+        await cloudSyncService.initialize(iCloudDrive);
+        logger.debug('[App] Cloud sync service initialized');
+    } catch (error) {
+        logger.warn('[App] Cloud sync initialization failed:', error);
+        // Don't throw - allow app to continue without cloud sync
+    }
+};
+
+const handleConflictResolution = async (resolution) => {
+    if (resolution.type === 'readonly') {
+        if (resolution.resolution === 'force-upload') {
+            // Force upload the local changes
+            await syncToCloud({ forceUpload: true });
+        }
+        // If keep-remote, do nothing as that's the default behavior
+    }
+};
+
+const handleConflictCancel = () => {
+    // Cancel the sync operation
+    logger.info('[CloudSync] Sync cancelled by user due to conflict');
+};
+
+const handleSyncToCloud = async () => {
+    try {
+        await syncToCloud();
+    } catch (error) {
+        logger.error('[CloudSync] Sync failed:', error);
+    }
+};
 
 const toolbar = ref([
     {
@@ -195,7 +238,7 @@ const toolbar = ref([
         appMode: 'basic'
     },
     {
-        action: syncToCloud,
+        action: handleSyncToCloud,
         icon: mdiCloudSync,
         tooltip: 'toolbar.tooltip.iCloudSync',
         appMode: 'advanced'
@@ -206,19 +249,40 @@ const toolbar = ref([
 onBeforeMount( async () => {
     isDBUpgraded.value = false;
     if (await dbUpgrader.isUpgradeNeed()) {
-        dbUpgrader.upgrade();
+        await dbUpgrader.upgrade();
     }
     isDBUpgraded.value = true;
 });
 
-// Set application locale to the one selected by the user and stored in the settings store.
-onMounted(() => {
+// Lifecycle hooks
+onMounted(async () => {
+    // Set application locale and start event listeners
     locale.value = userLocale.value;
     startAutoCheck();
+    
+    // Initialize services
+    if (await dbUpgrader.isUpgradeNeed()) {
+        await dbUpgrader.upgrade();
+    }
+    isDBUpgraded.value = true;
+    
+    // Initialize cloud sync after DB upgrade
+    await initializeCloudSync();
+    
+    window.addEventListener('sync-conflict', (event) => {
+        if (cloudSyncRef.value) {
+            cloudSyncRef.value.showConflict(event.detail);
+        }
+    });
 });
 
 onUnmounted(() => {
     stopAutoCheck();
+    window.removeEventListener('sync-conflict', (event) => {
+        if (cloudSyncRef.value) {
+            cloudSyncRef.value.showConflict(event.detail);
+        }
+    });
 });
 
 // Watch runtime changes to dark mode
@@ -239,6 +303,7 @@ watch(isUpdateAvailable, async (newValue) => {
 async function handleCheckForUpdates() {
     await updaterRef.value?.checkForUpdates();
 }
+
 </script>
 
 <style>

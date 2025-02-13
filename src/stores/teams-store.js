@@ -2,7 +2,6 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { imageDB } from '@/services/localforage';
 import logger from '@/services/logger';
-import { syncStateManager } from '@/services/syncStateManager';
 
 // The teams-store holds the teams creeated by the user in a list. A team is a list of AI assistants, bots
 // Each team object has an array of team member objects and an array of messages.

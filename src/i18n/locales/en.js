@@ -583,8 +583,18 @@ export default {
             action: 'Dismiss'
         }
     },
-    icloud: {
+    cloud: {
         sync: {
+            phase: {
+                idle: 'Idle',
+                starting: 'Starting sync...',
+                checking: 'Checking changes...',
+                uploading: 'Uploading...',
+                downloading: 'Downloading...',
+                cleaning: 'Cleaning up...',
+                completed: 'Sync completed successfully',
+                error: 'Sync failed'
+            },
             checking: {
                 message: 'Checking for cloud changes...'
             },

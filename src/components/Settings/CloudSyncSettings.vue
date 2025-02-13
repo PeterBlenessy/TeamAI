@@ -174,6 +174,7 @@ import { useHelpers } from '@/composables/useHelpers';
 import { platform } from '@tauri-apps/plugin-os';
 import { storeToRefs } from 'pinia';
 import { useSettingsStore } from '@/stores/settings-store';
+import { useSyncStore } from '@/stores/sync-store';
 import { useCloudSync } from '@/composables/useCloudSync';
 import { 
     mdiCloudSync,
@@ -188,7 +189,10 @@ import {
 
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
-const { cloudSync, cloudProvider, lastSync, syncOptions } = storeToRefs(settingsStore);
+const { cloudSync, cloudProvider, syncOptions } = storeToRefs(settingsStore);
+
+const syncStore = useSyncStore();
+const { lastSync } = storeToRefs(syncStore);
 const { syncing, syncToCloud } = useCloudSync();
 
 const isMacOS = computed(() => platform() === 'macos');

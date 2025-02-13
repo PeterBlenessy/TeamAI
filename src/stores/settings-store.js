@@ -50,8 +50,6 @@ export const useSettingsStore = defineStore('settings', () => {
         dBVersion: ref(loadFromStorage('dBVersion', 0)),
         isDBUpgraded: ref(loadFromStorage('isDBUpgraded', false)),
 
-        lastSync: ref(loadFromStorage('lastSync', null)),
-
         // Cloud sync settings
         cloudSync: ref(loadFromStorage('cloudSync', false)),
         cloudProvider: ref(loadFromStorage('cloudProvider', 'iCloud')),

@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin';
@@ -39,7 +41,7 @@ export default defineConfig(async () => ({
 
     test: {
         globals: true,
-        environment: 'node',
+        environment: 'jsdom',
         setupFiles: ['./tests/setup.js'],
         alias: {
             '@': path.resolve(__dirname, './src')
